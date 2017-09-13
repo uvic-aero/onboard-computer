@@ -19,7 +19,7 @@ class Liveview:
 
     async def start(self):
         if self.started is False:
-            #self._start_server()
+            self._start_server()
             await self._start_client()
             self.started = True
 
@@ -84,13 +84,47 @@ class Liveview:
 
             raw_image = await reader.readexactly(jpeg_data_size)
 
-            Image.open(io.BytesIO(raw_image)).save('image.jpg')
+            #Image.open(io.BytesIO(raw_image)).save('image.jpg')
 
             if padding_size > 0:
                 await reader.readexactly(padding_size)
 
+            await self.broadcast_image(raw_image)
+
             print("Frame: %s" % frames)
             frames += 1
 
-    async def client_connected(self, reader, writer):
-        print("new client")
+    async def client_connected(self, _reader, writer):
+
+        print("Added new streaming client")
+
+        message = "\r\n".join([
+            'HTTP/1.1 200 OK',
+            'Content-Type: multipart/x-mixed-replace; boundary=frame',
+            '', ''])
+
+        writer.write(message.encode())
+        await writer.drain()
+
+        self.connections.append(writer)
+
+        while writer.transport.is_closing() is False:
+            await asyncio.sleep(1)
+            continue
+
+        writer.close()
+        self.connections.remove(writer)
+
+    async def broadcast_image(self, image):
+
+        print("Sending img")
+
+        message = b'--frame\r\n' + b'Content-Type: image/jpeg\r\n\r\n' + image + b'\r\n'
+
+        #print(message)
+
+        for conn in self.connections:
+            conn.write(message)
+            await conn.drain()
+
+            print("Sent img")
