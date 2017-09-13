@@ -20,16 +20,19 @@ class OnboardComputer:
 
     async def run(self):
 
-        while True:
-            if self.camera.connected == False:
-                time.sleep(1)
-                self.camera.connect()
-                continue
+        print("Starting Onboard Computer")
+
+        while self.camera.connected == False:
+            await asyncio.sleep(1)
+            await self.camera.connect()
 
 if __name__ == '__main__':
 
     loop = asyncio.get_event_loop()
+    obc = OnboardComputer()
 
-    loop.run_until_complete(OnboardComputer().run())
+    loop.run_until_complete(obc.run())
+
+    loop.run_forever()
 
     loop.close()

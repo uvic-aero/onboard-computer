@@ -1,10 +1,13 @@
 import socket
+import asyncio
 import netifaces
 import traceback
 import requests
+import functools
 from io import BytesIO
 from http.client import HTTPResponse
 from enum import Enum
+from liveview import Liveview
 
 try:
     import xml.etree.cElementTree as ET
@@ -39,10 +42,9 @@ class Camera:
             "params": [],
             "method": ""
         }
+        self.liveview = None
 
-        self.connect()
-
-    def connect(self):
+    async def connect(self):
 
         if self.connected == True:
             return
@@ -57,65 +59,72 @@ class Camera:
                 continue
 
             for link in links[netifaces.AF_INET]:
+            
+                found = await self.send_discovery(link['addr'])
 
-                sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
-                sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-                sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 2)
-                sock.bind((link['addr'], 0))
-
-                message = "\r\n".join([
-                    'M-SEARCH * HTTP/1.1',
-                    'HOST: 239.255.255.250:1900',
-                    'MAN: "ssdp:discover"',
-                    'ST: urn:schemas-sony-com:service:ScalarWebAPI:1',
-                    'MX: 1', '', ''])
-
-                print('Using interface %s' % link['addr'])
-                
-                try:
-                    for _ in range(2):
-                        sock.sendto(message.encode(), ("239.255.255.250", 1900))   
-                except:
-                    print("Failed to query SSDP server")
-
-                try:
-                    data = sock.recv(1024)
-
-                    response = HTTPResponse(FakeSocket(data))
-                    response.begin()
-
-                    st = response.getheader('st')
-
-                    if st != 'urn:schemas-sony-com:service:ScalarWebAPI:1':
-                        return
-
-                    self.location = response.getheader('location')
-
-                    print('Camera location header: %s' % self.location)
-
-                    self.parse_ssdp_response()
-
-                    self.connected = True
-
-                    print('Connected to camera')
-
-                    self.set_record_mode()
-                    #self.update_camera_status()
-                    #self.start_liveview()
-
+                if found is True:
                     return
 
-                # Could not find the camera device
-                except socket.timeout:
-                    print('Connection timed out')
-                    continue
+    async def send_discovery(self, addr):
+        
+        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 2)
+        sock.bind((addr, 0))
 
-                # Error while parsing http response
-                except:
-                    traceback.print_exc()
-                    continue
+        message = "\r\n".join([
+            'M-SEARCH * HTTP/1.1',
+            'HOST: 239.255.255.250:1900',
+            'MAN: "ssdp:discover"',
+            'ST: urn:schemas-sony-com:service:ScalarWebAPI:1',
+            'MX: 1', '', ''])
 
-    def parse_ssdp_response(self):
+        print('Using interface %s' % addr)
+        
+        try:
+            for _ in range(2):
+                sock.sendto(message.encode(), ("239.255.255.250", 1900))   
+        except:
+            print("Failed to query SSDP server")
+
+        try:
+            data = sock.recv(1024)
+
+            response = HTTPResponse(FakeSocket(data))
+            response.begin()
+
+            st = response.getheader('st')
+
+            if st != 'urn:schemas-sony-com:service:ScalarWebAPI:1':
+                return False
+
+            self.location = response.getheader('location')
+
+            print('Camera location header: %s' % self.location)
+
+            await self.parse_ssdp_response()
+
+            self.connected = True
+
+            print('Connected to camera')
+
+            await self.set_record_mode()
+            #self.update_camera_status()
+            await self.start_liveview()
+
+            return True
+
+        # Could not find the camera device
+        except socket.timeout:
+            print('Connection timed out')
+            return False
+
+        # Error while parsing http response
+        except:
+            traceback.print_exc()
+            return False
+
+    async def parse_ssdp_response(self):
 
         # Parse SSDP get request as XML
         root = ET.fromstring(requests.get(self.location).content)
@@ -126,21 +135,21 @@ class Camera:
 
         print("Camera endpoint: %s" % self.endpoint)
 
-    def send_command(self, method, param=None):
+    async def send_command(self, method, param=None):
         
         self.params["method"] = method
         self.params["params"] = [] if param is None else [param]
 
         try:
             print(self.params)
-            res = requests.post(self.endpoint, json=self.params)
+            res = await asyncio.get_event_loop().run_in_executor(None, functools.partial(requests.post, self.endpoint, json=self.params))
 
             if res.status_code != 200:
                 raise Exception("Response status code: %s" % res.status_code)
 
             res_json = res.json()
 
-            # API errors are returned as [code, message] so pull out message
+            # API errors are returned as [code, message] so pull out the message
             if "error" in res_json:
                 raise Exception(res_json["error"][1])
 
@@ -149,18 +158,25 @@ class Camera:
             traceback.print_exc()
             return None
 
-    def set_record_mode(self):
+    async def set_record_mode(self):
         
-        print(self.send_command("startRecMode"))
+        await self.send_command("startRecMode")
+        print("Camera entering recMode")
 
-    def update_camera_status(self):
+    async def update_camera_status(self):
         
-        print(self.send_command("getEvent", True))
+        await self.send_command("getEvent", True)
 
-    def take_picture(self):
+    async def take_picture(self):
 
-        print(self.send_command("actTakePicture"))
+        await self.send_command("actTakePicture")
 
-    def start_liveview(self):
+    async def start_liveview(self):
         
-        print(self.send_command("startLiveview"))
+        res = await self.send_command("startLiveview")
+        liveview_url = res['result'][0]
+
+        print("Liveview URL: %s" % liveview_url)
+
+        self.liveview = Liveview(liveview_url)
+        await self.liveview.start()
