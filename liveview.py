@@ -3,6 +3,7 @@ import asyncio
 import urllib
 import binascii
 import io
+import traceback
 from PIL import Image
 
 class Liveview:
@@ -19,14 +20,13 @@ class Liveview:
 
     async def start(self):
         if self.started is False:
-            self._start_server()
+            await self._start_server()
             await self._start_client()
             self.started = True
 
-    def _start_server(self):
+    async def _start_server(self):
         print("Starting liveview server")
-        asyncio.get_event_loop().create_task(asyncio.start_server(self.client_connected, host="127.0.0.1", port=5000, family=socket.AF_INET))
-        #server = self.loop.run_until_complete(coro)
+        await asyncio.get_event_loop().create_task(asyncio.start_server(self.client_connected, host="127.0.0.1", port=5000, family=socket.AF_INET))
         print("Started liveview server on 127.0.0.1:5000")
 
     async def _start_client(self):
@@ -100,7 +100,7 @@ class Liveview:
 
         message = "\r\n".join([
             'HTTP/1.1 200 OK',
-            'Content-Type: multipart/x-mixed-replace; boundary=frame',
+            'Content-Type: multipart/x-mixed-replace;boundary=frame',
             '', ''])
 
         writer.write(message.encode())
@@ -117,14 +117,15 @@ class Liveview:
 
     async def broadcast_image(self, image):
 
-        print("Sending img")
-
-        message = b'--frame\r\n' + b'Content-Type: image/jpeg\r\n\r\n' + image + b'\r\n'
-
-        #print(message)
+        message = b'--frame\r\nContent-Type: image/jpeg\r\nContent-Length: %d' % len(image) + b'\r\n\r\n' + image + b'\r\n'
 
         for conn in self.connections:
-            conn.write(message)
-            await conn.drain()
+            if conn.transport.is_closing() is True:
+                continue
 
-            print("Sent img")
+            try:
+                conn.write(message)
+                await conn.drain()
+            except:
+                traceback.print_exc()
+                conn.close()

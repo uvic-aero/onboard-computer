@@ -110,7 +110,14 @@ class Camera:
 
             await self.set_record_mode()
             #self.update_camera_status()
+            
+            await asyncio.sleep(1)
+
             await self.start_liveview()
+
+            await asyncio.sleep(1)
+
+            await self.get_available_liveview_sizes()
 
             return True
 
@@ -174,9 +181,26 @@ class Camera:
     async def start_liveview(self):
         
         res = await self.send_command("startLiveview")
+
+        if res is None:
+            print("Failed to set liveview camera mode")
+            return
+
         liveview_url = res['result'][0]
 
         print("Liveview URL: %s" % liveview_url)
 
         self.liveview = Liveview(liveview_url)
         await self.liveview.start()
+
+    async def get_current_liveview_size(self):
+
+        res = await self.send_command("getLiveviewSize")
+
+        print(res)
+
+    async def get_available_liveview_sizes(self):
+
+        res = await self.send_command("getAvailableLiveviewSize")
+
+        print(res)
