@@ -59,7 +59,9 @@ Then start ffmpeg to transcode the images into a video stream
 ffmpeg -c mjpeg -i http://127.0.0.1:5000 -codec copy http://127.0.0.1:8080/feed1.ffm
 ```
 
-The video livestream can now be viewed at http://127.0.0.1/liveview.jpg depending on how ffserver is configured
+The video livestream can now be viewed at http://127.0.0.1:8080/liveview.jpg depending on how ffserver is configured
+The local IP in the link above can be replaced by the IP of the server/raspberry Pi depending how the network is configured as
+ffserver will run on all network interfaces whereas the initial jpeg stream will only run locally.
 
 ## Authors
 
