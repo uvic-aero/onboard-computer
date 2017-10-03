@@ -55,36 +55,47 @@ class Liveview:
         data = await reader.read(95)
 
         frames = 1
+        skipped_bytes = 0
 
         while True:
-            data = await reader.readexactly(8)
+            
+            data = await reader.read(1)
+
+            if len(data) == 0:
+                continue
 
             start_byte = data[0]
 
+            # 255 dictates start of new header+payload
             if start_byte != 255:
+                skipped_bytes += 1
                 continue
 
-            #payload_type = data[1] # 1 or 2
-            #sequence_number = int(binascii.hexlify(data[2:4]), 16)
-            #time_stamp = int(binascii.hexlify(data[4:8]), 16)
+            # Read rest of info header
+            data = await reader.read(7)
 
-            #print(start_byte, payload_type, sequence_number, time_stamp)
+            # Sanity check the payload type
+            payload_type = data[0] # 1 or 2
 
+            if payload_type != 1:
+                skipped_bytes += 1
+                continue
+
+            sequence_number = int(binascii.hexlify(data[1:3]), 16)
+            time_stamp = int(binascii.hexlify(data[3:7]), 16)
+
+            # Read payload header
             data = await reader.readexactly(128)
 
-            #start_code = int(binascii.hexlify(data[0:4]), 16)
+            start_code = int(binascii.hexlify(data[0:4]), 16)
             jpeg_data_size = int(binascii.hexlify(data[4:7]), 16)
             padding_size = data[7]
 
-            #reserved_1 = int(binascii.hexlify(data[8:12]), 16)
-            #flag = data[12] # 0x00
-            #reserved_2 = int(binascii.hexlify(data[13:]), 16)
+            _image_width = int(binascii.hexlify(data[7:9]), 16)
+            _image_height = int(binascii.hexlify(data[9:11]), 16)
 
-            #print(start_code, jpeg_data_size, padding_size)
-
+            # Read actual payload
             raw_image = await reader.readexactly(jpeg_data_size)
-
-            #Image.open(io.BytesIO(raw_image)).save('image.jpg')
 
             if padding_size > 0:
                 await reader.readexactly(padding_size)
@@ -95,7 +106,7 @@ class Liveview:
             frames += 1
 
     async def client_connected(self, _reader, writer):
-
+   
         print("Added new streaming client")
 
         message = "\r\n".join([
@@ -108,12 +119,15 @@ class Liveview:
 
         self.connections.append(writer)
 
+        # Disabled until a better method of closing the connection is written
+        '''
         while writer.transport.is_closing() is False:
             await asyncio.sleep(1)
             continue
 
         writer.close()
         self.connections.remove(writer)
+        '''
 
     async def broadcast_image(self, image):
 

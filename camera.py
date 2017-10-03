@@ -115,9 +115,9 @@ class Camera:
 
             await self.start_liveview()
 
-            await asyncio.sleep(1)
+            #await asyncio.sleep(1)
 
-            await self.get_available_liveview_sizes()
+            #await self.get_available_liveview_sizes()
 
             return True
 
@@ -180,7 +180,7 @@ class Camera:
 
     async def start_liveview(self):
         
-        res = await self.send_command("startLiveview")
+        res = await self.send_command("startLiveviewWithSize", "L")
 
         if res is None:
             print("Failed to set liveview camera mode")
