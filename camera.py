@@ -1,3 +1,4 @@
+import os
 import socket
 import asyncio
 import netifaces
@@ -9,6 +10,7 @@ from http.client import HTTPResponse
 from enum import Enum
 from liveview import Liveview
 
+
 try:
     import xml.etree.cElementTree as ET
 except ImportError:
@@ -18,7 +20,7 @@ socket.setdefaulttimeout(2) # 2 second timeout
 
 class Status(Enum):
     Error = -1
-    Idle = 0
+    IDLE = 0
     NotReady = 1
     StillCapturing = 2
     StillSaving = 3
@@ -37,50 +39,58 @@ class Camera:
         self.status = Status.NotReady
         self.endpoint = ""
         self.params = {
-            "id": 1,
-            "version": "1.0",
-            "params": [],
-            "method": ""
+            "id" : 1,
+            "version" : '1.0',
+            "params" : [],
+            "method" : ""
         }
         self.liveview = None
 
-    async def connect(self):
 
+    async def start_tasks(self):
+        await self.set_record_mode()
+        await self.start_liveview()
+        await asyncio.sleep(10)
+        await self.zoom_in()
+        await self.zoom_in()
+        await self.zoom_out()
+        await self.stop_liveview()
+        await self.zoom_in()
+        await self.take_picture()
+        await self.start_liveview()     
+
+    async def check_and_start_connection(self):
         if self.connected == True:
-            return
+            print("Already connected")
+            return True ###
+        while self.connected == False:
+            print('Starting connection to camera')
+            while True :
+                await asyncio.sleep(1)
+                for interface in netifaces.interfaces():
+                    links = netifaces.ifaddresses(interface)
+                    if netifaces.AF_INET not in links:
+                        continue
+                    for link in links[netifaces.AF_INET]:
+                        found = await self.start_connection(link['addr'])
+                        if found is True:
+                            print("Connection was established")
+                            return True ###
 
-        print('Starting connection to camera')
-
-        for interface in netifaces.interfaces():
-
-            links = netifaces.ifaddresses(interface)
-
-            if netifaces.AF_INET not in links:
-                continue
-
-            for link in links[netifaces.AF_INET]:
-            
-                found = await self.send_discovery(link['addr'])
-
-                if found is True:
-                    return
-
-    async def send_discovery(self, addr):
-        
+    async def start_connection(self, addr):
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 2)
         sock.bind((addr, 0))
-
+        # HTTP request
         message = "\r\n".join([
             'M-SEARCH * HTTP/1.1',
             'HOST: 239.255.255.250:1900',
             'MAN: "ssdp:discover"',
             'ST: urn:schemas-sony-com:service:ScalarWebAPI:1',
             'MX: 1', '', ''])
-
         print('Using interface %s' % addr)
-        
+        # Make sure the SSDP server is queried
         try:
             for _ in range(2):
                 sock.sendto(message.encode(), ("239.255.255.250", 1900))   
@@ -89,39 +99,23 @@ class Camera:
 
         try:
             data = sock.recv(1024)
-
             response = HTTPResponse(FakeSocket(data))
             response.begin()
 
             st = response.getheader('st')
-
             if st != 'urn:schemas-sony-com:service:ScalarWebAPI:1':
                 return False
 
             self.location = response.getheader('location')
-
             print('Camera location header: %s' % self.location)
-
-            await self.parse_ssdp_response()
-
-            self.connected = True
-
-            print('Connected to camera')
-
-            await self.set_record_mode()
-            #self.update_camera_status()
             
-            await asyncio.sleep(1)
-
-            await self.start_liveview()
-
-            #await asyncio.sleep(1)
-
-            #await self.get_available_liveview_sizes()
+            await self.parse_ssdp_response()
+            self.connected = True
+            print('Connected to camera')
 
             return True
 
-        # Could not find the camera device
+
         except socket.timeout:
             print('Connection timed out')
             return False
@@ -132,75 +126,103 @@ class Camera:
             return False
 
     async def parse_ssdp_response(self):
-
         # Parse SSDP get request as XML
         root = ET.fromstring(requests.get(self.location).content)
-
         for service in root.iter('{urn:schemas-sony-com:av}X_ScalarWebAPI_Service'):
             if service.find("{urn:schemas-sony-com:av}X_ScalarWebAPI_ServiceType").text == "camera":
                 self.endpoint = service.find("{urn:schemas-sony-com:av}X_ScalarWebAPI_ActionList_URL").text + "/camera"
-
         print("Camera endpoint: %s" % self.endpoint)
 
-    async def send_command(self, method, param=None):
-        
+    async def send_command(self, method, param=None): 
         self.params["method"] = method
-        self.params["params"] = [] if param is None else [param]
+        self.params["params"] = [] if param is None else param
 
         try:
-            print(self.params)
             res = await asyncio.get_event_loop().run_in_executor(None, functools.partial(requests.post, self.endpoint, json=self.params))
-
             if res.status_code != 200:
                 raise Exception("Response status code: %s" % res.status_code)
-
             res_json = res.json()
-
-            # API errors are returned as [code, message] so pull out the message
             if "error" in res_json:
-                raise Exception(res_json["error"][1])
-
+                raise Exception(res_json["error"][1]) ###
             return res_json
         except Exception as e:
             traceback.print_exc()
             return None
 
     async def set_record_mode(self):
-        
         await self.send_command("startRecMode")
         print("Camera entering recMode")
 
-    async def update_camera_status(self):
-        
-        await self.send_command("getEvent", True)
+    async def check_camera_status(self):      
+        res = await self.send_command("getEvent", [False]) ###
+        return res["result"][1]['cameraStatus']
+
+    async def camera_is_IDLE(self):
+        status = await self.check_camera_status()
+        isIDLE = (status == Status.IDLE.name)
+        return isIDLE
+
+    async def wait_camera_until_IDLE(self):
+        while True:
+            isIDLE = await self.camera_is_IDLE()
+            if isIDLE:
+                break
 
     async def take_picture(self):
+        await self.wait_camera_until_IDLE()
+        res = await self.send_command("actTakePicture")
+        picture_url = res["result"][0][0]
+        print("Picture url : ", picture_url)
 
-        await self.send_command("actTakePicture")
+        picture_name = picture_url.split("/")[-1]
+        response = requests.get(picture_url)
+        image = response.content
+
+        pwd = os.path.dirname(__file__)
+        folder_name = os.path.join(pwd,"picture")
+        if not os.path.exists(folder_name):
+            print ("Create the folder \"picture\".")
+            os.mkdir(folder_name)
+
+        picture_dir = os.path.join(folder_name, picture_name)
+        with open(picture_dir, 'wb') as file:
+            file.write(image)
 
     async def start_liveview(self):
-        
-        res = await self.send_command("startLiveviewWithSize", "L")
-
+        await self.wait_camera_until_IDLE()
+        res = await self.send_command("startLiveviewWithSize", ["L"])
         if res is None:
             print("Failed to set liveview camera mode")
             return
 
         liveview_url = res['result'][0]
-
         print("Liveview URL: %s" % liveview_url)
 
         self.liveview = Liveview(liveview_url)
         await self.liveview.start()
 
     async def get_current_liveview_size(self):
-
-        res = await self.send_command("getLiveviewSize")
-
-        print(res)
+        await self.wait_camera_until_IDLE()
+        await self.send_command("getLiveviewSize")
 
     async def get_available_liveview_sizes(self):
+        await self.wait_camera_until_IDLE()
+        await self.send_command("getAvailableLiveviewSize")
 
-        res = await self.send_command("getAvailableLiveviewSize")
+    async def stop_liveview(self):
+        await self.liveview.stop()
+        await self.send_command("stopLiveview")
+        self.liveview = None
+        print("Liveview has stopped.")
 
-        print(res)
+    async def zoom_in(self):
+        await self.wait_camera_until_IDLE()
+        print ("Start Zoom In")
+        await self.send_command("actZoom", ["in", "1shot"])
+        print ("Complete Zoom In")
+
+    async def zoom_out(self):
+        await self.wait_camera_until_IDLE()
+        print("Start Zoom Out")
+        await self.send_command("actZoom", ["out", "1shot"])
+        print("Complete Zoom out")
