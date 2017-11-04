@@ -9,24 +9,27 @@ from PIL import Image
 class Liveview:
     def __init__(self, camera_stream_url):
         self.started = False
+        self.stopped = True
         self.out_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP)
         self.connections = []
+        self.server = None
 
         url_info = urllib.parse.urlparse(camera_stream_url)
-
         self.stream_hostname = url_info.hostname
         self.stream_port = url_info.port
         self.stream_path = url_info.path
 
     async def start(self):
-        if self.started is False:
+        if self.started is False and self.stopped is True:
+            self.stopped = False
             await self._start_server()
             await self._start_client()
             self.started = True
 
     async def _start_server(self):
         print("Starting liveview server")
-        await asyncio.get_event_loop().create_task(asyncio.start_server(self.client_connected, host="127.0.0.1", port=5000, family=socket.AF_INET))
+        if self.server is None:
+            self.server = await asyncio.get_event_loop().create_task(asyncio.start_server(self.client_connected, host="127.0.0.1", port=5000, family=socket.AF_INET))
         print("Started liveview server on 127.0.0.1:5000")
 
     async def _start_client(self):
@@ -58,6 +61,12 @@ class Liveview:
         skipped_bytes = 0
 
         while True:
+            if self.stopped:
+                # TODO : ffmpeg.stop()
+                self.connections = []
+                self.server.close()
+                self.server = None
+                break
             
             data = await reader.read(1)
 
@@ -143,3 +152,8 @@ class Liveview:
             except:
                 traceback.print_exc()
                 conn.close()
+
+    async def stop(self):
+        if self.started is True and self.stopped is False:
+            self.stopped = True
+            self.started = False

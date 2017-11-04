@@ -65,7 +65,7 @@ ffserver will run on all network interfaces whereas the initial jpeg stream will
 
 ## Authors
 
-Christopher Hampu
+Christopher Hampu, Lin Hsuan-Yu
 
 ## License
 
