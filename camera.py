@@ -1,7 +1,6 @@
 import os
 import socket
 import asyncio
-import netifaces
 import traceback
 import requests
 import functools
@@ -67,15 +66,14 @@ class Camera:
             print('Starting connection to camera')
             while True :
                 await asyncio.sleep(1)
-                for interface in netifaces.interfaces():
-                    links = netifaces.ifaddresses(interface)
-                    if netifaces.AF_INET not in links:
-                        continue
-                    for link in links[netifaces.AF_INET]:
-                        found = await self.start_connection(link['addr'])
-                        if found is True:
-                            print("Connection was established")
-                            return True ###
+                # Get IP addresses that match specific parameters
+                for addr in [i[4][0] for i in socket.getaddrinfo(socket.gethostname(), None)
+                    if i[0] == socket.AF_INET and i[1] == socket.SOCK_DGRAM]:
+                    # Attempt to find camera on this interface
+                    found = await self.start_connection(addr)
+                    if found is True:
+                        print("Connection was established")
+                        return True ###
 
     async def start_connection(self, addr):
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)

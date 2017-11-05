@@ -4,7 +4,6 @@ import urllib
 import binascii
 import io
 import traceback
-from PIL import Image
 
 class Liveview:
     def __init__(self, camera_stream_url):
