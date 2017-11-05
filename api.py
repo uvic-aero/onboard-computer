@@ -14,6 +14,7 @@ class API:
 
     # Start the HTTP server
 	def start(self):
+		print("Starting Onboard HTTP Server")
 		self.app = tornado.web.Application(self.routes)
 		self.app.listen(8000)
 		tornado.ioloop.IOLoop.current().start()
@@ -48,9 +49,3 @@ class ZoomOut(tornado.web.RequestHandler):
 		camera.zoom_out()
 		#TODO: Test for functionality
 		
-
-#For Debugging Use (Running Independantly for now):
-if __name__ == "__main__":
-	server = API()
-	server.start()
-	
