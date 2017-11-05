@@ -1,5 +1,6 @@
 import tornado.ioloop
 import tornado.web
+import asyncio
 from camera import camera
 
 # An HTTP server that will receive commands from the GroundStation
@@ -23,20 +24,18 @@ class API:
 		
 class MainHandler(tornado.web.RequestHandler):
 	def get(self):
-		self.write("Main Page of Onboard Computer Web Server	")
+		self.write("Main Page of Onboard Computer Web Server")
 			
 class TakePicture(tornado.web.RequestHandler):
 	def get(self):
 		self.write("Picture Page")
-		camera.take_picture()
-		#TODO: Listed Below
-		#Return an HTTP 200 if the call succeeded 
-		#400-level code if the call failed with reason
-		#This call will depend on the camera being in Liveview mode to tell the camera to capture a still image
-		#will pause the liveview until the image is complete. This call may take many seconds to complete,
-		#but should not block the rest of the API***
+		asyncio.ensure_future(camera.take_picture())
+		raise tornado.web.HTTPError(200)
+		#yield camera.take_picture()
+		#tornado.ioloop.IOLoop.current().spawn_callback(camera.take_picture())
 		
-
+		#TODO: Modify to return HTTP 400 code if call fails with reason, or HTTP 200 code if call succedes
+		
 class ZoomIn(tornado.web.RequestHandler):
 	def get(self):
 		self.write("Picture Page")
@@ -54,3 +53,4 @@ class ZoomOut(tornado.web.RequestHandler):
 if __name__ == "__main__":
 	server = API()
 	server.start()
+	
