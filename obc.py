@@ -3,13 +3,13 @@ import requests
 import functools
 import traceback
 import time
-from camera import Camera
+from camera import camera
 
 groundstation_url = "127.0.0.1:4000"
 
 class OnboardComputer:
     def __init__(self):
-        self.camera = Camera()
+        self.camera = camera
 
     async def run(self):
         print("Starting Onboard Computer")

@@ -226,3 +226,5 @@ class Camera:
         print("Start Zoom Out")
         await self.send_command("actZoom", ["out", "1shot"])
         print("Complete Zoom out")
+
+camera = Camera()
