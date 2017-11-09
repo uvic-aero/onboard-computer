@@ -4,6 +4,7 @@ import asyncio
 import traceback
 import requests
 import functools
+from tornado import ioloop
 from io import BytesIO
 from http.client import HTTPResponse
 from enum import Enum
@@ -44,7 +45,6 @@ class Camera:
             "method" : ""
         }
         self.liveview = None
-
 
     async def start_tasks(self):
         await self.set_record_mode()
@@ -136,7 +136,7 @@ class Camera:
         self.params["params"] = [] if param is None else param
 
         try:
-            res = await asyncio.get_event_loop().run_in_executor(None, functools.partial(requests.post, self.endpoint, json=self.params))
+            res = await ioloop.IOLoop.instance().asyncio_loop.run_in_executor(None, functools.partial(requests.post, self.endpoint, json=self.params))
             if res.status_code != 200:
                 raise Exception("Response status code: %s" % res.status_code)
             res_json = res.json()

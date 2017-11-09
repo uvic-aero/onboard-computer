@@ -17,11 +17,6 @@ class API:
 		print("Starting Onboard HTTP Server")
 		self.app = tornado.web.Application(self.routes)
 		self.app.listen(8000)
-		tornado.ioloop.IOLoop.current().start()
-		
-	def stop(self):
-		tornado.ioloop.IOLoop.current().stop()
-		
 		
 class MainHandler(tornado.web.RequestHandler):
 	def get(self):
