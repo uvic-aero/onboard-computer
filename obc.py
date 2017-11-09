@@ -19,9 +19,7 @@ class OnboardComputer:
 
     async def run(self):
         print("Starting Onboard Computer")
-
         self.api.start()
-
         while self.camera.connected == False:
             await self.camera.check_and_start_connection()
         await self.camera.start_tasks()

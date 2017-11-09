@@ -14,9 +14,11 @@ class API:
 
     # Start the HTTP server
 	def start(self):
-		print("Starting Onboard HTTP Server")
 		self.app = tornado.web.Application(self.routes)
 		self.app.listen(8000)
+		print("Onboard HTTP Server Running")
+
+	
 		
 class MainHandler(tornado.web.RequestHandler):
 	def get(self):
@@ -24,23 +26,34 @@ class MainHandler(tornado.web.RequestHandler):
 			
 class TakePicture(tornado.web.RequestHandler):
 	def get(self):
-		self.write("Picture Page")
-		asyncio.ensure_future(camera.take_picture())
-		raise tornado.web.HTTPError(200)
-		#yield camera.take_picture()
-		#tornado.ioloop.IOLoop.current().spawn_callback(camera.take_picture())
-		
-		#TODO: Modify to return HTTP 400 code if call fails with reason, or HTTP 200 code if call succedes
+		if(camera.connected):
+			self.write("Picture Page")
+			asyncio.ensure_future(camera.take_picture())
+			raise tornado.web.HTTPError(200)
+		else:
+			raise tornado.web.HTTPError(503)
+
 		
 class ZoomIn(tornado.web.RequestHandler):
 	def get(self):
-		self.write("Picture Page")
-		camera.zoom_in()
+		if(camera.connected):
+			self.write("Zoom In Page")
+			camera.zoom_in()
+			raise tornado.web.HTTPError(200)
+		else:
+			raise tornado.web.HTTPError(503)
+		
 		#TODO: Test for functionality
 
 class ZoomOut(tornado.web.RequestHandler):
 	def get(self):
-		self.write("Picture Page")
-		camera.zoom_out()
+		if(camera.connected):
+			self.write("Zoom Out Page")
+			camera.zoom_out()
+			raise tornado.web.HTTPError(200)
+		else:
+			raise tornado.web.HTTPError(503)
 		#TODO: Test for functionality
+		
+
 		
