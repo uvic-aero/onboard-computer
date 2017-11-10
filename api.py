@@ -10,8 +10,10 @@ class API:
 		self.routes = [(r"/", MainHandler),
 		(r"/zoom/in", ZoomIn),
 		(r"/zoom/out", ZoomOut),
+		(r"/status", Status),
 		(r"/still", TakePicture)]		
-
+		
+		
     # Start the HTTP server
 	def start(self):
 		self.app = tornado.web.Application(self.routes)
@@ -54,6 +56,19 @@ class ZoomOut(tornado.web.RequestHandler):
 		else:
 			raise tornado.web.HTTPError(503)
 		#TODO: Test for functionality
+
+class Status(tornado.web.RequestHandler):
+	def get(self):
+		self.write("Status: " + camera.status.name)
+		if camera.status.value == 0:
+			self.set_status(200,reason=None)
+		if camera.status.value == 1:
+			self.set_status(503,reason=None)
+		if camera.status.value > 1:
+			self.set_status(500,reason=None)
+		else:
+			self.set_status(500,reason=None)
+
 		
 
 		
