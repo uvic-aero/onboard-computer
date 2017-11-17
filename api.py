@@ -33,7 +33,8 @@ class TakePicture(tornado.web.RequestHandler):
 			asyncio.ensure_future(camera.take_picture())
 			raise tornado.web.HTTPError(200)
 		else:
-			raise tornado.web.HTTPError(503)
+			self.write("Failed: " + camera.status.name)
+			self.set_status(503,reason=None)
 
 		
 class ZoomIn(tornado.web.RequestHandler):
