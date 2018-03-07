@@ -4,9 +4,9 @@ import functools
 import traceback
 import time
 from tornado import ioloop
-from camera import camera
+from cameraManager import CameraManager
 from api import API
-
+from liveReceiver import LiveReceiver
 groundstation_url = "127.0.0.1:4000"
 onboardserver_url = "127.0.0.1:8000"
 
@@ -28,9 +28,6 @@ if __name__ == '__main__':
 
     loop = ioloop.IOLoop.instance()
     native = loop.asyncio_loop
-
     obc = OnboardComputer()
-
     native.create_task(obc.run())
-
     loop.start()
