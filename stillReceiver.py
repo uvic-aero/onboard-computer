@@ -1,23 +1,28 @@
 from stillProcessor import StillProcessor
-import thread
+import threading
+from queue import Queue
 
 class StillReceiver:
-	def __init__(CameraManager):
+	def __init__(self, CameraManager):
 		self.image_queue = Queue();
-		self.runLoop = false;
-	def loop():
-		while(runLoop):
-			handle_receiver()
+		self.runLoop = False;
+	def loop(self):
+		print("Loop Running")
+		print(self.runLoop)
+		while(self.runLoop):
+			self.handle_receiver()
 			
-	def start():
-		runLoop = true;
-		thread.start_new_thread(loop, ())
+	def start(self):
+		self.runLoop = True;
+		try:
+			t = threading.Thread(target=self.loop)
+			t.start()
+		except:
+			print ("Error starting stillReceiver and/or stillProcessor Threads")
 		
-	def stop():
-		runLoop = false;
+	def stop(self):
+		runLoop = False;
 		
-	def handle_receiver():
-	
+	def handle_receiver(self):
+		print("Loop Foreverrrrrrrrrrr")
 
-	
-	
