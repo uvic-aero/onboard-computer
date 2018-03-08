@@ -1,4 +1,3 @@
-
 from abc import ABC, abstractmethod
 import os
 import functools
@@ -13,11 +12,11 @@ __all__ = ['cameraAPI']
 class BaseCameraAPI(ABC):
 	def __init__(self):
 		self.url = ''
+		self.liveview_url = ''
 		self.payload = {
 			"id" : 1,
 			"version" : '1.0',
-		}
-		self.liveview_url = ''
+			}
 
 	def send_command(self, method, param = []):
 		self.payload["method"] = method
@@ -103,11 +102,11 @@ class CameraAPI(BaseCameraAPI):
 		self.send_command("actZoom", ["out", "1shot"])
 	
 	def start_liveview(self):
-        self.wait_camera_until_IDLE()
-        res = self.send_command("startLiveviewWithSize", ["L"])
-        liveview_url = res['result'][0]
-        self.liveview_url = liveview_url
-        print("Liveview url : %s"%liveview_url)
+		self.wait_camera_until_IDLE()
+		res = self.send_command("startLiveviewWithSize", ["L"])
+		liveview_url = res['result'][0]
+		self.liveview_url = liveview_url
+		print("Liveview url : %s"%liveview_url)
 
 	def stop_liveview(self):
 		self.send_command("stopLiveview")
@@ -123,8 +122,7 @@ class CameraAPI(BaseCameraAPI):
 			time.sleep(0.05)
 
 	def _check_status(self):
-        res = self.send_command("getEvent", [False])
-        return res["result"][1]['cameraStatus']
-
+		res = self.send_command("getEvent", [False])
+		return res["result"][1]['cameraStatus']
 
 cameraAPI = CameraAPI()
