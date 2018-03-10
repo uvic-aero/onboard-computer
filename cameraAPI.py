@@ -5,124 +5,163 @@ import requests
 import traceback
 import time
 
-__all__ = ['cameraAPI']
+__all__ = ['CameraAPI']
 
-# TODO : Add Camera Exception
+# TODO : Error handing for disconnection, improper command, camera dysfunction
 
 class BaseCameraAPI(ABC):
-	def __init__(self):
-		self.url = ''
-		self.liveview_url = ''
-		self.payload = {
-			"id" : 1,
-			"version" : '1.0',
-			}
+	# Class Field
+	url = ''
+	liveview_url = ''
+	payload = {
+		"id" : 1,
+		"version" : '1.0'
+		}
 
-	def send_command(self, method, param = []):
-		self.payload["method"] = method
-		self.payload["params"] = param
+	@classmethod
+	def update_url(cls, url):
+		cls.url = url
 
-		send_request = functools.partial(requests.post, self.url, json=self.payload)
+	@classmethod
+	def send_command(cls, method, param = []):
+		cls.payload["method"] = method
+		cls.payload["params"] = param
+
+		send_request = functools.partial(requests.post, cls.url, 
+										json=cls.payload, timeout=0.5)
 		
-		# Send request to the camera and make sure it does response
+		# Make sure system doesn't crash during disconnection
 		try:
 			res = send_request()
-			res.status_code
-		except Exception as e:
-			traceback.print_exc()
-			raise Exception("The camera didn't respond or the camera url didn't work.")
+		except:
+			print("Some problems in connection.")
+			print("Drop the command.")
+			return
 
 		# Verify status code
 		if res.status_code == 200:
 			res_json = res.json()  # Convert json to Python Dict
+		elif res.status_code // 100 == 4:
+			print("Client error - Bad request. Reset url to default.")
+			print("Drop the command")
+			return
+		elif res.status_code // 100 == 5:
+			print("Server error! Camera SSDP server problem")
+			print("Drop the command")
+			return
 		else:
-			raise Exception("Response status code: %s" % res.status_code)
+			return
 		
-		# Capture error message from camera, otherwise return res_json
+		# Capture error message from improper command
 		if "error" in res_json:
-			raise Exception(res_json["error"][1])
+			print(res_json["error"][1])
+			print("Camera is unable to execute this comand")
+			print("Drop the command")
+			return 
 		else:
 			return res_json
-	
-	def update_url(self, url):
-		self.url = url
 
+	@classmethod
 	@abstractmethod
-	def take_still_picture(self):
-		pass
-	
-	@abstractmethod
-	def zoom_in(self):
-		pass
-	
-	@abstractmethod
-	def zoom_out(self):
-		pass
-	
-	@abstractmethod
-	def start_liveview(self):
-		pass
-	
-	@abstractmethod
-	def stop_liveview(self):
+	def start_record_mode(cls):
 		pass
 
+	@classmethod
 	@abstractmethod
-	def check_is_IDLE(self):
+	def take_still_picture(cls):
+		pass
+	
+	@classmethod
+	@abstractmethod
+	def zoom_in(cls):
+		pass
+	
+	@classmethod
+	@abstractmethod
+	def zoom_out(cls):
+		pass
+	
+	@classmethod
+	@abstractmethod
+	def start_liveview(cls):
+		pass
+	
+	@classmethod
+	@abstractmethod
+	def stop_liveview(cls):
+		pass
+
+	@classmethod
+	@abstractmethod
+	def check_is_IDLE(cls):
 		pass
 
 
 class CameraAPI(BaseCameraAPI):
-	def take_still_picture(self):
-		self._wait_until_IDLE()
-		res = self.send_command("actTakePicture")
-		pic_url = res["result"][0][0]
+	@classmethod
+	def start_record_mode(cls):
+		cls.send_command("startRecMode")
+
+	@classmethod
+	def still_capture(cls):
+		cls._wait_until_IDLE()
+		res = cls.send_command("actTakePicture")
+		print("Still capture.")
+
+		photo_url = res["result"][0][0]
 
 		# Download image from Camera
-		image = requests.get(pic_url).content
+		photo = requests.get(pic_url).content
 
 		cur_dir = os.path.dirname(__file__)
-		image_dir = os.path.join(cur_dir, 'picture')
-		pic_name = os.path.basename(pic_url)
-		pic_path = os.path.join(image_dir, pic_name)
+		photo_dir = os.path.join(cur_dir, 'photo')
+		photo_name = os.path.basename(photo_url)
+		photo_path = os.path.join(image_dir, photo_name)
 
-		if not os.path.exists(image_dir):
-			os.mkdir(image_dir)
+		if not os.path.exists(photo_dir):
+			os.mkdir(photo_dir)
 
 		# Save the image at .../picture folder
-		with open(pic_path, 'wb') as f:
-			f.write(image)
+		with open(photo_path, 'wb') as f:
+			f.write(photo)
 
-	def zoom_in(self):
-		self._wait_until_IDLE()
-		self.send_command("actZoom", ["in", "1shot"])
+	@classmethod
+	def zoom_in(cls):
+		cls._wait_until_IDLE()
+		cls.send_command("actZoom", ["in", "1shot"])
+		print("Zoom in.")
 	
-	def zoom_out(self):
-		self._wait_until_IDLE()
-		self.send_command("actZoom", ["out", "1shot"])
+	@classmethod
+	def zoom_out(cls):
+		cls._wait_until_IDLE()
+		cls.send_command("actZoom", ["out", "1shot"])
+		print("Zoom out.")
 	
-	def start_liveview(self):
-		self.wait_camera_until_IDLE()
-		res = self.send_command("startLiveviewWithSize", ["L"])
+	@classmethod
+	def start_liveview(cls):
+		cls.wait_camera_until_IDLE()
+		res = cls.send_command("startLiveviewWithSize", ["L"])
 		liveview_url = res['result'][0]
-		self.liveview_url = liveview_url
-		print("Liveview url : %s"%liveview_url)
+		cls.liveview_url = liveview_url
+		print("Liveview started : %s"%liveview_url)
 
-	def stop_liveview(self):
-		self.send_command("stopLiveview")
-		self.liveview_url = ''
+	@classmethod
+	def stop_liveview(cls):
+		cls.send_command("stopLiveview")
+		cls.liveview_url = ''
 		print("Liveview has been shut down.")
 	
-	def check_is_IDLE(self):
-		status = self._check_status()
+	@classmethod
+	def check_is_IDLE(cls):
+		status = cls._check_status()
 		return (status == 'IDLE')
 
-	def _wait_until_IDLE(self):
-		while self.check_is_IDLE() == False:
-			time.sleep(0.05)
+	@classmethod
+	def _wait_until_IDLE(cls):
+		while cls.check_is_IDLE() != True:
+			time.sleep(0.1)
 
-	def _check_status(self):
-		res = self.send_command("getEvent", [False])
+	@classmethod
+	def _check_status(cls):
+		res = cls.send_command("getEvent", [False])
 		return res["result"][1]['cameraStatus']
-
-cameraAPI = CameraAPI()
