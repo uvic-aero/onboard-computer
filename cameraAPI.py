@@ -10,9 +10,9 @@ __all__ = ['CameraAPI']
 
 class BaseCameraAPI():
 
-	def __init__(self, url, liveview_url):
-		self.url = url
-		self.liveview_url = liveview_url
+	def __init__(self):
+		self.url = ''
+		self.liveview_url = ''
 		self.payload = {
 			"id" : 1,
 			"version" : '1.0'

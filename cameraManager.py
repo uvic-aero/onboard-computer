@@ -9,7 +9,7 @@ import socket
 import time
 
 
-__all__ = ['ClassManager']
+__all__ = ['CameraManager']
 
 # TODO : Decide how to monitor connection and execute commands concurrently
 
@@ -19,7 +19,7 @@ class FakeSocket:
 	def makefile(self, *args, **kwargs):
 		return self._file
 
-class ConnHandler:
+class ConnHandler():
 	# Class Field
 	ssdp_req = "\r\n".join([
 			'M-SEARCH * HTTP/1.1',
@@ -55,9 +55,8 @@ class ConnHandler:
 				camera_url = service.find(action).text + "/camera"
 				return camera_url
 
-	@classmethod
-	def get_sock_location(cls, sock):
-		message = cls.ssdp_req
+	def get_sock_location(self, sock):
+		message = self.ssdp_req
 		try:
 			sock.sendto(message.encode(), ("239.255.255.250", 1900))
 			data = sock.recv(1024)
@@ -76,32 +75,31 @@ class ConnHandler:
 			return location
 
 class CameraManager:
-	# Class Field
-	api = CameraAPI
-	handler = ConnHandler
-	connected = False
-	sock = socket.socket()
+
+	def __init__(self):
+		self.api = CameraAPI()
+		self.handler = ConnHandler()
+		self.connected = False
+		self.sock = socket.socket()
 
 	# TODO
-	@classmethod
-	def start(cls):
+	def start(self):
 		while True:
-			cls.connected = cls._check_connection()
-			if cls.connected:
+			self.connected = self._check_connection()
+			if self.connected:
 				print("Sock works")
 				time.sleep(0.5)
 			else:
 				print("Try to reconnect!")
-				addresses = cls.handler.scan_netifaces()
+				addresses = self.handler.scan_netifaces()
 				for addr in addresses:
-					if cls._connect(addr):
+					if self._connect(addr):
 						break
 				time.sleep(0.5)
 
-	@classmethod
-	def _check_connection(cls):
-		url = cls.api.url
-		payload = cls.api.payload
+	def _check_connection(self):
+		url = self.api.url
+		payload = self.api.payload
 		payload['method'] = 'startRecMode'
 		try:  
 			res = requests.post(url, json=payload, timeout=0.5)
@@ -123,8 +121,7 @@ class CameraManager:
 		else:
 			return True
 
-	@classmethod
-	def _connect(cls, addr):
+	def _connect(self, addr):
 		sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
 		sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 		sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 2)
@@ -132,16 +129,17 @@ class CameraManager:
 
 		sock.bind((addr, 0))
 
-		location = cls.handler.get_sock_location(sock)
+		location = self.handler.get_sock_location(sock)
 		if location is None:
 			sock.close()
 		else:
-			camera_url = cls.handler.get_camera_url(location)
-			cls.api.update_url(camera_url)
-			cls.connected = True
-			cls.sock.close()
-			cls.sock = sock
+			camera_url = self.handler.get_camera_url(location)
+			self.api.update_url(camera_url)
+			self.connected = True
+			self.sock.close()
+			self.sock = sock
 			print("Camera url: %s" % camera_url)
 
 if __name__ == '__main__':
-	CameraManager.start()
+	cm = CameraManager()
+	cm.start()
