@@ -1,4 +1,3 @@
-from abc import ABC, abstractmethod
 import os
 import functools
 import requests
@@ -9,26 +8,24 @@ __all__ = ['CameraAPI']
 
 # TODO : Error handing for disconnection, improper command, camera dysfunction
 
-class BaseCameraAPI(ABC):
-	# Class Field
-	url = ''
-	liveview_url = ''
-	payload = {
-		"id" : 1,
-		"version" : '1.0'
+class BaseCameraAPI():
+
+	def __init__(self, url, liveview_url):
+		self.url = url
+		self.liveview_url = liveview_url
+		self.payload = {
+			"id" : 1,
+			"version" : '1.0'
 		}
 
-	@classmethod
-	def update_url(cls, url):
-		cls.url = url
+	def update_url(self, url):
+		self.url = url
 
-	@classmethod
-	def send_command(cls, method, param = []):
-		cls.payload["method"] = method
-		cls.payload["params"] = param
+	def send_command(self, method, param = []):
+		self.payload["method"] = method
+		self.payload["params"] = param
 
-		send_request = functools.partial(requests.post, cls.url, 
-										json=cls.payload, timeout=0.5)
+		send_request = requests.post(self.url, json=self.payload, timeout=0.5)
 		
 		# Make sure system doesn't crash during disconnection
 		try:
@@ -61,62 +58,47 @@ class BaseCameraAPI(ABC):
 		else:
 			return res_json
 
-	@classmethod
-	@abstractmethod
-	def start_record_mode(cls):
+	def start_record_mode(self):
 		pass
 
-	@classmethod
-	@abstractmethod
-	def take_still_picture(cls):
-		pass
-	
-	@classmethod
-	@abstractmethod
-	def zoom_in(cls):
-		pass
-	
-	@classmethod
-	@abstractmethod
-	def zoom_out(cls):
-		pass
-	
-	@classmethod
-	@abstractmethod
-	def start_liveview(cls):
-		pass
-	
-	@classmethod
-	@abstractmethod
-	def stop_liveview(cls):
+	def take_still_picture(self):
 		pass
 
-	@classmethod
-	@abstractmethod
-	def check_is_IDLE(cls):
+	def zoom_in(self):
+		pass
+
+	def zoom_out(self):
+		pass
+
+	def start_liveview(self):
+		pass
+
+	def stop_liveview(self):
+		pass
+
+	def check_is_IDLE(self):
 		pass
 
 
 class CameraAPI(BaseCameraAPI):
-	@classmethod
-	def start_record_mode(cls):
-		cls.send_command("startRecMode")
 
-	@classmethod
-	def still_capture(cls):
-		cls._wait_until_IDLE()
-		res = cls.send_command("actTakePicture")
+	def start_record_mode(self):
+		self.send_command("startRecMode")
+
+	def still_capture(self):
+		self._wait_until_IDLE()
+		res = self.send_command("actTakePicture")
 		print("Still capture.")
 
 		photo_url = res["result"][0][0]
 
 		# Download image from Camera
-		photo = requests.get(pic_url).content
+		photo = requests.get(photo_url).content
 
 		cur_dir = os.path.dirname(__file__)
-		photo_dir = os.path.join(cur_dir, 'photo')
+		photo_dir = os.path.join(cur_dir, 'images')
 		photo_name = os.path.basename(photo_url)
-		photo_path = os.path.join(image_dir, photo_name)
+		photo_path = os.path.join(photo_dir, photo_name)
 
 		if not os.path.exists(photo_dir):
 			os.mkdir(photo_dir)
@@ -125,43 +107,36 @@ class CameraAPI(BaseCameraAPI):
 		with open(photo_path, 'wb') as f:
 			f.write(photo)
 
-	@classmethod
-	def zoom_in(cls):
-		cls._wait_until_IDLE()
-		cls.send_command("actZoom", ["in", "1shot"])
+	def zoom_in(self):
+		self._wait_until_IDLE()
+		self.send_command("actZoom", ["in", "1shot"])
 		print("Zoom in.")
 	
-	@classmethod
-	def zoom_out(cls):
-		cls._wait_until_IDLE()
-		cls.send_command("actZoom", ["out", "1shot"])
+	def zoom_out(self):
+		self._wait_until_IDLE()
+		self.send_command("actZoom", ["out", "1shot"])
 		print("Zoom out.")
-	
-	@classmethod
-	def start_liveview(cls):
-		cls.wait_camera_until_IDLE()
-		res = cls.send_command("startLiveviewWithSize", ["L"])
+
+	def start_liveview(self):
+		self._wait_until_IDLE()
+		res = self.send_command("startLiveviewWithSize", ["L"])
 		liveview_url = res['result'][0]
-		cls.liveview_url = liveview_url
+		self.liveview_url = liveview_url
 		print("Liveview started : %s"%liveview_url)
 
-	@classmethod
-	def stop_liveview(cls):
-		cls.send_command("stopLiveview")
-		cls.liveview_url = ''
+	def stop_liveview(self):
+		self.send_command("stopLiveview")
+		self.liveview_url = ''
 		print("Liveview has been shut down.")
 	
-	@classmethod
-	def check_is_IDLE(cls):
-		status = cls._check_status()
+	def check_is_IDLE(self):
+		status = self._check_status()
 		return (status == 'IDLE')
 
-	@classmethod
-	def _wait_until_IDLE(cls):
-		while cls.check_is_IDLE() != True:
+	def _wait_until_IDLE(self):
+		while self.check_is_IDLE() != True:
 			time.sleep(0.1)
 
-	@classmethod
-	def _check_status(cls):
-		res = cls.send_command("getEvent", [False])
+	def _check_status(self):
+		res = self.send_command("getEvent", [False])
 		return res["result"][1]['cameraStatus']
