@@ -25,14 +25,17 @@ class BaseCameraAPI():
 		self.payload["method"] = method
 		self.payload["params"] = param
 
-		send_request = requests.post(self.url, json=self.payload, timeout=0.5)
-		
 		# Make sure system doesn't crash during disconnection
+		# Timeout must be set >= 3.5s,  because camera responds very slow
+		# Probably need to add api for setting timeout from ground station
+		# considered the possibility of different time to download different
+		# images
 		try:
-			res = send_request()
+			res = requests.post(self.url, json=self.payload, 
+				timeout=3.5)
 		except:
 			print("Some problems in connection.")
-			print("Drop the command.")
+			print("Drop the command : %s"%method)
 			return
 
 		# Verify status code
@@ -40,11 +43,11 @@ class BaseCameraAPI():
 			res_json = res.json()  # Convert json to Python Dict
 		elif res.status_code // 100 == 4:
 			print("Client error - Bad request. Reset url to default.")
-			print("Drop the command")
+			print("Drop the command : %s"%method)
 			return
 		elif res.status_code // 100 == 5:
 			print("Server error! Camera SSDP server problem")
-			print("Drop the command")
+			print("Drop the command : %s"%method)
 			return
 		else:
 			return
@@ -52,8 +55,8 @@ class BaseCameraAPI():
 		# Capture error message from improper command
 		if "error" in res_json:
 			print(res_json["error"][1])
-			print("Camera is unable to execute this comand")
-			print("Drop the command")
+			print("NotReady ! Please start record mode")
+			print("Drop the command : %s"%method)
 			return 
 		else:
 			return res_json
@@ -61,7 +64,7 @@ class BaseCameraAPI():
 	def start_record_mode(self):
 		pass
 
-	def take_still_picture(self):
+	def still_capture(self):
 		pass
 
 	def zoom_in(self):
@@ -86,11 +89,14 @@ class CameraAPI(BaseCameraAPI):
 		self.send_command("startRecMode")
 
 	def still_capture(self):
-		self._wait_until_IDLE()
 		res = self.send_command("actTakePicture")
-		print("Still capture.")
 
+		if res is None:
+			return 
+		
 		photo_url = res["result"][0][0]
+
+		print("Still capture.")
 
 		# Download image from Camera
 		photo = requests.get(photo_url).content
@@ -99,6 +105,8 @@ class CameraAPI(BaseCameraAPI):
 		photo_dir = os.path.join(cur_dir, 'images')
 		photo_name = os.path.basename(photo_url)
 		photo_path = os.path.join(photo_dir, photo_name)
+		print("Photo dir : ", photo_dir)
+		print("Photo path : ", photo_path)
 
 		if not os.path.exists(photo_dir):
 			os.mkdir(photo_dir)
@@ -108,35 +116,43 @@ class CameraAPI(BaseCameraAPI):
 			f.write(photo)
 
 	def zoom_in(self):
-		self._wait_until_IDLE()
 		self.send_command("actZoom", ["in", "1shot"])
 		print("Zoom in.")
 	
 	def zoom_out(self):
-		self._wait_until_IDLE()
 		self.send_command("actZoom", ["out", "1shot"])
 		print("Zoom out.")
 
 	def start_liveview(self):
-		self._wait_until_IDLE()
 		res = self.send_command("startLiveviewWithSize", ["L"])
+
+		if res is None:
+			return None
+
 		liveview_url = res['result'][0]
 		self.liveview_url = liveview_url
 		print("Liveview started : %s"%liveview_url)
 
 	def stop_liveview(self):
-		self.send_command("stopLiveview")
-		self.liveview_url = ''
-		print("Liveview has been shut down.")
+		res = self.send_command("stopLiveview")
+		if res is not None:
+			self.liveview_url = ''
+			print("Liveview has been shut down.")
 	
 	def check_is_IDLE(self):
 		status = self._check_status()
+
+		if status is None:
+			return None
+
 		return (status == 'IDLE')
 
-	def _wait_until_IDLE(self):
-		while self.check_is_IDLE() != True:
-			time.sleep(0.1)
 
 	def _check_status(self):
 		res = self.send_command("getEvent", [False])
+
+		if res is None:
+			return
+
+		print (res["result"][1]['cameraStatus'])
 		return res["result"][1]['cameraStatus']

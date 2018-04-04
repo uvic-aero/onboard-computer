@@ -7,6 +7,8 @@ import netifaces
 import requests
 import socket
 import time
+from  queue import Queue
+from threading import Thread, Lock
 
 
 __all__ = ['CameraManager']
@@ -81,6 +83,7 @@ class CameraManager:
 		self.handler = ConnHandler()
 		self.connected = False
 		self.sock = socket.socket()
+		self.queue = Queue(20)
 
 	# TODO
 	def start(self):
@@ -88,7 +91,11 @@ class CameraManager:
 			self.connected = self._check_connection()
 			if self.connected:
 				print("Sock works")
-				time.sleep(0.5)
+				if not self.queue.empty():
+					command = self.queue.get()
+					command()
+				
+			
 			else:
 				print("Try to reconnect!")
 				addresses = self.handler.scan_netifaces()
@@ -119,6 +126,7 @@ class CameraManager:
 			print("Status code : ",res.status_code)
 			return False
 		else:
+			self.api.start_record_mode()
 			return True
 
 	def _connect(self, addr):
@@ -140,6 +148,59 @@ class CameraManager:
 			self.sock = sock
 			print("Camera url: %s" % camera_url)
 
+
+# This class is just for testing 
+# Without async module, Real test should have at least two threads 
+# One for check connection and execute command from the queue
+# The other is for receiving orders and put it in the queue
+class _ActiveObject:
+
+	def __init__(self, cm):
+		self.cm = cm
+
+	def add_task(self, command):
+
+		if not self.cm.connected:
+			print("No connection ! Drop the command : %s" %command.__name__)
+			return
+
+		if self.cm.queue.full():
+			print("Queue is full ! Drop the command : %s"%command.__name__)
+		else:
+			self.cm.queue.put(command)
+
+
 if __name__ == '__main__':
+
+	lock = Lock()
+
 	cm = CameraManager()
-	cm.start()
+	ao = _ActiveObject(cm)
+
+
+	commands = [cm.api.still_capture, cm.api.zoom_in, cm.api.zoom_in, 
+		cm.api.still_capture, cm.api.still_capture, cm.api.start_liveview,
+		cm.api.zoom_out, cm.api.zoom_out, cm.api.still_capture, 
+		cm.api.still_capture, cm.api.zoom_out, cm.api.stop_liveview,
+		cm.api.stop_liveview, cm.api.still_capture, cm.api.zoom_in]
+
+	def target_1():
+
+		cm.start()
+
+	def target_2():
+
+		for command in commands:
+			time.sleep(1)
+
+			lock.acquire()
+			ao.add_task(command)
+			lock.release()
+
+
+	thread_1 = Thread(target=target_1)
+	thread_2 = Thread(target=target_2)
+
+	print("Start the test !!! ")
+	thread_1.start()
+	thread_2.start()
