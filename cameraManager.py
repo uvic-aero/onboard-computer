@@ -1,4 +1,4 @@
-from cameraAPI import CameraAPI
+from cameraAPI import CameraAPI, RecordMode
 from http.client import HTTPResponse
 from io import BytesIO
 
@@ -7,7 +7,7 @@ import netifaces
 import requests
 import socket
 import time
-from  queue import Queue
+from queue import Queue
 from threading import Thread, Lock
 
 
@@ -79,27 +79,39 @@ class ConnHandler():
 class CameraManager:
 
 	def __init__(self):
-		self.api = CameraAPI()
+		self.api = CameraAPI(manager=self)
 		self.handler = ConnHandler()
 		self.connected = False
 		self.sock = socket.socket()
-		self.queue = Queue(20) # just pick random size, can be changed later
+		self.thread = None
+		self.run = True
+		self.recMode = RecordMode.NONE
 
-	# TODO
 	def start(self):
-		while True:
-			time.sleep(0.01)
+		self.run = True
+		self.thread = Thread(target=self.loop)
+		self.thread.start()
+
+	def stop(self):
+		print("Requesting Camera Manager stop")
+		self.run = False
+
+	def loop(self):
+		while self.run:
+
 			self.connected = self._check_connection()
+
 			if self.connected:
-				if not self.queue.empty():
-					command = self.queue.get()
-					command()
+				self.api._process_queue()
 			else:
-				print("Try to reconnect!")
+				time.sleep(1)
+				print("Try to connect!")
 				addresses = self.handler.scan_netifaces()
 				for addr in addresses:
 					if self._connect(addr):
 						break
+		
+		print("Stopping Camera Manager")
 
 	def _check_connection(self):
 		url = self.api.url
@@ -124,7 +136,7 @@ class CameraManager:
 			print("Bad request or camera server problem.")
 			return False
 		else:
-			self.api.start_record_mode()
+			#self.api.start_record_mode()
 			return True
 
 	def _connect(self, addr):
@@ -140,7 +152,7 @@ class CameraManager:
 			sock.close()
 		else:
 			camera_url = self.handler.get_camera_url(location)
-			self.api.update_url(camera_url)
+			self.api._update_url(camera_url)
 			self.connected = True
 			self.sock.close()
 			self.sock = sock
@@ -170,6 +182,15 @@ class _ActiveObject:
 
 if __name__ == '__main__':
 
+	cm = CameraManager()
+	cm.start()
+
+	cm.api.check_status()
+
+	cm.stop()
+
+
+	'''
 	lock = Lock()
 
 	cm = CameraManager()
@@ -202,3 +223,4 @@ if __name__ == '__main__':
 	print("Start the test !!! ")
 	thread_1.start()
 	thread_2.start()
+	'''

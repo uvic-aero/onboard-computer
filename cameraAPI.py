@@ -3,27 +3,47 @@ import functools
 import requests
 import traceback
 import time
+import enum
+from queue import Queue
 
 __all__ = ['CameraAPI']
+
+class RecordMode(enum.Enum):
+	NONE = 0
+	STILL = 1
+	LIVE = 2
 
 # TODO : Error handing for disconnection, improper command, camera dysfunction
 
 class BaseCameraAPI():
 
-	def __init__(self):
+	def __init__(self, manager):
+		self.manager = manager
 		self.url = ''
 		self.liveview_url = ''
 		self.payload = {
 			"id" : 1,
 			"version" : '1.0'
 		}
+		self.queue = Queue()
 
-	def update_url(self, url):
+	def _process_queue(self):
+		if not self.queue.empty():
+			method, callback, params = self.queue.get()
+
+			self._send_command(method, callback, params)
+
+	def _update_url(self, url):
 		self.url = url
 
-	def send_command(self, method, param = []):
+	def _queue_command(self, method, callback = None, params = []):
+		print("Queued command %s" % method)
+		self.queue.put( (method, callback, params) )
+		
+	def _send_command(self, method, callback, params):
+		print("Sending command %s" % method)
 		self.payload["method"] = method
-		self.payload["params"] = param
+		self.payload["params"] = params
 
 		# Make sure system doesn't crash during disconnection
 		# Timeout must be set >= 3.5s,  because camera responds very slow
@@ -58,7 +78,8 @@ class BaseCameraAPI():
 				"Camera NotReady ! Please start record mode.")
 			return 
 		else:
-			return res_json
+			if callback is not None:
+				callback(res_json)
 
 	def start_record_mode(self):
 		pass
@@ -84,11 +105,16 @@ class BaseCameraAPI():
 
 class CameraAPI(BaseCameraAPI):
 
+	def __init__(self, manager):
+		super().__init__(manager)
+
 	def start_record_mode(self):
-		self.send_command("startRecMode")
+		self._queue_command("startRecMode")
 
 	def still_capture(self):
-		res = self.send_command("actTakePicture")
+		self._queue_command("actTakePicture", self._still_capture_result)
+
+	def _still_capture_result(self, res):
 
 		if res is None:
 			return 
@@ -113,15 +139,17 @@ class CameraAPI(BaseCameraAPI):
 			f.write(photo)
 
 	def zoom_in(self):
-		self.send_command("actZoom", ["in", "1shot"])
+		self._queue_command("actZoom", params=["in", "1shot"])
 		print("Zoom in.")
 	
 	def zoom_out(self):
-		self.send_command("actZoom", ["out", "1shot"])
+		self._queue_command("actZoom", params=["out", "1shot"])
 		print("Zoom out.")
 
 	def start_liveview(self):
-		res = self.send_command("startLiveviewWithSize", ["L"])
+		self._queue_command("startLiveviewWithSize", self._start_liveview_result, params=["L"])
+
+	def _start_liveview_result(self, res):
 
 		if res is None:
 			return None
@@ -131,23 +159,28 @@ class CameraAPI(BaseCameraAPI):
 		print("Liveview started : %s"%liveview_url)
 
 	def stop_liveview(self):
-		res = self.send_command("stopLiveview")
+		self._queue_command("stopLiveview", self._stop_liveview_result)
+		
+	def _stop_liveview_result(self, res):
 		if res is not None:
 			self.liveview_url = ''
 			print("Liveview has been shut down.")
 	
 	def check_is_IDLE(self):
+		return None
+		'''
 		status = self._check_status()
 
 		if status is None:
 			return None
 
 		return (status == 'IDLE')
+		'''
 
+	def check_status(self):
+		self._queue_command("getEvent", self._check_status_result, params=[False])
 
-	def _check_status(self):
-		res = self.send_command("getEvent", [False])
-
+	def _check_status_result(self, res):
 		if res is None:
 			return
 

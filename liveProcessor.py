@@ -1,4 +1,5 @@
 class LiveProcessor:
-	def __init__(CameraManager, Queue)
-	
-	def send():
+	def __init__(self, CameraManager, Queue):
+		pass
+	def send(self):
+		pass
