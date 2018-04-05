@@ -63,7 +63,7 @@ class ConnHandler():
 			sock.sendto(message.encode(), ("239.255.255.250", 1900))
 			data = sock.recv(1024)
 		except:
-			print("Failed to query SSDP server")
+			print("Failed to query SSDP server.")
 			return None
 
 		res = HTTPResponse(FakeSocket(data))
@@ -83,26 +83,23 @@ class CameraManager:
 		self.handler = ConnHandler()
 		self.connected = False
 		self.sock = socket.socket()
-		self.queue = Queue(20)
+		self.queue = Queue(20) # just pick random size, can be changed later
 
 	# TODO
 	def start(self):
 		while True:
+			time.sleep(0.01)
 			self.connected = self._check_connection()
 			if self.connected:
-				print("Sock works")
 				if not self.queue.empty():
 					command = self.queue.get()
 					command()
-				
-			
 			else:
 				print("Try to reconnect!")
 				addresses = self.handler.scan_netifaces()
 				for addr in addresses:
 					if self._connect(addr):
 						break
-				time.sleep(0.5)
 
 	def _check_connection(self):
 		url = self.api.url
@@ -111,19 +108,20 @@ class CameraManager:
 		try:  
 			res = requests.post(url, json=payload, timeout=0.5)
 		except requests.exceptions.Timeout as ex:
-			print("Server doesn't respond.")
+			print("No connection : Wifi Connection problem.")
 			return False
 		except requests.exceptions.MissingSchema as ex:
-			print("Invalid URL")
+			print("No connection : Invalid URL")
 			return False
 		except OSError as err:
-			print("OS error: {0}".format(err))
+			print("No connection : OS error, Failed to establish a new connection")
 			return False
 		except:
-			pass
+			print("No connection : Unknown error !")
+			return False
 
 		if res.status_code != 200:
-			print("Status code : ",res.status_code)
+			print("Bad request or camera server problem.")
 			return False
 		else:
 			self.api.start_record_mode()
@@ -146,7 +144,7 @@ class CameraManager:
 			self.connected = True
 			self.sock.close()
 			self.sock = sock
-			print("Camera url: %s" % camera_url)
+			print("Connected ! Camera url: %s" % camera_url)
 
 
 # This class is just for testing 
@@ -161,11 +159,11 @@ class _ActiveObject:
 	def add_task(self, command):
 
 		if not self.cm.connected:
-			print("No connection ! Drop the command : %s" %command.__name__)
+			print("Drop the command : %s - No connection !" %command.__name__)
 			return
 
 		if self.cm.queue.full():
-			print("Queue is full ! Drop the command : %s"%command.__name__)
+			print("Drop the command : %s - Queue is full !"%command.__name__)
 		else:
 			self.cm.queue.put(command)
 
@@ -191,7 +189,7 @@ if __name__ == '__main__':
 	def target_2():
 
 		for command in commands:
-			time.sleep(1)
+			time.sleep(3)
 
 			lock.acquire()
 			ao.add_task(command)

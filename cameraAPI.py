@@ -34,29 +34,28 @@ class BaseCameraAPI():
 			res = requests.post(self.url, json=self.payload, 
 				timeout=3.5)
 		except:
-			print("Some problems in connection.")
-			print("Drop the command : %s"%method)
+			print("Drop the command : %s - No connection."%method)
 			return
 
 		# Verify status code
 		if res.status_code == 200:
 			res_json = res.json()  # Convert json to Python Dict
 		elif res.status_code // 100 == 4:
-			print("Client error - Bad request. Reset url to default.")
-			print("Drop the command : %s"%method)
+			print("Drop the command : %s - Client error, Bad request."%method)
 			return
 		elif res.status_code // 100 == 5:
-			print("Server error! Camera SSDP server problem")
-			print("Drop the command : %s"%method)
+			print("Drop the command : %s - "%method, 
+				"Server error! Camera SSDP server problem.")
 			return
 		else:
+			print("Drop the command : %s - Something wrong."%method)
 			return
 		
 		# Capture error message from improper command
 		if "error" in res_json:
 			print(res_json["error"][1])
-			print("NotReady ! Please start record mode")
-			print("Drop the command : %s"%method)
+			print("Drop the command : %s - "%method, 
+				"Camera NotReady ! Please start record mode.")
 			return 
 		else:
 			return res_json
@@ -105,8 +104,6 @@ class CameraAPI(BaseCameraAPI):
 		photo_dir = os.path.join(cur_dir, 'images')
 		photo_name = os.path.basename(photo_url)
 		photo_path = os.path.join(photo_dir, photo_name)
-		print("Photo dir : ", photo_dir)
-		print("Photo path : ", photo_path)
 
 		if not os.path.exists(photo_dir):
 			os.mkdir(photo_dir)
@@ -154,5 +151,4 @@ class CameraAPI(BaseCameraAPI):
 		if res is None:
 			return
 
-		print (res["result"][1]['cameraStatus'])
 		return res["result"][1]['cameraStatus']
