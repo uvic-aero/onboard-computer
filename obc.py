@@ -8,7 +8,7 @@ from tornado import ioloop
 from cameraManager import CameraManager
 from api import API
 from liveReceiver import LiveReceiver
-
+from stillReceiver import StillReceiver
 
 groundstation_url = "127.0.0.1:4000"
 onboardserver_url = "127.0.0.1:8000"
@@ -25,8 +25,12 @@ class OnboardComputer:
         self.api.start()
         self.cameraManager.start()
 
+        self.stillReceiver = StillReceiver(self.cameraManager)
+        self.stillReceiver.start()
+
     def stop(self):
         print("Stopping Onboard Computer")
+        self.stillReceiver.stop()
         self.cameraManager.stop()
 
 if __name__ == '__main__':
