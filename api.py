@@ -44,7 +44,19 @@ class ZoomOut(tornado.web.RequestHandler):
 		self.cameraManager = cameraManager
 	def get(self):
 		pass
-		
+
+class SetCameraMode(tornado.web.RequestHandler):
+	def initialize(self, cameraManager):
+		self.cameraManager = cameraManager
+	def get(self):
+		pass
+
+class GetCameraMode(tornado.web.RequestHandler):
+	def initialize(self, cameraManager):
+		self.cameraManager = cameraManager
+	def get(self):
+		pass
+ 	
 class Status(tornado.web.RequestHandler):
 	def initialize(self, cameraManager):
 		self.cameraManager = cameraManager
