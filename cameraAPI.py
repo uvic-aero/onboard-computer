@@ -116,7 +116,7 @@ class CameraAPI(BaseCameraAPI):
 			return 
 
 		if 'result' in res:
-			self.manager.recMode = RecordMode.STILL
+			self.manager.currentMode = RecordMode.STILL
 
 	def still_capture(self, callback):
 		self._queue_command("actTakePicture", callback if callback is not None else self._still_capture_result)

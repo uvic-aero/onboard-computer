@@ -85,7 +85,8 @@ class CameraManager:
 		self.sock = socket.socket()
 		self.thread = None
 		self.run = True
-		self.recMode = RecordMode.NONE
+		self.currentMode = RecordMode.NONE
+		self.wantedMode = RecordMode.STILL
 
 	def start(self):
 		self.run = True

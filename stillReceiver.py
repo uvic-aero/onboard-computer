@@ -38,7 +38,7 @@ class StillReceiver:
 			time.sleep(5)
 			return
 
-		if self.cameraManager.recMode != RecordMode.STILL:
+		if self.cameraManager.currentMode != RecordMode.STILL and self.cameraManager.wantedMode == RecordMode.STILL:
 			print("stillReceiver: Camera not in Still mode")
 			self.cameraManager.api.start_record_mode()
 			time.sleep(5)
@@ -56,5 +56,3 @@ class StillReceiver:
 	def handle_image(self, result):
 		print("Captured image")
 		self.capturing = False
-
-

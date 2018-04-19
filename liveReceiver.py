@@ -7,6 +7,7 @@ class LiveReceiver:
 	def __init__(self, CameraManager):
 		self.image_queue = Queue();
 		self.runLoop = False;
+
 	def loop(self):
 		print("Loop Running")
 		print(self.runLoop)
@@ -22,7 +23,7 @@ class LiveReceiver:
 			print ("Error starting liveReceiver and/or liveProcessor Threads")
 		
 	def stop(self):
-		runLoop = False;
+		self.runLoop = False;
 		
 	def handle_receiver(self):
 		print("Loop Foreverrrrrrrrrrr")
