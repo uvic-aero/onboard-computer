@@ -109,10 +109,17 @@ class CameraAPI(BaseCameraAPI):
 		super().__init__(manager)
 
 	def start_record_mode(self):
-		self._queue_command("startRecMode")
+		self._queue_command("startRecMode", self._start_record_mode_result)
 
-	def still_capture(self):
-		self._queue_command("actTakePicture", self._still_capture_result)
+	def _start_record_mode_result(self, res):
+		if res is None:
+			return 
+
+		if 'result' in res:
+			self.manager.recMode = RecordMode.STILL
+
+	def still_capture(self, callback):
+		self._queue_command("actTakePicture", callback if callback is None else self._still_capture_result)
 
 	def _still_capture_result(self, res):
 

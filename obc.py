@@ -18,7 +18,7 @@ ioloop.IOLoop.configure('tornado.platform.asyncio.AsyncIOLoop')
 class OnboardComputer:
     def __init__(self):
         self.cameraManager = CameraManager()
-        self.api = API()
+        self.api = API(self.cameraManager)
 
     async def run(self):
         print("Starting Onboard Computer")

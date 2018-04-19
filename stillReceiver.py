@@ -10,6 +10,7 @@ class StillReceiver:
 		self.image_queue = Queue();
 		self.runLoop = False
 		self.processor = StillProcessor(cameraManager, self.image_queue)
+		self.capturing = False
 
 	def loop(self):
 		print("stillReceivver: Entering loop")
@@ -43,6 +44,17 @@ class StillReceiver:
 			time.sleep(5)
 			return
 
-		print("stillReceiver: Running nominally")
-		time.sleep(5)
+		if self.capturing == True:
+			print("Waiting on image capture")
+			time.sleep(1)
+			return
+
+		print("Capturing picture")
+		self.cameraManager.api.still_capture(self.handle_image)
+		self.capturing = True
+
+	def handle_image(self, result):
+		print("Captured image")
+		self.capturing = False
+
 
