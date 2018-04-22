@@ -1,16 +1,16 @@
 from liveProcessor import LiveProcessor
 import threading
-from queue import Queue
+
 
 class LiveReceiver:
 
-	def __init__(self, CameraManager):
-		self.image_queue = Queue();
-		self.runLoop = False;
+	def __init__(self, cameraManager):
+		self.cameraManager = cameraManager
+		self.runLoop = False
+		self.processor = LiveProcessor(cameraManager)
 
 	def loop(self):
-		print("Loop Running")
-		print(self.runLoop)
+		print("Loop Running : ", self.runLoop)
 		while(self.runLoop):
 			self.handle_receiver()
 			
@@ -21,10 +21,15 @@ class LiveReceiver:
 			t.start()
 		except:
 			print ("Error starting liveReceiver and/or liveProcessor Threads")
+
+		self.processor.start()
 		
 	def stop(self):
-		self.runLoop = False;
+		self.processor.stop()
+		self.runLoop = False
+		self.cameraManager.api.stop_liveview()
 		
 	def handle_receiver(self):
-		print("Loop Foreverrrrrrrrrrr")
-	
+		liview_url = self.cameraManager.api.liveview_url
+		if not liveview_url:
+			self.cameraManager.api.start_liveview()
