@@ -131,8 +131,6 @@ class LiveReceiver:
 
 	def _receive_image(self):
 
-		skipped_bytes = 0
-
 		try:
 			data = self.client.recv(1, socket.MSG_WAITALL)
 
@@ -145,10 +143,7 @@ class LiveReceiver:
 
 			# 255 dictates start of new header+payload
 			if start_byte != 255:
-				skipped_bytes += 1
 				return None
-
-			print("skipped", skipped_bytes)
 
 			# Read rest of info header
 			data = self.client.recv(7, socket.MSG_WAITALL)
@@ -178,15 +173,24 @@ class LiveReceiver:
 			_image_height = int(binascii.hexlify(data[9:11]), 16)
 
 			# Read actual payload
-			raw_image = self.client.recv(jpeg_data_size, socket.MSG_WAITALL)
+			chunks = []
+			received = 0
+			while received < jpeg_data_size:
+				chunk = self.client.recv(min(jpeg_data_size - received, 2048), socket.MSG_WAITALL)
 
-			print(len(data), jpeg_data_size)
+				if chunk == b'':
+					return None
+
+				received += len(chunk)
+				chunks.append(chunk)
+
+			print(received, jpeg_data_size)
 
 			if padding_size > 0:
 				self.client.recv(padding_size, socket.MSG_WAITALL)
 
+			return b''.join(chunks)
+
 		except Exception as e:
 			print(str(e))
 			return None
-
-		return raw_image
