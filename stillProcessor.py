@@ -1,5 +1,7 @@
 import time
 import threading
+import requests
+import base64
 
 class StillProcessor:
 	def __init__(self, cameraManager, queue):
@@ -15,9 +17,11 @@ class StillProcessor:
 				time.sleep(3)
 				continue
 
-			item = self.queue.get()
+			image = self.queue.get()
 
 			print("stillProcessor: Received item for processing")
+
+			self.send_image(image)
 
 	def start(self):
 		print("Starting Still Processor")
@@ -31,3 +35,24 @@ class StillProcessor:
 	def stop(self):
 		print("Stopping still processor")
 		self.runLoop = False;
+
+	def send_image(self, image):
+	
+		try:
+			print(type(image))
+			timestamp = time.time() * 1000
+			#encoded_image = base64.b64encode(image)
+			encoded_image = base64.b64encode(image)
+
+			print(type(encoded_image))
+
+			payload = {
+				'timestamp': timestamp,
+				'image': encoded_image.decode('utf-8', "ignore")
+			}
+
+			requests.post('http://localhost:24002/images', json=payload)
+
+		except Exception as e:
+			print(str(e))
+			print("Failed to send image to groundstation")

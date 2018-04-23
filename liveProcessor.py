@@ -21,8 +21,8 @@ class LiveProcessor:
 		self.port = urlparse(liveview_url).port
 		self.path = urlparse(liveview_url).path
 
-		t_server = Thread(target=_start_server)
-		t_client = Thread(target=_start_client)
+		t_server = Thread(target=self._start_server)
+		t_client = Thread(target=self._start_client)
 
 		t_server.start()
 		t_client.start()

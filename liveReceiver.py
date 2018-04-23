@@ -30,6 +30,6 @@ class LiveReceiver:
 		self.cameraManager.api.stop_liveview()
 		
 	def handle_receiver(self):
-		liview_url = self.cameraManager.api.liveview_url
+		liveview_url = self.cameraManager.api.liveview_url
 		if not liveview_url:
 			self.cameraManager.api.start_liveview()

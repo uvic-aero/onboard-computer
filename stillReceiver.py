@@ -3,6 +3,7 @@ from cameraAPI import RecordMode
 import threading
 import time
 from queue import Queue
+import requests
 
 class StillReceiver:
 	def __init__(self, cameraManager):
@@ -54,5 +55,23 @@ class StillReceiver:
 		self.capturing = True
 
 	def handle_image(self, result):
+
+		if result is None:
+			self.capturing = False
+			print("Image capture failed")
+			return
+
 		print("Captured image")
+
+		try:
+			photo_url = result["result"][0][0]
+
+			# Download image from Camera
+			photo = requests.get(photo_url).content
+
+			print("Queued image")
+			self.image_queue.put(photo)
+		except:
+			print("Failed to download image")
+
 		self.capturing = False
