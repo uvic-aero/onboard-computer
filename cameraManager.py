@@ -86,7 +86,7 @@ class CameraManager:
 		self.thread = None
 		self.run = True
 		self.currentMode = RecordMode.NONE
-		self.wantedMode = RecordMode.STILL
+		self.wantedMode = RecordMode.LIVE
 
 	def start(self):
 		self.run = True
@@ -140,6 +140,7 @@ class CameraManager:
 			#self.api.start_record_mode()
 			return True
 
+	# TODO: Set appropriate timeouts
 	def _connect(self, addr):
 		sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
 		sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -154,10 +155,13 @@ class CameraManager:
 		else:
 			camera_url = self.handler.get_camera_url(location)
 			self.api._update_url(camera_url)
+			self.api.start_record_mode()
 			self.connected = True
 			self.sock.close()
 			self.sock = sock
 			print("Connected ! Camera url: %s" % camera_url)
+
+			
 
 
 # This class is just for testing 

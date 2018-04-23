@@ -28,8 +28,12 @@ class OnboardComputer:
         self.stillReceiver = StillReceiver(self.cameraManager)
         self.stillReceiver.start()
 
+        self.liveReceiver = LiveReceiver(self.cameraManager)
+        self.liveReceiver.start()
+
     def stop(self):
         print("Stopping Onboard Computer")
+        self.liveReceiver.stop()
         self.stillReceiver.stop()
         self.cameraManager.stop()
 

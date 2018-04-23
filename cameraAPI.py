@@ -153,25 +153,12 @@ class CameraAPI(BaseCameraAPI):
 		self._queue_command("actZoom", params=["out", "1shot"])
 		print("Zoom out.")
 
-	def start_liveview(self):
-		self._queue_command("startLiveviewWithSize", self._start_liveview_result, params=["L"])
+	def start_liveview(self, callback):
+		self._queue_command("startLiveviewWithSize", callback, params=["L"])
 
-	def _start_liveview_result(self, res):
-
-		if res is None:
-			return None
-
-		liveview_url = res['result'][0]
-		self.liveview_url = liveview_url
-		print("Liveview started : %s"%liveview_url)
-
-	def stop_liveview(self):
-		self._queue_command("stopLiveview", self._stop_liveview_result)
-		
-	def _stop_liveview_result(self, res):
-		if res is not None:
-			self.liveview_url = ''
-			print("Liveview has been shut down.")
+	def stop_liveview(self, callback):
+		self._queue_command("stopLiveview", callback)
+	
 	
 	def check_is_IDLE(self):
 		return None
