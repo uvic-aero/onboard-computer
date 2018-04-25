@@ -154,7 +154,7 @@ class CameraAPI(BaseCameraAPI):
 		print("Zoom out.")
 
 	def start_liveview(self, callback):
-		self._queue_command("startLiveviewWithSize", callback, params=["L"])
+		self._queue_command("startLiveview", callback)
 
 	def stop_liveview(self, callback):
 		self._queue_command("stopLiveview", callback)
