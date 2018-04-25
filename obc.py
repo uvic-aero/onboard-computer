@@ -10,25 +10,20 @@ from api import API
 from liveReceiver import LiveReceiver
 from stillReceiver import StillReceiver
 
-groundstation_url = "127.0.0.1:4000"
-onboardserver_url = "127.0.0.1:8000"
-
 ioloop.IOLoop.configure('tornado.platform.asyncio.AsyncIOLoop')
 
 class OnboardComputer:
     def __init__(self):
         self.cameraManager = CameraManager()
         self.api = API(self.cameraManager)
+        self.stillReceiver = StillReceiver(self.cameraManager)
+        self.liveReceiver = LiveReceiver(self.cameraManager)
 
     async def run(self):
         print("Starting Onboard Computer")
         self.api.start()
-        self.cameraManager.start()
-
-        self.stillReceiver = StillReceiver(self.cameraManager)
+        self.cameraManager.start(self.stillReceiver)
         self.stillReceiver.start()
-
-        self.liveReceiver = LiveReceiver(self.cameraManager)
         self.liveReceiver.start()
 
     def stop(self):

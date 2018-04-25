@@ -87,8 +87,10 @@ class CameraManager:
 		self.run = True
 		self.currentMode = RecordMode.NONE
 		self.wantedMode = RecordMode.LIVE
+		self.stillReceiver = None
 
-	def start(self):
+	def start(self, stillReceiver):
+		self.stillReceiver = stillReceiver
 		self.run = True
 		self.thread = Thread(target=self.loop)
 		self.thread.start()
@@ -106,6 +108,7 @@ class CameraManager:
 				self.api._process_queue()
 			else:
 				time.sleep(1)
+				self.currentMode = RecordMode.NONE
 				print("Try to connect!")
 				addresses = self.handler.scan_netifaces()
 				for addr in addresses:
@@ -119,7 +122,7 @@ class CameraManager:
 		payload = self.api.payload
 		payload['method'] = 'startRecMode'
 		try:  
-			res = requests.post(url, json=payload, timeout=0.5)
+			res = requests.post(url, json=payload, timeout=1)
 		except requests.exceptions.Timeout as ex:
 			print("No connection : Wifi Connection problem.")
 			return False
@@ -160,9 +163,6 @@ class CameraManager:
 			self.sock.close()
 			self.sock = sock
 			print("Connected ! Camera url: %s" % camera_url)
-
-			
-
 
 # This class is just for testing 
 # Without async module, Real test should have at least two threads 

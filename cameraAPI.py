@@ -8,7 +8,7 @@ from queue import Queue
 
 __all__ = ['CameraAPI']
 
-class RecordMode(enum.Enum):
+class RecordMode(enum.IntEnum):
 	NONE = 0
 	STILL = 1
 	LIVE = 2
@@ -118,7 +118,7 @@ class CameraAPI(BaseCameraAPI):
 		if 'result' in res:
 			self.manager.currentMode = RecordMode.STILL
 
-	def still_capture(self, callback):
+	def still_capture(self, callback=None):
 		self._queue_command("actTakePicture", callback if callback is not None else self._still_capture_result)
 
 	def _still_capture_result(self, res):
@@ -133,24 +133,15 @@ class CameraAPI(BaseCameraAPI):
 		# Download image from Camera
 		photo = requests.get(photo_url).content
 
-		cur_dir = os.path.dirname(__file__)
-		photo_dir = os.path.join(cur_dir, 'images')
-		photo_name = os.path.basename(photo_url)
-		photo_path = os.path.join(photo_dir, photo_name)
+		# Dump directly into image queue for sending to GS
+		self.manager.stillReceiver.image_queue.put(photo)
 
-		if not os.path.exists(photo_dir):
-			os.mkdir(photo_dir)
-
-		# Save the image at .../picture folder
-		with open(photo_path, 'wb') as f:
-			f.write(photo)
-
-	def zoom_in(self):
-		self._queue_command("actZoom", params=["in", "1shot"])
+	def zoom_in(self, callback=None):
+		self._queue_command("actZoom", callback, params=["in", "1shot"])
 		print("Zoom in.")
 	
-	def zoom_out(self):
-		self._queue_command("actZoom", params=["out", "1shot"])
+	def zoom_out(self, callback=None):
+		self._queue_command("actZoom", callback, params=["out", "1shot"])
 		print("Zoom out.")
 
 	def start_liveview(self, callback):
@@ -171,8 +162,8 @@ class CameraAPI(BaseCameraAPI):
 		return (status == 'IDLE')
 		'''
 
-	def check_status(self):
-		self._queue_command("getEvent", self._check_status_result, params=[False])
+	def check_status(self, callback=None):
+		self._queue_command("getEvent", callback if callback is not None else self._check_status_result, params=[False])
 
 	def _check_status_result(self, res):
 		if res is None:

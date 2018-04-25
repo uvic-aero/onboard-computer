@@ -2,6 +2,8 @@ import time
 import threading
 import requests
 import base64
+import os
+from constants import groundstation_url
 
 class StillProcessor:
 	def __init__(self, cameraManager, queue):
@@ -13,7 +15,6 @@ class StillProcessor:
 		print("stillProcessor: Entering loop")
 		while(self.runLoop):
 			if self.queue.empty():
-				print("stillProcessor: Queue is empty")
 				time.sleep(3)
 				continue
 
@@ -36,22 +37,34 @@ class StillProcessor:
 		print("Stopping still processor")
 		self.runLoop = False;
 
+	def _save_image(self, image):
+		cur_dir = os.path.dirname(__file__)
+		photo_dir = os.path.join(cur_dir, 'images')
+		photo_name = os.path.basename(str(time.time()) + '.jpg')
+		photo_path = os.path.join(photo_dir, photo_name)
+
+		if not os.path.exists(photo_dir):
+			os.mkdir(photo_dir)
+
+		# Save the image at .../picture folder
+		with open(photo_path, 'wb') as f:
+			f.write(image)
+
 	def send_image(self, image):
 	
+		self._save_image(image)
+
 		try:
-			print(type(image))
 			timestamp = time.time() * 1000
 			#encoded_image = base64.b64encode(image)
 			encoded_image = base64.b64encode(image)
-
-			print(type(encoded_image))
 
 			payload = {
 				'timestamp': timestamp,
 				'image': encoded_image.decode('utf-8', "ignore")
 			}
 
-			requests.post('http://localhost:24002/images', json=payload)
+			requests.post(groundstation_url + '/images', json=payload)
 
 		except Exception as e:
 			print(str(e))

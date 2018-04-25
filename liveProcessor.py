@@ -55,7 +55,7 @@ class LiveProcessor:
 	def _start_server(self):
 		if self.server_started == False:
 			self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-			self.server.bind(('127.0.0.1', 5000))
+			self.server.bind(('0.0.0.0', 5000))
 			self.server.listen(2)
 			self.server.setblocking(0)
 
@@ -84,14 +84,7 @@ class LiveProcessor:
 
 	def _broadcast_image(self, image):
 
-		with open('image.jpg', 'wb') as f:
-			f.write(image)
-
-		print(len(image))
-		
 		message = b'--frame\r\nContent-Type: image/jpeg\r\nContent-Length: %d' % len(image) + b'\r\n\r\n' + image + b'\r\n'
-
-		print("liveProcessor: Broadcasting image")
 
 		for conn in self.connections[:]:
 			try:

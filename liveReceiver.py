@@ -49,6 +49,8 @@ class LiveReceiver:
 	def _start_liveview_result(self, res):
 
 		if res is None:
+			print("liveReceiver: Failed to start liveview")
+			self.liveview_started = False
 			return None
 
 		liveview_url = res['result'][0]
@@ -87,22 +89,30 @@ class LiveReceiver:
 		print("liveReceiver: Received camera connection reponse")
 		self.liveview_connected = True
 
+	def _reset(self):
+		self.liveview_connected = False
+		self.liveview_running = False
+		self.liveview_started = False
+
 	def loop(self):
 		print("liveReceiver: Loop running")
 		frames = 0
 		while self.runLoop == True:
 			if self.cameraManager.connected == False:
 				print("liveReceiver: Camera not connected")
+				self._reset()
 				time.sleep(5)
 				continue
 
 			if self.cameraManager.wantedMode != RecordMode.LIVE:
 				print("liveReceiver: Liveview mode not wanted")
+				self._reset()
 				time.sleep(3)
 				continue
 
 			if self.cameraManager.currentMode != RecordMode.LIVE:
 				print("liveReceiver: Putting camera into liveview mode")
+				print(self.liveview_started)
 				if self.liveview_started == False:
 					self._start_liveview()
 				print("liveReceiver: Waiting for liveview to start")
@@ -120,21 +130,16 @@ class LiveReceiver:
 			raw_image = self._receive_image()
 
 			if raw_image:
-				print("liveReceiver: Queued next image")
 				self.queue.put(raw_image)
 			else:
 				continue
 
-			print("liveReceiver: Frame %s" % frames)
 			frames += 1
-
 
 	def _receive_image(self):
 
 		try:
 			data = self.client.recv(1, socket.MSG_WAITALL)
-
-			print(len(data))
 
 			if len(data) == 0:
 				return None
@@ -148,13 +153,10 @@ class LiveReceiver:
 			# Read rest of info header
 			data = self.client.recv(7, socket.MSG_WAITALL)
 
-			print(len(data))
-
 			# Sanity check the payload type
 			payload_type = data[0] # 1 or 2
 
 			if payload_type != 1:
-				skipped_bytes += 1
 				return None
 
 			sequence_number = int(binascii.hexlify(data[1:3]), 16)
@@ -162,8 +164,6 @@ class LiveReceiver:
 
 			# Read payload header
 			data = self.client.recv(128, socket.MSG_WAITALL)
-
-			print(len(data))
 
 			start_code = int(binascii.hexlify(data[0:4]), 16)
 			jpeg_data_size = int(binascii.hexlify(data[4:7]), 16)
@@ -183,8 +183,6 @@ class LiveReceiver:
 
 				received += len(chunk)
 				chunks.append(chunk)
-
-			print(received, jpeg_data_size)
 
 			if padding_size > 0:
 				self.client.recv(padding_size, socket.MSG_WAITALL)

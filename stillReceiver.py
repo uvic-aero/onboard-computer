@@ -65,15 +65,12 @@ class StillReceiver:
 			print("Image capture failed")
 			return
 
-		print("Captured image")
-
 		try:
 			photo_url = result["result"][0][0]
 
 			# Download image from Camera
 			photo = requests.get(photo_url).content
 
-			print("Queued image")
 			self.image_queue.put(photo)
 		except:
 			print("Failed to download image")
