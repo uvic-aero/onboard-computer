@@ -57,7 +57,7 @@ class CameraMode(tornado.web.RequestHandler):
 
 	def post(self):
 		print(self.request.body)
-		_json = json.loads(self.request.body, encoding = object)
+		_json = json.loads(self.request.body.decode('utf-8'))
 		print(_json)
 		if 'wanted' in _json:
 			mode = _json['wanted']
