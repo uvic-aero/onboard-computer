@@ -129,7 +129,7 @@ class LiveReceiver:
 	
 			raw_image = self._receive_image()
 
-			if raw_image:
+			if raw_image and self.queue.qsize() <= 2:
 				self.queue.put(raw_image)
 			else:
 				continue
