@@ -17,6 +17,7 @@ class LiveProcessor:
 		self.process = None
 		self.thread = None
 
+
 	def start(self):
 		self.runLoop = True
 		self.runProcess = True
@@ -58,7 +59,9 @@ class LiveProcessor:
 				continue
 			
 			image = self.receive_queue.get()
-			self.process_queue.put(image)
+
+			if self.process_queue.qsize() == 0:
+				self.process_queue.put(image)
 
 def loop(runLoop, queue):
 	connections = []
@@ -124,7 +127,9 @@ def broadcast_image(connections, image):
 			conn.send( b'--frame\r\nContent-Type: image/jpeg\r\nContent-Length: %d\r\n\r\n' % len(image))
 			conn.send(image)
 			conn.send(b'\r\n')
-		except (BrokenPipeError, OSError) as ex:
+		except socket.timeout:
+			pass
+		except (BrokenPipeError, OSError):
 			connections.remove(conn)
 			print("The connection has been shut down or closed.")
 		except AttributeError:
