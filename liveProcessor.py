@@ -1,35 +1,47 @@
 import socket
 import traceback
 from threading import Thread
+from multiprocessing import Process, Value, Queue
 from cameraAPI import RecordMode
 import time
+from ctypes import c_bool
+from constants import framerate_delay
 
 class LiveProcessor:
 	def __init__(self, cameraManager, queue):
 		self.cameraManager = cameraManager
-		self.queue = queue
+		self.receive_queue = queue
+		self.process_queue = Queue()
+		self.runProcess = Value(c_bool, False)
 		self.runLoop = False
-		self.connections = []
-		self.server = None
-		self.server_started = False
+		self.process = None
+		self.thread = None
 
 	def start(self):
 		self.runLoop = True
+		self.runProcess = True
+		print("liveProcessor: Starting loops")
+		print("liveProcessor: Frame delay: %f" % framerate_delay)
 		try:
-			t_server = Thread(target=self.loop)
+			self.thread = Thread(target=self.loop)
+			self.process = Process(target=loop, args=(self.runProcess, self.process_queue))
 
-			t_server.start()
+			self.thread.start()
+			self.process.start()
 		except:
+			self.process = None
+			self.thread = None
 			print("liveProcessor: Failed to start thread")
 
 	def stop(self):
 		self.runLoop = False
+		self.runProcess = False
 
-		if self.server_started:
-			self._stop_server()
+		if self.process:
+			self.process.join()
 
 	def loop(self):
-		print("liveProcessor: Entering loop")
+		print("liveProcessor: Entering receive loop")
 		while self.runLoop == True:
 			if self.cameraManager.connected == False:
 				print("liveProcessor: Camera not connected")
@@ -38,68 +50,92 @@ class LiveProcessor:
 
 			if self.cameraManager.currentMode != RecordMode.LIVE:
 				time.sleep(3)
-				continue 
-
-			if self.server_started == False:
-				self._start_server()
-
-			self._check_connections()
-
-			if self.queue.empty():
 				continue
 
-			image = self.queue.get()
+			time.sleep(framerate_delay)
 
-			self._broadcast_image(image)
+			if self.receive_queue.empty():
+				continue
+			
+			image = self.receive_queue.get()
+			self.process_queue.put(image)
 
-	def _start_server(self):
-		if self.server_started == False:
-			self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-			self.server.bind(('0.0.0.0', 5000))
-			self.server.listen(2)
-			self.server.setblocking(0)
+def loop(runLoop, queue):
+	connections = []
+	server = None
+	server_started = False
+	
+	print("liveProcessor: Entering process loop")
+	while runLoop == True:
 
-			print("liveProcessor: Server listening")
-			self.server_started = True
+		if server_started == False:
+			server_started, server = start_server(server_started, server)
 
-	def _check_connections(self):
-		if self.server == None or self.server_started == False:
-			return
+		check_connections(server, server_started, connections)
 
+		time.sleep(framerate_delay)
+
+		if queue.empty():
+			continue
+
+		image = queue.get()
+
+		broadcast_image(connections, image)
+
+	print("liveProcessor: Stopping process loop")
+	if server:
+		stop_server(server)
+
+def start_server(server_started, server):
+	if server_started == False:
+		server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		server.bind(('0.0.0.0', 5000))
+		server.listen(2)
+		server.setblocking(0)
+
+		print("liveProcessor: Server listening")
+		server_started = True
+	return server_started, server
+
+def check_connections(server, server_started, connections):
+	if server == None or server_started == False:
+		return
+
+	try:
+		conn, addr = server.accept()
+
+		message = "\r\n".join([
+			'HTTP/1.1 200 OK',
+			'Content-Type: multipart/x-mixed-replace;boundary=frame',
+			'', ''])
+
+		conn.send(message.encode())
+
+		connections.append(conn)
+		print("liveProcessor: New listener")
+	except:
+		# An exception means no incoming connection
+		return
+
+def broadcast_image(connections, image):
+
+	for conn in connections[:]:
 		try:
-			conn, addr = self.server.accept()
-
-			message = "\r\n".join([
-				'HTTP/1.1 200 OK',
-				'Content-Type: multipart/x-mixed-replace;boundary=frame',
-				'', ''])
-
-			conn.send(message.encode())
-
-			self.connections.append(conn)
-			print("liveProcessor: New listener")
+			conn.send( b'--frame\r\nContent-Type: image/jpeg\r\nContent-Length: %d\r\n\r\n' % len(image))
+			conn.send(image)
+			conn.send(b'\r\n')
+		except (BrokenPipeError, OSError) as ex:
+			connections.remove(conn)
+			print("The connection has been shut down or closed.")
+		except AttributeError:
+			pass
 		except:
-			# An exception means no incoming connection
-			return
+			connections.remove(conn)
 
-	def _broadcast_image(self, image):
+def stop_server(server):
 
-		message = b'--frame\r\nContent-Type: image/jpeg\r\nContent-Length: %d' % len(image) + b'\r\n\r\n' + image + b'\r\n'
+	server.close()
+	server = None
+	#self.server_started = False
 
-		for conn in self.connections[:]:
-			try:
-				
-				conn.send(message)
-			except (BrokenPipeError, OSError) as ex:
-				self.connections.remove(conn)
-				print("The connection has been shut down or closed.")
-			except AttributeError:
-				pass
-			except:
-				self.connections.remove(conn)
 
-	def _stop_server(self):
-
-		self.server.close()
-		self.server = None
-		self.server_started = False
