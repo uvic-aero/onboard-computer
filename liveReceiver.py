@@ -101,13 +101,13 @@ class LiveReceiver:
 			if self.cameraManager.connected == False:
 				print("liveReceiver: Camera not connected")
 				self._reset()
-				time.sleep(5)
+				time.sleep(1)
 				continue
 
 			if self.cameraManager.wantedMode != RecordMode.LIVE:
 				print("liveReceiver: Liveview mode not wanted")
 				self._reset()
-				time.sleep(3)
+				time.sleep(1)
 				continue
 
 			if self.cameraManager.currentMode != RecordMode.LIVE:
@@ -116,7 +116,7 @@ class LiveReceiver:
 				if self.liveview_started == False:
 					self._start_liveview()
 				print("liveReceiver: Waiting for liveview to start")
-				time.sleep(2)
+				time.sleep(1)
 				continue
 
 			if self.liveview_running == False:

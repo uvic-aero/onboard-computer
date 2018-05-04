@@ -46,11 +46,11 @@ class LiveProcessor:
 		while self.runLoop == True:
 			if self.cameraManager.connected == False:
 				print("liveProcessor: Camera not connected")
-				time.sleep(5)
+				time.sleep(1)
 				continue
 
 			if self.cameraManager.currentMode != RecordMode.LIVE:
-				time.sleep(3)
+				time.sleep(1)
 				continue
 
 			time.sleep(framerate_delay)
