@@ -15,7 +15,7 @@ class StillProcessor:
 		print("stillProcessor: Entering loop")
 		while(self.runLoop):
 			if self.queue.empty():
-				time.sleep(3)
+				time.sleep(0.1)
 				continue
 
 			image = self.queue.get()
