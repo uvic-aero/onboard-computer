@@ -6,9 +6,13 @@ import time
 import signal
 from tornado import ioloop
 
+#import new application class here
+
 from apps.SonyCamera.camera import camera
 from apps.API.api import API
-from apps.SonyCamera.cameraManager import CameraManager, StillReceiver, LiveReceiver
+from apps.SonyCamera.cameraManager import CameraManager
+from apps.SonyCamera.stillReceiver import StillReceiver
+from apps.SonyCamera.liveReceiver import LiveReceiver
 
 groundstation_url = "127.0.0.1:4000"
 onboardserver_url = "127.0.0.1:8000"
@@ -18,21 +22,21 @@ ioloop.IOLoop.configure('tornado.platform.asyncio.AsyncIOLoop')
 class OnboardComputer:
     def __init__(self):
         self.cameraManager = CameraManager()
+        #self.stillReceiver = StillReceiver(self.cameraManager)
+        #self.liveReceiver = LiveReceiver(self.cameraManager)
         self.api = API(self.cameraManager)
-        self.stillReceiver = StillReceiver(self.cameraManager)
-        self.liveReceiver = LiveReceiver(self.cameraManager)
 
     async def run(self):
         print("Starting Onboard Computer")
         self.api.start()
-        self.cameraManager.start(self.stillReceiver)
-        self.stillReceiver.start()
-        self.liveReceiver.start()
+        #self.cameraManager.start(self.stillReceiver)
+        #self.stillReceiver.start()
+        #self.liveReceiver.start()
 
     def stop(self):
         print("Stopping Onboard Computer")
-        self.liveReceiver.stop()
-        self.stillReceiver.stop()
+        #self.liveReceiver.stop()
+        #self.stillReceiver.stop()
         self.cameraManager.stop()
 
 if __name__ == '__main__':
