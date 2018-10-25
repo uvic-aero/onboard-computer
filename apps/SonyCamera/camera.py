@@ -8,7 +8,6 @@ from tornado import ioloop
 from io import BytesIO
 from http.client import HTTPResponse
 from enum import Enum
-from liveview import Liveview
 
 
 try:

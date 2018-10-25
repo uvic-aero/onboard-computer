@@ -1,7 +1,7 @@
 import tornado.ioloop
 import tornado.web
 import asyncio
-from camera import camera
+from ..SonyCamera.camera import camera
 
 # An HTTP server that will receive commands from the GroundStation
 class API:
