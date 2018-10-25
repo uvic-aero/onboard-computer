@@ -8,7 +8,7 @@ import requests
 class StillReceiver:
 	def __init__(self, cameraManager):
 		self.cameraManager = cameraManager
-		self.image_queue = Queue();
+		self.image_queue = Queue()
 		self.runLoop = False
 		self.processor = StillProcessor(cameraManager, self.image_queue)
 		self.capturing = False
@@ -19,7 +19,7 @@ class StillReceiver:
 			self.handle_receiver()
 			
 	def start(self):
-		self.runLoop = True;
+		self.runLoop = True
 		try:
 			t = threading.Thread(target=self.loop)
 			t.start()
