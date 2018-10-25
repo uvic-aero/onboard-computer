@@ -1,6 +1,6 @@
-from liveProcessor import LiveProcessor
+from .liveProcessor import LiveProcessor
 import threading
-from cameraAPI import RecordMode
+from .cameraAPI import RecordMode
 import time
 import socket
 from urllib.parse import urlparse

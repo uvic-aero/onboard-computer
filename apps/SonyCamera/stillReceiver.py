@@ -1,5 +1,5 @@
-from stillProcessor import StillProcessor
-from cameraAPI import RecordMode
+from .stillProcessor import StillProcessor
+from .cameraAPI import RecordMode
 import threading
 import time
 from queue import Queue

@@ -1,4 +1,4 @@
-from cameraAPI import CameraAPI, RecordMode
+from .cameraAPI import CameraAPI, RecordMode
 from http.client import HTTPResponse
 from io import BytesIO
 

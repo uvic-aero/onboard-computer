@@ -2,7 +2,7 @@ import socket
 import traceback
 from threading import Thread
 from multiprocessing import Process, Value, Queue
-from cameraAPI import RecordMode
+from .cameraAPI import RecordMode
 import time
 from ctypes import c_bool
 from constants import framerate_delay
