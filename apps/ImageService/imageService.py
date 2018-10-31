@@ -1,4 +1,4 @@
-class ImageService(self):
+class ImageService:
     def __init__(self):
         self.img_path = '~/obc/images/'
 
