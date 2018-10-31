@@ -18,10 +18,14 @@ class CameraDisplay:
         # return list of broken services.
         pass
 
+    def init_display(self):
+        # open window with cam display
+        pass
+
     # the following functions are designed to help with the process of recognizing infrared 
     # intense light sources.
 
-
+    
     def find_ir(self, frame):
         #would return a set of coordinates 
         pass
