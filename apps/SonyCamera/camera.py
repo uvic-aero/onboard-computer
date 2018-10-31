@@ -46,11 +46,16 @@ class Camera:
         self.liveview = None
 
     async def start_tasks(self):
+        await self.set_record_mode()
+        await self.start_liveview()
+        await asyncio.sleep(10)
         await self.zoom_in()
         await self.zoom_in()
         await self.zoom_out()
+        await self.stop_liveview()
         await self.zoom_in()
         await self.take_picture()
+        await self.start_liveview()     
 
     async def check_and_start_connection(self):
         if self.connected == True:
@@ -141,6 +146,10 @@ class Camera:
             traceback.print_exc()
             return None
 
+    async def set_record_mode(self):
+        await self.send_command("startRecMode")
+        print("Camera entering recMode")
+
     async def check_camera_status(self):      
         res = await self.send_command("getEvent", [False]) ###
         return res["result"][1]['cameraStatus']
@@ -175,6 +184,33 @@ class Camera:
         picture_dir = os.path.join(folder_name, picture_name)
         with open(picture_dir, 'wb') as file:
             file.write(image)
+
+    async def start_liveview(self):
+        await self.wait_camera_until_IDLE()
+        res = await self.send_command("startLiveviewWithSize", ["L"])
+        if res is None:
+            print("Failed to set liveview camera mode")
+            return
+
+        liveview_url = res['result'][0]
+        print("Liveview URL: %s" % liveview_url)
+
+        self.liveview = Liveview(liveview_url)
+        await self.liveview.start()
+
+    async def get_current_liveview_size(self):
+        await self.wait_camera_until_IDLE()
+        await self.send_command("getLiveviewSize")
+
+    async def get_available_liveview_sizes(self):
+        await self.wait_camera_until_IDLE()
+        await self.send_command("getAvailableLiveviewSize")
+
+    async def stop_liveview(self):
+        await self.liveview.stop()
+        await self.send_command("stopLiveview")
+        self.liveview = None
+        print("Liveview has stopped.")
 
     async def zoom_in(self):
         await self.wait_camera_until_IDLE()
