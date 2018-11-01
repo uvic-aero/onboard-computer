@@ -1,3 +1,6 @@
+import asyncio
+from tornado import web
+
 class ImageService:
     def __init__(self):
         self.img_path = '~/obc/images/'
@@ -13,12 +16,12 @@ class ImageService:
 
     def stop(self):
         pass
-
+    
     def store_img(self, img):
         # this function will receive an image and store it locally
         # with telemetry data(hopefully inside photo metadata).
         pass
-    
+ 
     def get_telemetry(self):
         # this function probes telem2 port on pixhawk for gps data
         pass
@@ -31,3 +34,17 @@ class ImageService:
         # 2. add gps data and encoded image to dict 
         # 3. requests.post(groundstation_url + '/images', json=payload)
         pass
+
+
+
+
+class ImageServiceStatus(web.RequestHandler):
+    @web.asynchronous
+    def get(self):
+        try:
+            self.write({
+                'service':'ImageService',
+                'status':'broken'})
+            self.finish()
+        except:
+            print('Error Writing Request Response')
