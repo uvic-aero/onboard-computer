@@ -4,66 +4,44 @@ import functools
 import traceback
 import time
 import signal
+import tornado
 from tornado import ioloop
 
-#import new application class here
-
-from apps.SonyCamera.camera import camera
-from apps.API.api import API
-from apps.SonyCamera.cameraManager import CameraManager
-from apps.SonyCamera.stillReceiver import StillReceiver
-from apps.SonyCamera.liveReceiver import LiveReceiver
+from apps.ImageService.imageService import ImageService, ImageServiceStatus
 
 groundstation_url = "127.0.0.1:4000"
 onboardserver_url = "127.0.0.1:8000"
 
-ioloop.IOLoop.configure('tornado.platform.asyncio.AsyncIOLoop')
 
 class OnboardComputer:
     def __init__(self):
-        self.cameraManager = CameraManager()
-        #self.stillReceiver = StillReceiver(self.cameraManager)
-        #self.liveReceiver = LiveReceiver(self.cameraManager)
-        self.api = API(self.cameraManager)
 
-    async def run(self):
+        self.imageService = ImageService()
+
+        self.routes = [
+                (r"/status/imageService", ImageServiceStatus)
+                ]
+
+        self.application = tornado.web.Application(self.routes)
+        self.server = tornado.httpserver.HTTPServer(self.application)
+    
+    def start(self, port):
         print("Starting Onboard Computer")
-        self.api.start()
-        #self.cameraManager.start(self.stillReceiver)
-        #self.stillReceiver.start()
-        #self.liveReceiver.start()
+        
+
+        #start http server
+        self.application.listen(port) 
+        tornado.ioloop.IOLoop.instance().start()
+        
+
+
 
     def stop(self):
         print("Stopping Onboard Computer")
-        #self.liveReceiver.stop()
-        #self.stillReceiver.stop()
-        self.cameraManager.stop()
 
 if __name__ == '__main__':
 
-    loop = ioloop.IOLoop.instance()
-    native = loop.asyncio_loop
-
-    def signal_handler(*args):
-        # A SIGINT is a request for the application to stop; kill the event loop
-        loop.add_callback_from_signal(loop.stop)
-
-    # An empty function is enough to wake up event loop so interrupts can be handled
-    def check_should_exit():
-        pass
-
-    # Start OBC + async tasks
     obc = OnboardComputer()
-    native.create_task(obc.run())
+    obc.start(8000)
 
-    # Capture crl+c
-    signal.signal(signal.SIGINT, signal_handler)
 
-    # Force IOLoop to wake up so interrupts can be handled
-    ioloop.PeriodicCallback(check_should_exit, 100).start()
-
-    # Enter event loop
-    loop.start()
-
-    # Shutdown code
-    obc.stop()
