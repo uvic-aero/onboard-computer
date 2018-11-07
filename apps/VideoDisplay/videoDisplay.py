@@ -31,3 +31,13 @@ class VideoDisplay:
         pass
 
 
+class VideoDisplayStatus(web.RequestHandler):
+    @web.asynchronous
+    def get(self):
+        try:
+            self.write({
+                'service':'ImageService',
+                'status':'broken'})
+            self.finish()
+        except:
+            print('Error Writing Request Response')
