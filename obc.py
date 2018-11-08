@@ -37,6 +37,11 @@ class OnboardComputer:
     def start(self, port):
         print("Starting Onboard Computer")
         
+        #start apps
+        self.imageService.start()
+        self.imageService.start()
+        self.timelapse.start()
+        self.videoDisplay.start()
 
         #start http server
         self.application.listen(port) 
@@ -47,6 +52,12 @@ class OnboardComputer:
 
     def stop(self):
         print("Stopping Onboard Computer")
+
+        #stop apps
+        self.imageService.stop()
+        self.imageService.stop()
+        self.timelapse.stop()
+        self.videoDisplay.stop()
 
 if __name__ == '__main__':
 

@@ -39,7 +39,7 @@ class VideoDisplayStatus(web.RequestHandler):
     def get(self):
         try:
             self.write({
-                'service':'ImageService',
+                'service':'videoDisplay',
                 'status':'broken'})
             self.finish()
         except:
