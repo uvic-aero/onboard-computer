@@ -1,0 +1,12 @@
+[Unit]
+Description=OBC Python service entry point
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/pi
+ExecStart=python /home/pi/oneboard-computer-python/obc.py
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
