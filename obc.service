@@ -5,7 +5,7 @@ After=network.target
 [Service]
 Type=simple
 WorkingDirectory=/home/pi
-ExecStart=python /home/pi/oneboard-computer-python/obc.py
+ExecStart=python @dir/obc.py
 Restart=on-failure
 
 [Install]
