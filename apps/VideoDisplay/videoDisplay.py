@@ -1,3 +1,6 @@
+import asyncio
+from tornado import web
+
 class VideoDisplay:
     def __init__(self):
         self.status = 'down' #this status is used to check if a service is functioning normaly or not
@@ -36,7 +39,7 @@ class VideoDisplayStatus(web.RequestHandler):
     def get(self):
         try:
             self.write({
-                'service':'ImageService',
+                'service':'videoDisplay',
                 'status':'broken'})
             self.finish()
         except:
