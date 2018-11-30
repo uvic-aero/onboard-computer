@@ -7,6 +7,7 @@ class VideoDisplay:
         # store class variables here.
         pass
     def start(self):
+        self.status = 'maybe running'
         # this function will at least initialize a window for the user to see the picam.
         pass
 
@@ -34,13 +35,15 @@ class VideoDisplay:
         pass
 
 
+videoDisplay = VideoDisplay()
+
 class VideoDisplayStatus(web.RequestHandler):
     @web.asynchronous
     def get(self):
         try:
             self.write({
                 'service':'videoDisplay',
-                'status':'broken'})
+                'status':videoDisplay.status})
             self.finish()
         except:
             print('Error Writing Request Response')
