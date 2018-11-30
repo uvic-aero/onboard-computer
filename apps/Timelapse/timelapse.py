@@ -26,6 +26,8 @@ timelapse = Timelapse()
 class TimelapseStatus(web.RequestHandler):
     @web.asynchronous
     def get(self):
+        # Include when the last image was taken so that users can confirm 
+        # this feature is working.
         try:
             self.write({
                 'service':'Timelapse',
