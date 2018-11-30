@@ -16,6 +16,7 @@ class ImageService:
         pass
 
     def stop(self):
+        self.status = 'down'
         pass
     
     def save_img(self, img):
@@ -49,3 +50,28 @@ class ImageServiceStatus(web.RequestHandler):
             self.finish()
         except:
             print('Error Writing Request Response')
+
+
+class ImageServiceStop(web.RequestHandler):
+    @web.asynchronous
+    def get(self):  
+        imageService.stop()
+        try:
+            self.write({
+                'service':'imageService',
+                'action':'Killing'})
+            self.finish()
+        except:
+            print('Error Writing Request Response')
+
+class ImageServiceStart(web.RequestHandler):
+    @web.asynchronous
+    def get(self):  
+        imageService.start()
+        try:
+            self.write({
+                'service':'imageService',
+                'action':'Starting'})
+            self.finish()
+        except:
+            print('Error Writing Request Response') 

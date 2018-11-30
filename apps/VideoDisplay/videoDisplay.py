@@ -12,6 +12,7 @@ class VideoDisplay:
         pass
 
     def stop(self):
+        self.status = 'down'
         # this function should kill the camera viewing window and 
         # any other processes it has started.
         pass
@@ -47,3 +48,27 @@ class VideoDisplayStatus(web.RequestHandler):
             self.finish()
         except:
             print('Error Writing Request Response')
+
+class VideoDisplayStop(web.RequestHandler):
+    @web.asynchronous
+    def get(self):  
+        videoDisplay.stop()
+        try:
+            self.write({
+                'service':'videoDisplay',
+                'action':'Killing'})
+            self.finish()
+        except:
+            print('Error Writing Request Response')
+
+class VideoDisplayStart(web.RequestHandler):
+    @web.asynchronous
+    def get(self):  
+        videoDisplay.start()
+        try:
+            self.write({
+                'service':'videoDisplay',
+                'action':'Starting'})
+            self.finish()
+        except:
+            print('Error Writing Request Response') 

@@ -34,3 +34,26 @@ class TimelapseStatus(web.RequestHandler):
         except:
             print('Error Writing Request Response')
 
+class TimelapseStop(web.RequestHandler):
+    @web.asynchronous
+    def get(self):  
+        timelapse.stop()
+        try:
+            self.write({
+                'service':'timelapse',
+                'action':'Killing'})
+            self.finish()
+        except:
+            print('Error Writing Request Response')
+
+class TimelapseStart(web.RequestHandler):
+    @web.asynchronous
+    def get(self):  
+        timelapse.start()
+        try:
+            self.write({
+                'service':'timelapse',
+                'action':'Starting'})
+            self.finish()
+        except:
+            print('Error Writing Request Response') 
