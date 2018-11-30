@@ -7,9 +7,9 @@ import signal
 import tornado
 from tornado import ioloop
 
-from apps.ImageService.imageService import imageService, ImageServiceStatus
-from apps.Timelapse.timelapse import timelapse, TimelapseStatus
-from apps.VideoDisplay.videoDisplay import videoDisplay, VideoDisplayStatus
+from apps.ImageService.imageService import imageService, ImageServiceStatus, ImageServiceStart, ImageServiceStop
+from apps.Timelapse.timelapse import timelapse, TimelapseStatus, TimelapseStart, TimelapseStop
+from apps.VideoDisplay.videoDisplay import videoDisplay, VideoDisplayStatus, VideoDisplayStart, VideoDisplayStop
 
 groundstation_url = "127.0.0.1:4000"
 onboardserver_url = "127.0.0.1:8000"
@@ -21,6 +21,12 @@ class OnboardComputer:
                 (r"/status/imageService", ImageServiceStatus),
                 (r"/status/timelapse", TimelapseStatus),
                 (r"/status/videoDisplay", VideoDisplayStatus),
+                (r"/start/imageService", ImageServiceStart),
+                (r"/start/timelapse", TimelapseStart),
+                (r"/start/videoDisplay", VideoDisplayStart),
+                (r"/stop/imageService", ImageServiceStop),
+                (r"/stop/timelapse", TimelapseStop),
+                (r"/stop/videoDisplay", VideoDisplayStop),
                 ]
 
         self.application = tornado.web.Application(self.routes)
