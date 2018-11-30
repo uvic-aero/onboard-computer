@@ -1,6 +1,6 @@
-<<<<<<< HEAD
 import asyncio
 from tornado import web
+import datetime
 
 class Timelapse:
     def __init__(self):
@@ -27,26 +27,4 @@ class TimelapseStatus(web.RequestHandler):
             self.finish()
         except:
             print('Error Writing Request Response')
-=======
-import datetime
-from camera import camera
 
-isRunning = False;
-
-class Timelapse:
-
-    def __init__(self):
-        isRunning = False
-
-    def start(self):
-        isRunning = True
-        self.run()
-
-    def stop(self):
-        isRunning = False
-
-    def run(self):
-        while isRunning:
-            if (datetime.now().strftime('%S')) % 3 == 0:
-                camera.take_picture()
->>>>>>> 26167a4266af14726ad3507bbdc3c9edecb40707
