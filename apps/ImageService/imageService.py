@@ -4,7 +4,7 @@ from tornado import web
 class ImageService:
     def __init__(self):
         self.img_path = '~/obc/images/'
-
+        self.status = 'down'
 
     # The start and stop functions do not need to be used if the programmer 
     # thinks that this class should not take the form of a process
@@ -12,12 +12,13 @@ class ImageService:
     def start(self):
         #this function is responsible for inidtializing connections 
         #and processes that may be used by the ImageService class
+        self.status = 'maybe running'
         pass
 
     def stop(self):
         pass
     
-    def store_img(self, img):
+    def save_img(self, img):
         # this function will receive an image and store it locally
         # with telemetry data(hopefully inside photo metadata).
         pass
@@ -35,7 +36,7 @@ class ImageService:
         # 3. requests.post(groundstation_url + '/images', json=payload)
         pass
 
-
+imageService = ImageService()
 
 
 class ImageServiceStatus(web.RequestHandler):
@@ -44,7 +45,7 @@ class ImageServiceStatus(web.RequestHandler):
         try:
             self.write({
                 'service':'ImageService',
-                'status':'broken'})
+                'status':imageService.status})
             self.finish()
         except:
             print('Error Writing Request Response')
