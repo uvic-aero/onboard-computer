@@ -4,6 +4,7 @@ import datetime
 
 class Timelapse:
     def __init__(self):
+        self.status = 'down'
         pass
 
     # The start and stop functions do not need to be used if the programmer 
@@ -12,10 +13,15 @@ class Timelapse:
     def start(self):
         #this function is responsible for inidtializing connections 
         #and processes that may be used by the ImageService class
+        self.status = 'maybe running'
         pass
 
     def stop(self):
+        self.status = 'down'
         pass
+
+
+timelapse = Timelapse()
 
 class TimelapseStatus(web.RequestHandler):
     @web.asynchronous
@@ -23,7 +29,7 @@ class TimelapseStatus(web.RequestHandler):
         try:
             self.write({
                 'service':'Timelapse',
-                'status':'broken'})
+                'status':timelapse.status})
             self.finish()
         except:
             print('Error Writing Request Response')
