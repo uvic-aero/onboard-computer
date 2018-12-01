@@ -39,7 +39,7 @@ class TimelapseStatus(web.RequestHandler):
                 'status':timelapse.status})
             self.finish()
         except:
-            print('Error Writing Request Response')a
+            print('Error Writing Request Response')
     @web.asynchronous 
     def options(self):
         self.set_status(204)
