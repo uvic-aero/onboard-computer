@@ -59,6 +59,6 @@ class OnboardComputer:
 if __name__ == '__main__':
 
     obc = OnboardComputer()
-    obc.start(8000)
+    obc.start(1600)
 
 
