@@ -24,6 +24,11 @@ class Timelapse:
 timelapse = Timelapse()
 
 class TimelapseStatus(web.RequestHandler):
+    def set_default_headers(self):
+        self.set_header("Access-Control-Allow-Origin", "*")
+        self.set_header("Access-Control-Allow-Headers", "x-requested-with,content-type")
+        self.set_header('Access-Control-Allow-Methods', 'GET, OPTIONS')
+
     @web.asynchronous
     def get(self):
         # Include when the last image was taken so that users can confirm 
@@ -34,9 +39,20 @@ class TimelapseStatus(web.RequestHandler):
                 'status':timelapse.status})
             self.finish()
         except:
-            print('Error Writing Request Response')
+            print('Error Writing Request Response')a
+    @web.asynchronous 
+    def options(self):
+        self.set_status(204)
+        self.finish()
+
+
 
 class TimelapseStop(web.RequestHandler):
+    def set_default_headers(self):
+        self.set_header("Access-Control-Allow-Origin", "*")
+        self.set_header("Access-Control-Allow-Headers", "x-requested-with,content-type")
+        self.set_header('Access-Control-Allow-Methods', 'GET, OPTIONS')
+
     @web.asynchronous
     def get(self):  
         timelapse.stop()
@@ -47,8 +63,20 @@ class TimelapseStop(web.RequestHandler):
             self.finish()
         except:
             print('Error Writing Request Response')
+ 
+    @web.asynchronous 
+    def options(self):
+        self.set_status(204)
+        self.finish()
+
+
 
 class TimelapseStart(web.RequestHandler):
+    def set_default_headers(self):
+        self.set_header("Access-Control-Allow-Origin", "*")
+        self.set_header("Access-Control-Allow-Headers", "x-requested-with,content-type")
+        self.set_header('Access-Control-Allow-Methods', 'GET, OPTIONS')
+
     @web.asynchronous
     def get(self):  
         timelapse.start()
@@ -58,4 +86,11 @@ class TimelapseStart(web.RequestHandler):
                 'action':'Starting'})
             self.finish()
         except:
-            print('Error Writing Request Response') 
+            print('Error Writing Request Response')
+    @web.asynchronous 
+    def options(self):
+        self.set_status(204)
+        self.finish()
+
+
+  
