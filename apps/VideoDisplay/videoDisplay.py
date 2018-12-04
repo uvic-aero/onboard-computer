@@ -1,5 +1,6 @@
 import asyncio
 from tornado import web
+from picamera import PiCamera
 
 class VideoDisplay:
     def __init__(self):
@@ -7,11 +8,13 @@ class VideoDisplay:
         # store class variables here.
         pass
     def start(self):
-        self.status = 'maybe running'
+        print('starting videoDisplay')
+        self.status = 'running'
         # this function will at least initialize a window for the user to see the picam.
         pass
 
     def stop(self):
+        print('stopping videoDisplay')
         self.status = 'down'
         # this function should kill the camera viewing window and 
         # any other processes it has started.
