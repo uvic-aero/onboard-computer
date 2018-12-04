@@ -1,6 +1,7 @@
 import asyncio
 from tornado import web
 import datetime
+from picamera import PiCamera
 
 class Timelapse:
     def __init__(self):
@@ -11,12 +12,14 @@ class Timelapse:
     # thinks that this class should not take the form of a process
 
     def start(self):
+        print('starting timelapse')
         #this function is responsible for inidtializing connections 
         #and processes that may be used by the ImageService class
         self.status = 'maybe running'
         pass
 
     def stop(self):
+        print('stopping timelapse')
         self.status = 'down'
         pass
 
