@@ -4,18 +4,20 @@ from picamera import PiCamera
 class VideoDisplay:
     def __init__(self):
         self.status = 'down' #this status is used to check if a service is functioning normaly or not
-        self.camera = PiCamera.Camera()
+        self.camera = PiCamera()
         # store class variables here.
         pass
     def start(self):
         self.status = 'maybe running'
+        print('starting display')
         self.camera.start_preview()
         # this function will at least initialize a window for the user to see the picam.
         pass
 
     def stop(self):
         self.status = 'down'
-				self.camera.stop_preview()
+        self.camera.stop_preview()
+        print('stopping videoDisplay')	
         # this function should kill the camera viewing window and 
         # any other processes it has started.
         pass

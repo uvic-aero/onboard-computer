@@ -13,10 +13,12 @@ class ImageService:
         #this function is responsible for inidtializing connections 
         #and processes that may be used by the ImageService class
         self.status = 'maybe running'
+        print('starting imageService')
         pass
 
     def stop(self):
         self.status = 'down'
+        print('stoping imageService')
         pass
     
     def save_img(self, img):

@@ -14,10 +14,12 @@ class Timelapse:
         #this function is responsible for inidtializing connections 
         #and processes that may be used by the ImageService class
         self.status = 'maybe running'
+        print('starting timelapse')
         pass
 
     def stop(self):
         self.status = 'down'
+        print('stopping timelapse')
         pass
 
 
