@@ -4,7 +4,6 @@ After=network.target
 
 [Service]
 Type=simple
-WorkingDirectory=/home/pi
 ExecStart=/usr/bin/python dir/obc.py
 Restart=on-failure
 
