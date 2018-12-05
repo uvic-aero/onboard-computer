@@ -9,4 +9,4 @@ sed -i -e "s@dir@${path}@g" ./obc.service
 sudo cp obc.service /etc/systemd/system
 sudo systemctl start obc.service
 sudo systemctl enable obc.service
-systemctl daemon-reload
+sudo systemctl daemon-reload
