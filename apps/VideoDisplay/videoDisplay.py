@@ -17,8 +17,6 @@ class VideoDisplay:
     def stop(self):
         print('stopping videoDisplay')
         self.status = 'down'
-        self.camera.stop_preview()
-        print('stopping videoDisplay')	
         # this function should kill the camera viewing window and 
         # any other processes it has started.
         pass
