@@ -5,7 +5,7 @@ from picamera import PiCamera
 
 class Timelapse:
     def __init__(self):
-        self.status = 'down'
+        self.status = 'Down'
         pass
 
     # The start and stop functions do not need to be used if the programmer 
@@ -15,13 +15,13 @@ class Timelapse:
         print('starting timelapse')
         #this function is responsible for inidtializing connections 
         #and processes that may be used by the ImageService class
-        self.status = 'maybe running'
+        self.status = 'Running'
         print('starting timelapse')
         pass
 
     def stop(self):
         print('stopping timelapse')
-        self.status = 'down'
+        self.status = 'Down'
         print('stopping timelapse')
         pass
 
