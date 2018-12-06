@@ -4,8 +4,7 @@ After=network.target
 
 [Service]
 Type=simple
-WorkingDirectory=/home/pi
-ExecStart=/usr/bin/python dir/obc.py
+ExecStart=/home/pi/.virtualenvs/cv/bin/python dir/obc.py
 Restart=on-failure
 
 [Install]
