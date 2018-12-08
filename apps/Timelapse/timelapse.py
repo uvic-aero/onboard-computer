@@ -1,30 +1,27 @@
 import asyncio
 from tornado import web
-import datetime
-from picamera import PiCamera
+from apps.PiCam.piCam import piCam
 
 class Timelapse:
     def __init__(self):
         self.status = 'Down'
-        pass
-
-    # The start and stop functions do not need to be used if the programmer 
-    # thinks that this class should not take the form of a process
+        self.loop_flag = False
 
     def start(self):
         print('starting timelapse')
-        #this function is responsible for inidtializing connections 
-        #and processes that may be used by the ImageService class
         self.status = 'Running'
-        print('starting timelapse')
-        pass
+        self.loop_flag = True
+        self.start_timelapse()
 
     def stop(self):
         print('stopping timelapse')
         self.status = 'Down'
-        print('stopping timelapse')
-        pass
+        self.loop_flag = False
 
+    def start_timelapse(self, interval):
+        while self.loop_flag:
+            piCam.take_picture()
+            time.sleep(interval)
 
 timelapse = Timelapse()
 
