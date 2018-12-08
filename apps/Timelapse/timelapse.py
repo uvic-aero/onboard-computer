@@ -11,7 +11,7 @@ class Timelapse:
         print('starting timelapse')
         self.status = 'Running'
         self.loop_flag = True
-        self.start_timelapse()
+        self.start_timelapse(5)
 
     def stop(self):
         print('stopping timelapse')
