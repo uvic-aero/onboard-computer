@@ -1,28 +1,34 @@
 import asyncio
 from tornado import web
 import time
+import _thread
 from apps.PiCam.piCam import piCam
 
 class Timelapse:
     def __init__(self):
         self.status = 'Down'
-        self.loop_flag = False
-
+        self.loop_flag = True
+        self.interval = 3
+        
     def start(self):
+        self.loop_flag = True
         print('starting timelapse')
         self.status = 'Running'
-        self.loop_flag = True
-        self.start_timelapse(5)
-
+        try:
+            _thread.start_new_thread( self.start_timelapse, ( ))
+        except:
+            print('Failed to Create Timelapse Thread')
+    
     def stop(self):
         print('stopping timelapse')
         self.status = 'Down'
         self.loop_flag = False
 
-    def start_timelapse(self, interval):
+    def start_timelapse(self):
         while self.loop_flag:
             piCam.take_picture()
-            time.sleep(interval)
+            print('in loop: ' + str(self.interval))
+            time.sleep(self.interval)
 
 timelapse = Timelapse()
 
