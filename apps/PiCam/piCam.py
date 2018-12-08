@@ -11,7 +11,7 @@ class PiCam:
         file.close()
     
     def start_video(self):
-        file = open('/home/pi/images' + str(time.time())[:-8] + '.h264', 'wb')
+        file = open('/home/pi/images/' + str(time.time())[:-8] + '.h264', 'wb')
         self.camera.start_recording(file)
     def stop_video(self, file):
         self.camera.stop_recording()
