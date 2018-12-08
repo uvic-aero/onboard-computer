@@ -1,11 +1,10 @@
 import asyncio
 from tornado import web
-from picamera import PiCamera
+from apps.PiCam.piCam import piCam
 
 class VideoDisplay:
     def __init__(self):
         self.status = 'down' #this status is used to check if a service is functioning normaly or not
-        self.camera = PiCamera()
         # store class variables here.
         pass
     def start(self):
