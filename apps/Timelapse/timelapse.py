@@ -1,5 +1,6 @@
 import asyncio
 from tornado import web
+import time
 from apps.PiCam.piCam import piCam
 
 class Timelapse:
