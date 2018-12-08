@@ -2,10 +2,11 @@ from picamera import PiCamera
 import time
 
 class PiCam:
-    self.camera = PiCamera()
+    def __init__(self):
+        self.camera = PiCamera()
     
     def take_picture(self):
-        file = open('/home/pi/images' + str(time.time())[:-8] + '.jpg', 'wb')
+        file = open('/home/pi/images/' + str(time.time())[:-8] + '.jpg', 'wb')
         self.camera.capture(file)
         file.close()
     
@@ -22,3 +23,4 @@ class PiCam:
         self.camera.stop_preview()
 
 piCam = PiCam()
+
