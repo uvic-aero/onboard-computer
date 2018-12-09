@@ -27,7 +27,6 @@ class Timelapse:
     def start_timelapse(self):
         while self.loop_flag:
             piCam.take_picture()
-            print('in loop: ' + str(self.interval))
             time.sleep(self.interval)
 
 timelapse = Timelapse()
