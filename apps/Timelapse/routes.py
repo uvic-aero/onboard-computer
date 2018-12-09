@@ -6,5 +6,3 @@ routes = [
     (r"/stop/timelapse", Stop),
     (r"/setInterval/timelapse", SetInterval),
 ]
-
-
