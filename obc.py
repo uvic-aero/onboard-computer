@@ -1,3 +1,4 @@
+# Dependencies
 import asyncio
 import requests
 import functools
@@ -7,9 +8,11 @@ import signal
 import tornado
 from tornado import ioloop
 
-from apps.ImageService.imageService import imageService, ImageServiceStatus, ImageServiceStart, ImageServiceStop
-from apps.Timelapse.timelapse import timelapse, TimelapseStatus, TimelapseStart, TimelapseStop
-from apps.VideoDisplay.videoDisplay import videoDisplay, VideoDisplayStatus, VideoDisplayStart, VideoDisplayStop
+# import apps
+from apps.Routes.routes import routes
+from apps.ImageService.imageService import imageService
+from apps.VideoDisplay.videoDisplay import videoDisplay
+from apps.Timelapse.timelapse import timelapse
 
 groundstation_url = "127.0.0.1:4000"
 onboardserver_url = "127.0.0.1:8000"
@@ -17,18 +20,7 @@ onboardserver_url = "127.0.0.1:8000"
 
 class OnboardComputer:
     def __init__(self):
-        self.routes = [
-                (r"/status/imageService", ImageServiceStatus),
-                (r"/status/timelapse", TimelapseStatus),
-                (r"/status/videoDisplay", VideoDisplayStatus),
-                (r"/start/imageService", ImageServiceStart),
-                (r"/start/timelapse", TimelapseStart),
-                (r"/start/videoDisplay", VideoDisplayStart),
-                (r"/stop/imageService", ImageServiceStop),
-                (r"/stop/timelapse", TimelapseStop),
-                (r"/stop/videoDisplay", VideoDisplayStop),
-                ]
-
+        self.routes = routes
         self.application = tornado.web.Application(self.routes)
         self.server = tornado.httpserver.HTTPServer(self.application)
     
