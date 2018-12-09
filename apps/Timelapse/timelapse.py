@@ -27,6 +27,7 @@ class Timelapse:
     def start_timelapse(self):
         while self.loop_flag:
             piCam.take_picture()
+            print(str(time.time()))
             time.sleep(self.interval)
 
 timelapse = Timelapse()
@@ -101,4 +102,50 @@ class TimelapseStart(web.RequestHandler):
         self.finish()
 
 
-  
+class TimelapseStart(web.RequestHandler):
+    def set_default_headers(self):
+        self.set_header("Access-Control-Allow-Origin", "*")
+        self.set_header("Access-Control-Allow-Headers", "x-requested-with,content-type")
+        self.set_header('Access-Control-Allow-Methods', 'GET, OPTIONS')
+
+    @web.asynchronous
+    def get(self):  
+        timelapse.start()
+        try:
+            self.write({
+                'service':'timelapse',
+                'action':'Starting'})
+            self.finish()
+        except:
+            print('Error Writing Request Response')
+    @web.asynchronous 
+    def options(self):
+        self.set_status(204)
+        self.finish()
+
+class TimelapseSetInterval(web.RequestHandler):
+    def set_default_headers(self):
+        self.set_header("Access-Control-Allow-Origin", "*")
+        self.set_header("Access-Control-Allow-Headers", "x-requested-with,content-type")
+        self.set_header('Access-Control-Allow-Methods', 'GET, OPTIONS')
+
+    @web.asynchronous
+    def get(self):  
+        try:
+            val = self.get_argument('val')
+            timelapse.interval = int(val)
+            self.write({
+                'service':'timelapse',
+                'action':'Changing Interval',
+                'value': timelapse.interval})
+            self.finish()
+        except:
+            print('Error Writing Request Response')
+
+    @web.asynchronous 
+    def options(self):
+        self.set_status(204)
+        self.finish()
+
+
+ 
