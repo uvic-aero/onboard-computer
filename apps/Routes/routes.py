@@ -1,6 +1,6 @@
 #   import app GET responses
 from apps.ImageService.imageService import ImageServiceStatus, ImageServiceStart, ImageServiceStop
-from apps.Timelapse.timelapse import TimelapseStatus, TimelapseStart, TimelapseStop
+from apps.Timelapse.timelapse import TimelapseStatus, TimelapseStart, TimelapseStop, TimelapseSetInterval
 from apps.VideoDisplay.videoDisplay import VideoDisplayStatus, VideoDisplayStart, VideoDisplayStop
 
 routes = [
@@ -13,5 +13,6 @@ routes = [
     (r"/stop/imageService", ImageServiceStop),
     (r"/stop/timelapse", TimelapseStop),
     (r"/stop/videoDisplay", VideoDisplayStop),
+    (r"/setInterval/timelapse", TimelapseSetInterval),
 ]
 
