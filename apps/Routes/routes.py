@@ -1,6 +1,7 @@
 #   import app GET responses
-from apps.ImageService.imageService import ImageServiceStatus, ImageServiceStart, ImageServiceStop
-from apps.VideoDisplay.videoDisplay import VideoDisplayStatus, VideoDisplayStart, VideoDisplayStop
-from apps.Timelapse.routes import routes as tlRoutes
+from apps.Timelapse.routes import routes as tRoutes
+from apps.ImageService.routes import routes as isRoutes
+from apps.VideoDisplay.routes import routes as vdRoutes
 
-routes = tlRoutes
+
+routes = tRoutes + isRoutes + vdRoutes
