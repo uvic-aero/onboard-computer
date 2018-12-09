@@ -1,7 +1,7 @@
-#import singleton instance of apps 
-from apps.ImageService.imageService import imageService, ImageServiceStatus, ImageServiceStart, ImageServiceStop
-from apps.Timelapse.timelapse import timelapse, TimelapseStatus, TimelapseStart, TimelapseStop
-from apps.VideoDisplay.videoDisplay import videoDisplay, VideoDisplayStatus, VideoDisplayStart, VideoDisplayStop
+#   import app GET responses
+from apps.ImageService.imageService import ImageServiceStatus, ImageServiceStart, ImageServiceStop
+from apps.Timelapse.timelapse import TimelapseStatus, TimelapseStart, TimelapseStop
+from apps.VideoDisplay.videoDisplay import VideoDisplayStatus, VideoDisplayStart, VideoDisplayStop
 
 routes = [
     (r"/status/imageService", ImageServiceStatus),
