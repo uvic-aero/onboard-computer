@@ -1,4 +1,4 @@
-from apps.ImageService.handlers import Status, Stop, Start, SetInterval 
+from apps.ImageService.handlers import Status, Stop, Start
 
 routes = [
     (r"/status/imageService", Status),
