@@ -1,16 +1,16 @@
-#from picamera import PiCamera
+from picamera import PiCamera
 import time
+import RPi.GPIO as GPIO
 
 class PiCam:
     def __init__(self):
-        pass
-#       self.camera = PiCamera()
-#   
+        self.camera = PiCamera()
+   
     def take_picture(self):
         pass
-#       file = open('/home/pi/images/' + str(time.time())[:-8] + '.jpg', 'wb')
-#       self.camera.capture(file)
-#       file.close()
+        file = open('/home/pi/images/' + str(time.time())[:-8] + '.jpg', 'wb')
+        self.camera.capture(file)
+        file.close()
 #   
     def start_video(self):
         pass
@@ -23,10 +23,10 @@ class PiCam:
 #   
     def start_preview(self):
         pass
-#       self.camera.start_preview()
+        self.camera.start_preview()
     def stop_preview(self):
         pass
-#       self.camera.stop_preview()
+        self.camera.stop_preview()
 #
 piCam = PiCam()
 
