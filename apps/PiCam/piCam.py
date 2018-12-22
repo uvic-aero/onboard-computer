@@ -9,14 +9,14 @@ class PiCam:
         self.now = datetime.datetime.now()
    
     def take_picture(self):
+        date = str(self.now)[:10]
+        path = '/home/pi/images/'+ date 
         try:
             os.mkdir(path)
         except OSError:
             print ("Creation of the directory %s failed" % path)
         else:
             print ("Successfully created the directory %s " % path)
-
-        date = str(self.now)[:10]
         file = open('/home/pi/images/'+ date +'/' + str(time.time())[:-8] + '.jpg', 'wb')
         self.camera.capture(file)
         file.close()
