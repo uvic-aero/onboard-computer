@@ -11,7 +11,7 @@ class PiCam:
     def take_picture(self):
         date = str(self.now)[:10]
         path = '/home/pi/images/'+ date 
-        if !os.path.exists(path):
+        if not os.path.exists(path):
             try:
                 os.mkdir(path)
             except OSError:
