@@ -1,6 +1,7 @@
 from picamera import PiCamera
 import time
 import datetime
+import os
 
 class PiCam:
     def __init__(self):
@@ -8,6 +9,13 @@ class PiCam:
         self.now = datetime.datetime.now()
    
     def take_picture(self):
+        try:
+            os.mkdir(path)
+        except OSError:
+            print ("Creation of the directory %s failed" % path)
+        else:
+            print ("Successfully created the directory %s " % path)
+
         date = str(self.now)[:10]
         file = open('/home/pi/images/'+ date +'/' + str(time.time())[:-8] + '.jpg', 'wb')
         self.camera.capture(file)
