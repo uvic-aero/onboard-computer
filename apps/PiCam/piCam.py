@@ -1,6 +1,5 @@
 from picamera import PiCamera
 import time
-import RPi.GPIO as GPIO
 
 class PiCam:
     def __init__(self):
