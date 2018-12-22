@@ -1,12 +1,15 @@
 from picamera import PiCamera
 import time
+import datetime
 
 class PiCam:
     def __init__(self):
         self.camera = PiCamera()
+        self.now = datetime.datetime.now()
    
     def take_picture(self):
-        file = open('/home/pi/images/' + str(time.time())[:-8] + '.jpg', 'wb')
+        date = str(self.now)[:10]
+        file = open('/home/pi/images/'+ date +'/' + str(time.time())[:-8] + '.jpg', 'wb')
         self.camera.capture(file)
         file.close()
 #   
