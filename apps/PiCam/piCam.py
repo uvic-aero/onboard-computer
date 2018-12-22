@@ -7,7 +7,6 @@ class PiCam:
         self.camera = PiCamera()
    
     def take_picture(self):
-        pass
         file = open('/home/pi/images/' + str(time.time())[:-8] + '.jpg', 'wb')
         self.camera.capture(file)
         file.close()
