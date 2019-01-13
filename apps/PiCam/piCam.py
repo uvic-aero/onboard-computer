@@ -1,14 +1,16 @@
-from picamera import PiCamera
+#from picamera import PiCamera
 import time
 import datetime
 import os
 
 class PiCam:
     def __init__(self):
-        self.camera = PiCamera()
+        #self.camera = PiCamera()
         self.now = datetime.datetime.now()
+        self.status = 'unset status'
    
     def take_picture(self):
+        pass
         date = str(self.now)[:10]
         path = '/home/pi/images/'+ date 
         if not os.path.exists(path):
@@ -38,6 +40,7 @@ class PiCam:
     def stop_preview(self):
         pass
         self.camera.stop_preview()
-#
+
+# Export singleton
 piCam = PiCam()
 
