@@ -5,6 +5,9 @@ import base64
 import requests
 
 class ImageService:
+    ImageQueue = []
+    groundstation_url = 'http://localhost:24002'
+
     def __init__(self):
         self.img_path = '~/obc/images/'
         self.status = 'down'
@@ -17,6 +20,12 @@ class ImageService:
         #and processes that may be used by the ImageService class
         self.status = 'maybe running'
         print('starting imageService')
+
+        while True:
+            if ImageQueue:
+                img_to_send = self.peekImageQueue()
+                if self.send_img(img_to_send):
+                    self.popImageQueue()
         pass
 
     def stop(self):
@@ -37,14 +46,13 @@ class ImageService:
     def send_img(self, img):
         try:
             timestamp = time.time() * 1000
-            with open("stupid_sexy_avery.jpg", "rb") as image_file:
+            with open(img, "rb") as image_file:
                 encoded_image = base64.b64encode(image_file.read())
 
             payload = {
                 'timestamp': timestamp,
                 'image': encoded_image.decode('utf-8', "ignore")
             }
-            groundstation_url = 'http://localhost:24002'
             requests.post(groundstation_url + '/images', json=payload)
 
         except Exception as e:
@@ -59,6 +67,21 @@ class ImageService:
         # 2. add gps data and encoded image to dict 
         # 3. requests.post(groundstation_url + '/images', json=payload)
         # pass
+    
+    # add an image to the Image queue
+    def appendImageQueue(self, img):
+        self.ImageQueue.append(img)
+
+    # return an image from the top of the queue
+    def popImageQueue(self, img):
+        return self.ImageQueue.pop()
+    
+    def peekImageQueue(self, img):
+        try 
+            return self.ImageQueue[-1]
+        except Exception as e:
+            print(str(e))
+
 
 imageService = ImageService()
 
