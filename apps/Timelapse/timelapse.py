@@ -5,6 +5,8 @@ import _thread
 from apps.PiCam.piCam import piCam
 
 class Timelapse:
+    interval = 3 #set default interval length.
+
     def __init__(self):
         self.status = 'Down'
         self.loop_flag = True
@@ -26,18 +28,24 @@ class Timelapse:
     def start_timelapse(self):
         while self.loop_flag:
             
-            time.sleep(3) # Sleep for 3 seconds
-
+            time.sleep(self.interval) # Sleep for 3 seconds
             # This loop is used to trigger a photo every X seconds, using piCam.take_picture().
             # My recomendation is to take a photo then use the 
             # time.sleep(seconds) function to pause the loop for a desired amount of time.
             pass
     
-    def set_interval(self, interval):
+    def set_interval(self, newInterval):
         # This function is used to update the interval between each photo being taken.
         # Hint, update this class to store a variable called interval, 
         # then refer to that variable while inside the timelapse loop while sleeping.
+        try:
+            self.interval = newInterval
+        except:
+            print("invalid interval entered\n")
+
         pass
 
 timelapse = Timelapse()
+
+
 

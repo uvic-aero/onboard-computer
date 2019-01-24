@@ -79,12 +79,12 @@ class SetInterval(web.RequestHandler):
     @web.asynchronous
     def get(self):  
         try:
-            val = self.get_argument('val')
-            timelapse.interval = int(val)
+            interval = self.get_argument('interval')
+            timelapse.set_interval(float(interval))
             self.write({
                 'service':'timelapse',
                 'action':'Changing Interval',
-                'value': timelapse.interval})
+                'interval': timelapse.interval})
             self.finish()
         except:
             print('Error Writing Request Response')
