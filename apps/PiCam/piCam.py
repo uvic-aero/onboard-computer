@@ -1,16 +1,20 @@
-from picamera import PiCamera
+# from picamera import PiCamera
 import time
 import datetime
 import os
 
 class PiCam:
     def __init__(self):
-        self.camera = PiCamera()
+        #self.camera = PiCamera()
         self.now = datetime.datetime.now()
    
     def take_picture(self):
         date = str(self.now)[:10]
         path = '/home/pi/images/'+ date 
+        
+        #add thing to queue 
+        # send the picture to imageService at some point
+        '''
         if not os.path.exists(path):
             try:
                 os.mkdir(path)
@@ -20,8 +24,9 @@ class PiCam:
                 print ("Successfully created the directory %s " % path)
 
         file = open('/home/pi/images/'+ date +'/' + str(time.time())[:-8] + '.jpg', 'wb')
-        self.camera.capture(file)
+        # self.camera.capture(file)
         file.close()
+        '''
 #   
     def start_video(self):
         pass
@@ -34,10 +39,10 @@ class PiCam:
 #   
     def start_preview(self):
         pass
-        self.camera.start_preview()
+        # self.camera.start_preview()
     def stop_preview(self):
         pass
-        self.camera.stop_preview()
+        # self.camera.stop_preview()
 #
 piCam = PiCam()
 
