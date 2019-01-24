@@ -14,6 +14,10 @@ class PiCam:
         pass
         date = str(self.now)[:10]
         path = '/home/pi/images/'+ date 
+        
+        #add thing to queue 
+        # send the picture to imageService at some point
+        '''
         if not os.path.exists(path):
             try:
                 os.mkdir(path)
@@ -23,8 +27,9 @@ class PiCam:
                 print ("Successfully created the directory %s " % path)
 
         file = open('/home/pi/images/'+ date +'/' + str(time.time())[:-8] + '.jpg', 'wb')
-        self.camera.capture(file)
+        # self.camera.capture(file)
         file.close()
+        '''
 #   
     def start_video(self):
         print('working')
@@ -40,8 +45,7 @@ class PiCam:
     def start_preview(self):
         print('working')
         pass
-        self.camera.start_preview()
-    
+        
     def stop_preview(self):
         print('working')
         pass
