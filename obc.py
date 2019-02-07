@@ -35,8 +35,6 @@ class OnboardComputer:
         timelapse.start()
         videoDisplay.start()
 
-        imageService.send_img()
-
         #start http server
         self.application.listen(port) 
         tornado.ioloop.IOLoop.instance().start()

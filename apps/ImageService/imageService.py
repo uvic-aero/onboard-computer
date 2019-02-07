@@ -3,9 +3,17 @@ from tornado import web
 import time
 import base64
 import requests
+from threading import Thread
+from time import sleep
 
 class ImageService:
-    ImageQueue = []
+    ImageQueue = [
+        'photo1.jpg',
+        'photo2.jpg',
+        'photo3.jpg',
+        'balls.zip'
+
+    ]
     groundstation_url = 'http://localhost:24002'
 
     def __init__(self):
@@ -20,16 +28,33 @@ class ImageService:
         #and processes that may be used by the ImageService class
         # self.status = 'maybe running'
         print('starting imageService')
-        image_queue = []
-        while True:
-            if len(image_queue) > 0:
-                image_to_send = image_queue[0]
-                # could potentially always try to send same image
-                # if there is an error with that image
-                if send_img(image_to_send):
-                    image_queue.pop(0)
-        pass
+        image_queue_thread = Thread(target = self.poll_image_queue, args=(0.1,))
+        image_gen_thread = Thread(target = self.add_new_image_to_queue, args=())
+        image_queue_thread.start()
+        image_gen_thread.start()
 
+    # poll_time is the amount of time in seconds that the thread sleeps in between
+    # checking the queue if there is an image ready to be sent to groundstation
+    def poll_image_queue(self, poll_time):
+        while True: 
+            if self.ImageQueue:
+                img_to_send = self.peekImageQueue()
+                encoded_img_to_send = self.get_encoded_img(img_to_send)
+                if encoded_img_to_send is not None:
+                    if self.send_img(encoded_img_to_send):
+                        self.popImageQueue() 
+                else:
+                    self.popImageQueue()        
+                    
+            sleep(poll_time)            
+
+    def add_new_image_to_queue(self):
+        x = 0
+        while True:
+            self.appendImageQueue('photo' + str(x%3 + 1) + '.jpg')        
+            x += 1
+            sleep(2)
+    
     def stop(self):
         self.status = 'down'
         print('stoping imageService')
@@ -44,22 +69,33 @@ class ImageService:
         # this function probes telem2 port on pixhawk for gps data
         pass
 
-    # image is the current string
-    def send_img(self, img):
-        try:
-            timestamp = time.time() * 1000
-            with open(img, "rb") as image_file:
-                encoded_image = base64.b64encode(image_file.read())
+    # returns Encoded image given filename
+    # returns None if image couldn't be opened
+    def get_encoded_img(self, img):
+        try: 
+            with open(img, 'rb') as image_file:
+                return base64.b64encode(image_file.read())
+        except Exception as e:
+            print(str(e))
+            print("Failed to get encoded image. Removing '" + str(img) + "' from queue.")  
+            return None   
 
+    # accepts encoded image 
+    # returns True if image successfully sent to groundstation
+    def send_img(self, encoded_img):
+        timestamp = time.time() * 1000
+        try:
             payload = {
                 'timestamp': timestamp,
-                'image': encoded_image.decode('utf-8', "ignore")
+                'image': encoded_img.decode('utf-8', "ignore")
             }
-            requests.post(groundstation_url + '/images', json=payload)
-
+            requests.post(self.groundstation_url + '/images', json=payload)
+            print('successfully sent image to the groundstation.')
+            return True
         except Exception as e:
             print(str(e))
             print("Failed to send image to groundstation")
+            return False
         # File pointer
 
         # this function must send images to
@@ -75,12 +111,12 @@ class ImageService:
         self.ImageQueue.append(img)
 
     # return an image from the top of the queue
-    def popImageQueue(self, img):
-        return self.ImageQueue.pop()
+    def popImageQueue(self):
+        return self.ImageQueue.pop(0)
     
-    def peekImageQueue(self, img):
-        try 
-            return self.ImageQueue[-1]
+    def peekImageQueue(self):
+        try: 
+            return self.ImageQueue[0]
         except Exception as e:
             print(str(e))
 
