@@ -15,8 +15,16 @@ class ImageService:
     def start(self):
         #this function is responsible for inidtializing connections 
         #and processes that may be used by the ImageService class
-        self.status = 'maybe running'
+        # self.status = 'maybe running'
         print('starting imageService')
+        image_queue = []
+        while True:
+            if len(image_queue) > 0:
+                image_to_send = image_queue[0]
+                # could potentially always try to send same image
+                # if there is an error with that image
+                if send_img(image_to_send):
+                    image_queue.pop(0)
         pass
 
     def stop(self):
