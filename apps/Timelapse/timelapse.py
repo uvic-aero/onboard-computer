@@ -10,6 +10,7 @@ class Timelapse:
     def __init__(self):
         self.status = 'Down'
         self.loop_flag = True
+        self.camera = piCam
         
     def start(self):
         self.loop_flag = True
@@ -29,6 +30,7 @@ class Timelapse:
         while self.loop_flag:
             
             time.sleep(self.interval) # Sleep for 3 seconds
+            self.camera.take_picture()
             # This loop is used to trigger a photo every X seconds, using piCam.take_picture().
             # My recomendation is to take a photo then use the 
             # time.sleep(seconds) function to pause the loop for a desired amount of time.
