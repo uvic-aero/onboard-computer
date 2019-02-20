@@ -2,5 +2,5 @@ __pycache__
 apps/API/__pycache__
 apps/ImageService/__pycache__
 apps/SonyCamera/__pycache__
-
+images
 
