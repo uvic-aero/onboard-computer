@@ -12,7 +12,6 @@ class PiCam:
    
     def take_picture(self):
         print('working')
-        pass
         date = str(self.now)[:10]
         path = '/home/pi/images/'+ date 
         
@@ -31,6 +30,7 @@ class PiCam:
         self.camera.capture(file)
         file.close()
         imageService.appendImageQueue(fpath)
+        pass
   
     def start_video(self):
         print('working')
