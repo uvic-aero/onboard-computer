@@ -1,11 +1,12 @@
-#from picamera import PiCamera
+from picamera import PiCamera
 import time
 import datetime
 import os
+from apps.ImageService.imageService import ImageService
 
 class PiCam:
     def __init__(self):
-        #self.camera = PiCamera()
+        self.camera = PiCamera()
         self.now = datetime.datetime.now()
         self.status = 'unset status'
    
@@ -17,7 +18,6 @@ class PiCam:
         
         #add thing to queue 
         # send the picture to imageService at some point
-        '''
         if not os.path.exists(path):
             try:
                 os.mkdir(path)
@@ -26,11 +26,12 @@ class PiCam:
             else:
                 print ("Successfully created the directory %s " % path)
 
-        file = open('/home/pi/images/'+ date +'/' + str(time.time())[:-8] + '.jpg', 'wb')
-        # self.camera.capture(file)
+        fpath = '/home/pi/images/'+ date +'/' + str(time.time())[:-8] + '.jpg'
+        file = open(fpath, 'wb')
+        self.camera.capture(file)
         file.close()
-        '''
-#   
+        ImageService.appendImageQueue(fpath)
+  
     def start_video(self):
         print('working')
         pass

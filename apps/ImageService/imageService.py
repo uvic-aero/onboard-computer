@@ -8,10 +8,6 @@ from time import sleep
 
 class ImageService:
     ImageQueue = [
-        'photo1.jpg',
-        'photo2.jpg',
-        'photo3.jpg',
-        'balls.zip'
 
     ]
     # groundstation_url = 'http://localhost:24002'
@@ -30,9 +26,9 @@ class ImageService:
         # self.status = 'maybe running'
         print('starting imageService')
         image_queue_thread = Thread(target = self.poll_image_queue, args=(0.1,))
-        image_gen_thread = Thread(target = self.add_new_image_to_queue, args=())
+        # image_gen_thread = Thread(target = self.add_new_image_to_queue, args=())
         image_queue_thread.start()
-        image_gen_thread.start()
+        # image_gen_thread.start()
 
     # poll_time is the amount of time in seconds that the thread sleeps in between
     # checking the queue if there is an image ready to be sent to groundstation
