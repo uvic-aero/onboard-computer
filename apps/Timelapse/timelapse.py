@@ -13,7 +13,6 @@ class Timelapse:
         self.status = 'Down'
         self.loop_flag = True
         self.camera = piCam
-            
         
     def start(self):
         # Check if Simulation
