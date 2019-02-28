@@ -1,10 +1,12 @@
 # Dependencies
 import asyncio
-import requests
+import argparse
 import functools
+import os
+import signal
+import requests
 import traceback
 import time
-import signal
 import tornado
 from tornado import ioloop
 
@@ -23,7 +25,8 @@ class OnboardComputer:
         self.routes = routes
         self.application = tornado.web.Application(self.routes)
         self.server = tornado.httpserver.HTTPServer(self.application)
-    
+        self.get_arguments() 
+
     def start(self, port):
         print("Starting Onboard Computer")
         
@@ -37,8 +40,6 @@ class OnboardComputer:
         tornado.ioloop.IOLoop.instance().start()
         
 
-
-
     def stop(self):
         print("Stopping Onboard Computer")
 
@@ -47,6 +48,13 @@ class OnboardComputer:
         self.imageService.stop()
         self.timelapse.stop()
         self.videoDisplay.stop()
+
+    def get_arguments(self):
+        parser = argparse.ArgumentParser()
+        parser.add_argument("--simulate", "-s", nargs='?',
+                        const=True, default=False,
+                        help="Activate Simulation Mode")
+        args = parser.parse_args()
 
 if __name__ == '__main__':
 
