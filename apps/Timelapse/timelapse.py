@@ -1,8 +1,10 @@
 import asyncio
 from tornado import web
 import time
+import os
 import _thread
 from apps.PiCam.piCam import piCam
+from apps.PiCam.simulation.piCam import piCam as simulatedCamera
 
 class Timelapse:
     interval = 3 #set default interval length.
@@ -10,8 +12,15 @@ class Timelapse:
     def __init__(self):
         self.status = 'Down'
         self.loop_flag = True
+        self.camera = piCam
+            
         
     def start(self):
+        # Check if Simulation
+        if os.environ.get('SIMULATE'):
+            self.camera = simulatedCamera
+            print('Setting simulated camera')
+
         self.loop_flag = True
         print('starting timelapse')
         self.status = 'Running'
@@ -27,17 +36,10 @@ class Timelapse:
 
     def start_timelapse(self):
         while self.loop_flag:
-            
-            time.sleep(self.interval) # Sleep for 3 seconds
-            # This loop is used to trigger a photo every X seconds, using piCam.take_picture().
-            # My recomendation is to take a photo then use the 
-            # time.sleep(seconds) function to pause the loop for a desired amount of time.
-            pass
-    
+            self.camera.take_picture()
+            time.sleep(self.interval) 
+
     def set_interval(self, newInterval):
-        # This function is used to update the interval between each photo being taken.
-        # Hint, update this class to store a variable called interval, 
-        # then refer to that variable while inside the timelapse loop while sleeping.
         try:
             self.interval = newInterval
         except:
