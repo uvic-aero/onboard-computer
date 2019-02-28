@@ -51,10 +51,14 @@ class OnboardComputer:
 
     def get_arguments(self):
         parser = argparse.ArgumentParser()
-        parser.add_argument("--simulate", "-s", nargs='?',
+        parser.add_argument("--simulate", "-s", nargs='?', dest='simulate',
                         const=True, default=False,
                         help="Activate Simulation Mode")
         args = parser.parse_args()
+        
+        if args.simulate:
+            print('setting env var')
+            os.environ["SIMULATE"] = 'SIMULATING'
 
 if __name__ == '__main__':
 
