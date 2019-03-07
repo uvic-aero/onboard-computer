@@ -29,7 +29,7 @@ class PiCam:
         file = open(fpath, 'wb')
         self.camera.capture(file)
         file.close()
-        imageService.appendImageQueue(fpath)
+        imageService.appendimage_queue(fpath)
         pass
   
     def start_video(self):
