@@ -3,19 +3,20 @@ from tornado import web
 import time
 import base64
 import requests
-from threading import Thread
+from threading import Thread, Lock
 from time import sleep
 
 class ImageService:
-    ImageQueue = [
 
-    ]
     # groundstation_url = 'http://localhost:24002'
     groundstation_url = 'http://192.168.0.18:24002'
 
     def __init__(self):
         self.img_path = '~/obc/images/'
         self.status = 'down'
+        self.image_queue = []
+        self.mutex = Lock()
+
 
     # The start and stop functions do not need to be used if the programmer 
     # thinks that this class should not take the form of a process
@@ -26,15 +27,13 @@ class ImageService:
         # self.status = 'maybe running'
         print('starting imageService')
         image_queue_thread = Thread(target = self.poll_image_queue, args=(0.1,))
-        image_gen_thread = Thread(target = self.add_new_image_to_queue, args=(0.1,))
         image_queue_thread.start()
-        image_gen_thread.start()
 
     # poll_time is the amount of time in seconds that the thread sleeps in between
     # checking the queue if there is an image ready to be sent to groundstation
     def poll_image_queue(self, poll_time):
         while True: 
-            if self.ImageQueue:
+            if self.peekImageQueue() is not None:
                 img_to_send = self.peekImageQueue()
                 encoded_img_to_send = self.get_encoded_img(img_to_send)
                 if encoded_img_to_send is not None:
@@ -42,9 +41,9 @@ class ImageService:
                         self.popImageQueue() 
                 else:
                     self.popImageQueue()        
-                    
             sleep(poll_time)            
 
+    # test function to put images in the queue
     def add_new_image_to_queue(self, add_time):
         x = 0
         while True:
@@ -103,20 +102,30 @@ class ImageService:
         # 3. requests.post(groundstation_url + '/images', json=payload)
         # pass
     
+    # protects queue mutex
     # add an image to the Image queue
     def appendImageQueue(self, img):
-        self.ImageQueue.append(img)
+        self.mutex.acquire()
+        self.image_queue.append(img)
+        self.mutex.release()
 
+    # protects queue mutex
     # return an image from the top of the queue
     def popImageQueue(self):
-        return self.ImageQueue.pop(0)
+        self.mutex.acquire()
+        return self.image_queue.pop(0)
+        self.mutex.release()
     
+    # protects queue mutex
+    # returns None if queue is empty
     def peekImageQueue(self):
-        try: 
-            return self.ImageQueue[0]
-        except Exception as e:
-            print(str(e))
+        self.mutex.acquire()
+        head = None
+        if self.image_queue:
+            head = self.image_queue[0]
 
+        self.mutex.release()
+        return head
 
 imageService = ImageService()
 
