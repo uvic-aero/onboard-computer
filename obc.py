@@ -44,7 +44,6 @@ class OnboardComputer:
 
         #stop apps
         self.imageService.stop()
-        self.imageService.stop()
         self.timelapse.stop()
         self.videoDisplay.stop()
 

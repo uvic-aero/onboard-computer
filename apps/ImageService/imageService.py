@@ -26,9 +26,9 @@ class ImageService:
         # self.status = 'maybe running'
         print('starting imageService')
         image_queue_thread = Thread(target = self.poll_image_queue, args=(0.1,))
-        # image_gen_thread = Thread(target = self.add_new_image_to_queue, args=())
+        image_gen_thread = Thread(target = self.add_new_image_to_queue, args=(0.1,))
         image_queue_thread.start()
-        # image_gen_thread.start()
+        image_gen_thread.start()
 
     # poll_time is the amount of time in seconds that the thread sleeps in between
     # checking the queue if there is an image ready to be sent to groundstation
@@ -45,12 +45,12 @@ class ImageService:
                     
             sleep(poll_time)            
 
-    def add_new_image_to_queue(self):
+    def add_new_image_to_queue(self, add_time):
         x = 0
         while True:
             self.appendImageQueue('photo' + str(x%3 + 1) + '.jpg')        
             x += 1
-            sleep(2)
+            sleep(add_time)
     
     def stop(self):
         self.status = 'down'
