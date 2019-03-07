@@ -33,14 +33,16 @@ class ImageService:
     # checking the queue if there is an image ready to be sent to groundstation
     def poll_image_queue(self, poll_time):
         while True: 
-            if self.peekImageQueue() is not None:
-                img_to_send = self.peekImageQueue()
+            self.mutex.acquire()
+            img_to_send = self.peekImageQueue()
+            if img_to_send is not None:
                 encoded_img_to_send = self.get_encoded_img(img_to_send)
                 if encoded_img_to_send is not None:
                     if self.send_img(encoded_img_to_send):
                         self.popImageQueue() 
                 else:
-                    self.popImageQueue()        
+                    self.popImageQueue()    
+            self.mutex.release()    
             sleep(poll_time)            
 
     # test function to put images in the queue
@@ -112,19 +114,15 @@ class ImageService:
     # protects queue mutex
     # return an image from the top of the queue
     def popImageQueue(self):
-        self.mutex.acquire()
         return self.image_queue.pop(0)
-        self.mutex.release()
     
     # protects queue mutex
     # returns None if queue is empty
     def peekImageQueue(self):
-        self.mutex.acquire()
         head = None
         if self.image_queue:
             head = self.image_queue[0]
-
-        self.mutex.release()
+            
         return head
 
 imageService = ImageService()
