@@ -12,6 +12,7 @@ import tornado
 from tornado import ioloop
 
 # import apps
+from apps.Config.config import config
 from apps.Routes.routes import routes
 from apps.ImageService.imageService import imageService
 from apps.VideoDisplay.videoDisplay import videoDisplay
@@ -60,7 +61,6 @@ class OnboardComputer:
         args = parser.parse_args()
         
         if args.simulate:
-            print('setting env var')
             os.environ["SIMULATE"] = 'SIMULATING'
 
 if __name__ == '__main__':
