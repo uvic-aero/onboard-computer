@@ -1,6 +1,7 @@
 # Dependencies
 import asyncio
 import argparse
+import configparser
 import functools
 import os
 import signal
@@ -16,18 +17,15 @@ from apps.ImageService.imageService import imageService
 from apps.VideoDisplay.videoDisplay import videoDisplay
 from apps.Timelapse.timelapse import timelapse
 
-groundstation_url = "127.0.0.1:4000"
-onboardserver_url = "127.0.0.1:8000"
-
-
 class OnboardComputer:
     def __init__(self):
         self.routes = routes
         self.application = tornado.web.Application(self.routes)
         self.server = tornado.httpserver.HTTPServer(self.application)
         self.get_arguments() 
+        self.config = self.get_configuration()
 
-    def start(self, port):
+    def start(self):
         print("Starting Onboard Computer")
         
         #start apps
@@ -36,7 +34,7 @@ class OnboardComputer:
         videoDisplay.start()
 
         #start http server
-        self.application.listen(port) 
+        self.application.listen(self.config['obc']['port'])
         tornado.ioloop.IOLoop.instance().start()
         
 
@@ -48,6 +46,11 @@ class OnboardComputer:
         self.imageService.stop()
         self.timelapse.stop()
         self.videoDisplay.stop()
+    
+    def get_configuration(self):
+        config = configparser.ConfigParser()
+        config.read('config.ini')
+        return config
 
     def get_arguments(self):
         parser = argparse.ArgumentParser()
@@ -61,8 +64,7 @@ class OnboardComputer:
             os.environ["SIMULATE"] = 'SIMULATING'
 
 if __name__ == '__main__':
-
     obc = OnboardComputer()
-    obc.start(1600)
+    obc.start()
 
 
