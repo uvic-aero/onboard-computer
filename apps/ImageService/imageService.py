@@ -1,6 +1,8 @@
 import asyncio
 from tornado import web
 
+from apps.Config.config import config
+
 class ImageService:
     def __init__(self):
         self.img_path = '~/obc/images/'

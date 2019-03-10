@@ -1,7 +1,6 @@
 # Dependencies
 import asyncio
 import argparse
-import configparser
 import functools
 import os
 import signal
@@ -24,7 +23,6 @@ class OnboardComputer:
         self.application = tornado.web.Application(self.routes)
         self.server = tornado.httpserver.HTTPServer(self.application)
         self.get_arguments() 
-        self.config = self.get_configuration()
 
     def start(self):
         print("Starting Onboard Computer")
@@ -35,7 +33,7 @@ class OnboardComputer:
         videoDisplay.start()
 
         #start http server
-        self.application.listen(self.config['obc']['port'])
+        self.application.listen(config.values['obc']['port'])
         tornado.ioloop.IOLoop.instance().start()
         
 
@@ -48,11 +46,6 @@ class OnboardComputer:
         self.timelapse.stop()
         self.videoDisplay.stop()
     
-    def get_configuration(self):
-        config = configparser.ConfigParser()
-        config.read('config.ini')
-        return config
-
     def get_arguments(self):
         parser = argparse.ArgumentParser()
         parser.add_argument("--simulate", "-s", nargs='?', dest='simulate',
