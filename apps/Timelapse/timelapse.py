@@ -19,7 +19,6 @@ class Timelapse:
         # Check if Simulation
         if os.environ.get('SIMULATE'):
             self.camera = simulatedCamera
-            print('Setting simulated camera')
 
         self.loop_flag = True
         print('starting timelapse')
