@@ -8,8 +8,8 @@ from time import sleep
 
 class ImageService:
 
-    # groundstation_url = 'http://localhost:24002'
-    groundstation_url = 'http://192.168.0.18:24002'
+    groundstation_url = 'http://localhost:24002'
+    # groundstation_url = 'http://192.168.0.18:24002'
 
     def __init__(self):
         self.img_path = '~/obc/images/'
