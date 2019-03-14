@@ -44,12 +44,7 @@ class Timelapse:
     def start_timelapse(self):
         self.photo_count = -1
         while self.loop_flag:
-<<<<<<< HEAD
             self.camera.take_picture()
-=======
-
-            # Wait for a given interval between photo captures
->>>>>>> c1b517b56ac42b064334ea9b375c9e39e6d203c3
             time.sleep(float(self.interval)) # Sleep for 3 seconds
             
             # If Duration set, decrease photo count                 
