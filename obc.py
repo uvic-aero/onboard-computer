@@ -11,14 +11,11 @@ import tornado
 from tornado import ioloop
 
 # import apps
+from apps.Config.config import config
 from apps.Routes.routes import routes
 from apps.ImageService.imageService import imageService
 from apps.VideoDisplay.videoDisplay import videoDisplay
 from apps.Timelapse.timelapse import timelapse
-
-groundstation_url = "127.0.0.1:4000"
-onboardserver_url = "127.0.0.1:8000"
-
 
 class OnboardComputer:
     def __init__(self):
@@ -27,7 +24,7 @@ class OnboardComputer:
         self.server = tornado.httpserver.HTTPServer(self.application)
         self.get_arguments() 
 
-    def start(self, port):
+    def start(self):
         print("Starting Onboard Computer")
         
         #start apps
@@ -36,7 +33,7 @@ class OnboardComputer:
         videoDisplay.start()
 
         #start http server
-        self.application.listen(port) 
+        self.application.listen(config.values['obc']['port'])
         tornado.ioloop.IOLoop.instance().start()
         
     def stop(self):
@@ -46,7 +43,7 @@ class OnboardComputer:
         self.imageService.stop()
         self.timelapse.stop()
         self.videoDisplay.stop()
-
+    
     def get_arguments(self):
         parser = argparse.ArgumentParser()
         parser.add_argument("--simulate", "-s", nargs='?', dest='simulate',
@@ -55,12 +52,10 @@ class OnboardComputer:
         args = parser.parse_args()
         
         if args.simulate:
-            print('setting env var')
             os.environ["SIMULATE"] = 'SIMULATING'
 
 if __name__ == '__main__':
-
     obc = OnboardComputer()
-    obc.start(1600)
+    obc.start()
 
 

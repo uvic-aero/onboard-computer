@@ -6,6 +6,8 @@ import requests
 from threading import Thread, Lock
 from time import sleep
 
+from apps.Config.config import config
+
 class ImageService:
 
     groundstation_url = 'http://localhost:24002'
