@@ -166,7 +166,6 @@ class Camera:
                 break
 
     async def take_picture(self):
-        print('\n\nFUCK\n\n')
         await self.wait_camera_until_IDLE()
         res = await self.send_command("actTakePicture")
         picture_url = res["result"][0][0]
