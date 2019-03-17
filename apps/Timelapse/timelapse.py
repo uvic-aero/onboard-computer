@@ -5,6 +5,7 @@ import os
 import _thread
 from apps.PiCam.piCam import piCam
 from apps.PiCam.simulation.piCam import piCam as simulatedCamera
+from apps.Config.config import config
 
 class Timelapse:
 
@@ -15,7 +16,7 @@ class Timelapse:
         self.stop_burst = False
 
         #set default interval length.
-        self.interval = 3 
+        self.interval = config.values['timelapse']['interval'] # get default interval from config.ini
         self.prev_interval = 3
         self.duration = 0
         self.photo_count = -1
