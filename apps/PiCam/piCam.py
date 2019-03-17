@@ -1,4 +1,4 @@
-# from picamera import PiCamera
+from picamera import PiCamera
 import time
 import datetime
 import os
@@ -6,7 +6,7 @@ from apps.ImageService.imageService import imageService
 
 class PiCam:
     def __init__(self):
-        # self.camera = PiCamera()
+        self.camera = PiCamera()
         self.now = datetime.datetime.now()
         self.status = 'unset status'
    
@@ -29,7 +29,7 @@ class PiCam:
         file = open(fpath, 'wb')
         self.camera.capture(file)
         file.close()
-        imageService.appendimage_queue(fpath)
+        imageService.appendImageQueue(fpath)
         pass
   
     def start_video(self):
