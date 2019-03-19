@@ -37,8 +37,8 @@ class ImageService:
             self.mutex.acquire()
             img_to_send = self.peekImageQueue()
             if img_to_send is not None:
-                img_to_send['img'] = self.get_encoded_img(img_to_send['img'])
-                if img_to_send['img'] is not None:
+                img_to_send['image'] = self.get_encoded_img(img_to_send['image'])
+                if img_to_send['image'] is not None:
                     if self.send_img(img_to_send):
                         self.popImageQueue() 
                 else:
@@ -86,11 +86,8 @@ class ImageService:
         try:
             payload = {
                 'timestamp': timestamp,
-                'image': img['img'].decode('utf-8', "ignore")
-                'telemetry': {
-                    'lat': img['lat'],
-                    'lng': img['lng']
-                }
+                'image': img['image'].decode('utf-8', "ignore"),
+                'telemetry': img['telemetry']
             }
             requests.post(self.groundstation_url + '/images', json=payload)
             print('successfully sent image to the groundstation.')
