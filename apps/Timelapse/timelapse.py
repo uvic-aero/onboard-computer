@@ -48,7 +48,6 @@ class Timelapse:
         while self.loop_flag:
             self.camera.take_picture()
             time.sleep(float(self.interval)) # Sleep for 3 seconds
-            print(telemetry.get_coord())            
             # If Duration set, decrease photo count                 
             if self.photo_count > 0:
                 self.photo_count = self.photo_count - 1 
