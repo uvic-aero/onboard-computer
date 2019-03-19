@@ -3,6 +3,7 @@ from tornado import web
 import time
 import os
 import _thread
+from apps.Config.config import config
 from apps.PiCam.piCam import piCam
 from apps.PiCam.simulation.piCam import piCam as simulatedCamera
 
@@ -15,7 +16,7 @@ class Timelapse:
         self.stop_burst = False
 
         #set default interval length.
-        self.interval = 3 
+        self.interval = config.values['timelapse']['interval'] 
         self.prev_interval = 3
         self.duration = 0
         self.photo_count = -1
