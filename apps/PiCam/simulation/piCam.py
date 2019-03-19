@@ -10,12 +10,16 @@ class PiCam:
         pathlib.Path('home/pi/images/').mkdir(parents=True, exist_ok=True) 
    
     def take_picture(self):
+        lat = 49.00
+        lng = 49.00
         imarray = numpy.random.rand(100,100,3) * 255
         im = Image.fromarray(imarray.astype('uint8')).convert('RGBA')
         fpath = 'home/pi/images/' +  str(self.counter) + '.png'
         im.save(fpath)
         self.counter += 1
-        imageService.appendImageQueue(fpath)
+
+        img = {'id': self.counter, 'img': fpath, 'lat': lat, 'lng': lng}
+        imageService.appendImageQueue(img)
         print('Camera Simulating Image Capture')
 
     def take_corrupt_pic(self):

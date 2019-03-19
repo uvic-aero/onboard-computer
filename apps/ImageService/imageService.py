@@ -10,15 +10,14 @@ from apps.Config.config import config
 
 class ImageService:
 
-    groundstation_url = 'http://localhost:24002'
-    # groundstation_url = 'http://192.168.0.18:24002'
+    groundstation_url = config.values['groundstation']['ip'] + ':' + config.values['groundstation']['port']
 
     def __init__(self):
         self.img_path = '~/obc/images/'
         self.status = 'down'
         self.image_queue = []
         self.mutex = Lock()
-
+        self.poll_time = config.values['imageService']['poll_time']
 
     # The start and stop functions do not need to be used if the programmer 
     # thinks that this class should not take the form of a process
@@ -28,7 +27,7 @@ class ImageService:
         #and processes that may be used by the ImageService class
         # self.status = 'maybe running'
         print('starting imageService')
-        image_queue_thread = Thread(target = self.poll_image_queue, args=(0.1,))
+        image_queue_thread = Thread(target = self.poll_image_queue, args=(self.poll_time,))
         image_queue_thread.start()
 
     # poll_time is the amount of time in seconds that the thread sleeps in between
@@ -38,9 +37,9 @@ class ImageService:
             self.mutex.acquire()
             img_to_send = self.peekImageQueue()
             if img_to_send is not None:
-                encoded_img_to_send = self.get_encoded_img(img_to_send)
-                if encoded_img_to_send is not None:
-                    if self.send_img(encoded_img_to_send):
+                img_to_send['img'] = self.get_encoded_img(img_to_send['img'])
+                if img_to_send['img'] is not None:
+                    if self.send_img(img_to_send):
                         self.popImageQueue() 
                 else:
                     self.popImageQueue()    
@@ -80,14 +79,18 @@ class ImageService:
             print("Failed to get encoded image. Removing '" + str(img) + "' from queue.")  
             return None   
 
-    # accepts encoded image 
+    # accepts image dictionary object
     # returns True if image successfully sent to groundstation
-    def send_img(self, encoded_img):
+    def send_img(self, img):
         timestamp = time.time() * 1000
         try:
             payload = {
                 'timestamp': timestamp,
-                'image': encoded_img.decode('utf-8', "ignore")
+                'image': img['img'].decode('utf-8', "ignore")
+                'telemetry': {
+                    'lat': img['lat'],
+                    'lng': img['lng']
+                }
             }
             requests.post(self.groundstation_url + '/images', json=payload)
             print('successfully sent image to the groundstation.')
