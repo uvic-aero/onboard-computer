@@ -6,6 +6,7 @@ import _thread
 from apps.Config.config import config
 from apps.PiCam.piCam import piCam
 from apps.PiCam.simulation.piCam import piCam as simulatedCamera
+from apps.Telemetry.telemetry import telemetry
 
 class Timelapse:
 
@@ -47,7 +48,7 @@ class Timelapse:
         while self.loop_flag:
             self.camera.take_picture()
             time.sleep(float(self.interval)) # Sleep for 3 seconds
-            
+            print(telemetry.get_coord())            
             # If Duration set, decrease photo count                 
             if self.photo_count > 0:
                 self.photo_count = self.photo_count - 1 
