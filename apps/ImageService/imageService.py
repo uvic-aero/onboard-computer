@@ -17,6 +17,7 @@ class ImageService:
         self.status = 'down'
         self.image_queue = []
         self.mutex = Lock()
+        self.poll_time = config.values['imageService']['poll_time']
 
 
     # The start and stop functions do not need to be used if the programmer 
@@ -27,7 +28,7 @@ class ImageService:
         #and processes that may be used by the ImageService class
         # self.status = 'maybe running'
         print('starting imageService')
-        image_queue_thread = Thread(target = self.poll_image_queue, args=(0.1,))
+        image_queue_thread = Thread(target = self.poll_image_queue, args=(self.poll_time,))
         image_queue_thread.start()
 
     # poll_time is the amount of time in seconds that the thread sleeps in between
