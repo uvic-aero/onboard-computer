@@ -2,11 +2,18 @@
 import time
 import datetime
 import os
+import importlib
+
+if importlib.find_loader('picamera'):
+    from picamera import PiCamera
+
 from apps.ImageService.imageService import imageService
 
 class PiCam:
     def __init__(self):
-        # self.camera = PiCamera()
+        self.camera = None
+        if os.environ.get('SIMULATE') is not None:
+            self.camera = PiCamera() 
         self.now = datetime.datetime.now()
         self.status = 'unset status'
    
