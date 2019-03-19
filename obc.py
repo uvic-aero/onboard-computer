@@ -36,12 +36,10 @@ class OnboardComputer:
         self.application.listen(config.values['obc']['port'])
         tornado.ioloop.IOLoop.instance().start()
         
-
     def stop(self):
         print("Stopping Onboard Computer")
 
         #stop apps
-        self.imageService.stop()
         self.imageService.stop()
         self.timelapse.stop()
         self.videoDisplay.stop()

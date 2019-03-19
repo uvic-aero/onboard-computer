@@ -4,3 +4,4 @@ apps/ImageService/__pycache__
 apps/SonyCamera/__pycache__
 images
 
+.vscode/settings.json
