@@ -14,6 +14,7 @@ class PiCam:
         self.camera = None
         if os.environ.get('SIMULATE') is not None:
             self.camera = PiCamera() 
+            self.camera.resolution = (1024, 768)
         self.now = datetime.datetime.now()
         self.status = 'unset status'
    
