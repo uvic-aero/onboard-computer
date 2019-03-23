@@ -2,33 +2,26 @@
 
 The purpose of the Onboard Computer (OBC) is to remotely control our camera (Sony ILCE 5100), utilize the camera API, and stream images/video from the camera to our ground station
 
-## Getting Started
+### Requirements
+* Python3.6 or greater
 
-The following instructions will help you get the project running
+### Getting Started
+1. Install python3.6 or greater
+1. Install python requirements `pip3 install -r requirements.txt`
 
-### Prerequisites
+### Configuration 
+1. Open the `config.ini` file located in the root directory of this repository
+1. Edit the groundstation ip address to http://<address of machine runnig gcs>
+1. Leave groundstation port as is unless explicitly modified on gcs
 
-This project is dependent on Python 3.6+ and requires installing a few dependencies
+### Running 
+Start obc by running (in the repository root)
+	`python3 obc.py`
 
-### Installing
+To run obc in simultaion mode, run
+	`python3 obc.py -s`
 
-First ensure that Python 3.6+ and Python-Pip are installed
-
-Next install the project dependencies
-
-```
-pip install -r requirements.txt
-```
-
-Then run the project while the camera is turned on
-
-```
-python obc.py
-```
-
-The project will begin searching for the camera and will attempt to connect to it and control it
-This requires having a Wi-Fi connection to the camera hotspot
-
+<!--
 ## Livestreaming video
 
 The jpeg livestream will be served on http://127.0.0.1:5000 but is meant to be dijested by ffmpeg/ffserver
@@ -70,3 +63,4 @@ Christopher Hampu, Lin Hsuan-Yu, TaeHun Kang
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+-->
