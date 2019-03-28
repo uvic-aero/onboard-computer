@@ -12,7 +12,7 @@ from apps.ImageService.imageService import imageService
 class PiCam:
     def __init__(self):
         self.camera = None
-        if os.environ.get('SIMULATE') is not None:
+        if os.environ.get('SIMULATE') is None:
             self.camera = PiCamera() 
             self.camera.resolution = (1024, 768)
         self.now = datetime.datetime.now()
