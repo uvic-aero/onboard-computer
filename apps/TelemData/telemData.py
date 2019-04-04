@@ -32,6 +32,7 @@ class TelemData:
     # return list of broken services.
     if(self.connection_status)
       print('Status: Active')
+      print('GPS connection state: %s' % vehicle.gps_0)
     else
       print('Status: Broken (see above for details)')
 
@@ -46,11 +47,13 @@ class TelemData:
     except dronekit.APIException:
         print 'The connection has timed out.'
         self.connection_status = 0
+        self.status = 'pixhawk connection broken'
 
     # Other error
     except:
         print 'An unexpected error occured'
         self.connection_status = 0
+        self.status = 'pixhawk connection broken'
 
   # Close vehicle connection
   def disconnect(self):
