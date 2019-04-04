@@ -2,4 +2,6 @@ requests>=2.11.1
 netifaces>=0.10.6
 tornado>=5.0.0
 picamera
-
+pymavlink==2.3.4
+dronekit==2.9.2
+future==0.17.1
