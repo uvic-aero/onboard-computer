@@ -60,16 +60,16 @@ class TelemData:
     self.vehicle.close()
     self.connection_status = 0
 
-  def getLat(self):
+  def getLat(self): # Get vehicle latitude
     return self.vehicle.location.global_relative_frame.lat
 
-  def getLon(self):
+  def getLon(self): # Get vehicle longitude
     return self.vehicle.location.global_relative_frame.lon
 
-  def getAlt(self):
+  def getAlt(self): # Get vehicle altitude
     return self.vehicle.location.global_relative_frame.alt
 
-  def getGPSLocation(self):
+  def getGPSLocation(self): # Get vehicle postion (Returns dict of lat,long, and alt)
     return {"lat":self.getLat, "lon":self.getLon, "alt":self.getAlt}
 
 telemData = TelemData()
