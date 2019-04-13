@@ -7,6 +7,7 @@ class TelemData:
     
     def __init__(self):
         self.status = 'down' #this status is used to check if a service is functioning normaly or not
+        self.vehicle = None
     
     def start(self):
         print('starting telemData')
@@ -19,7 +20,7 @@ class TelemData:
         self.connect(args)
 
     def stop(self):
-        print('stopping videoDisplay')
+        print('stopping Telemetry Data')
         self.status = 'down'
         # this function should kill the connection to the pixhawk and 
         # any other processes it has started.
@@ -67,15 +68,21 @@ class TelemData:
             time.sleep(1)
 
     def getLat(self): # Get vehicle latitude
-        return self.vehicle.location.global_relative_frame.lat
+        if not self.vehicle:
+            return 49
+        return str(self.vehicle.location.global_relative_frame.lat)
 
     def getLon(self): # Get vehicle longitude
-        return self.vehicle.location.global_relative_frame.lon
+        if not self.vehicle:
+            return 123
+        return str(self.vehicle.location.global_relative_frame.lon)
 
     def getAlt(self): # Get vehicle altitude
+        if not self.vehicle:
+            return 0
         return self.vehicle.location.global_relative_frame.alt
 
     def get_location(self): # Get vehicle postion (Returns dict of lat,long, and alt)
-        return {"lat":self.getLat, "lon":self.getLon, "alt":self.getAlt}
+        return {"lat":self.getLat(), "lon":self.getLon(), "alt":self.getAlt()}
 
 telemData = TelemData()

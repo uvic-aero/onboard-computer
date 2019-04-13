@@ -16,7 +16,7 @@ class PiCam:
         fpath = 'home/pi/images/' +  str(self.counter) + '.png'
         im.save(fpath)
         self.counter += 1
-
+        print(telemData.get_location())
         img = {'id': self.counter, 'image': fpath, 'telemetry': telemData.get_location()}
         imageService.appendImageQueue(img)
         print('Camera Simulating Image Capture')
