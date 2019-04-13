@@ -8,6 +8,7 @@ if importlib.find_loader('picamera'):
     from picamera import PiCamera
 
 from apps.ImageService.imageService import imageService
+from apps.TelemData.telemData import telemData
 
 class PiCam:
     def __init__(self):
@@ -37,7 +38,8 @@ class PiCam:
         file = open(fpath, 'wb')
         self.camera.capture(file)
         file.close()
-        imageService.appendImageQueue(fpath)
+        img = {'id': self.counter, 'image': fpath, 'telemetry': telemData.get_location()}
+        imageService.appendImageQueue(img)
         pass
   
     def start_video(self):

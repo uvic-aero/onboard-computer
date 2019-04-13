@@ -75,8 +75,8 @@ class ImageService:
             with open(img, 'rb') as image_file:
                 return base64.b64encode(image_file.read())
         except Exception as e:
-            print(str(e))
-            print("Failed to get encoded image. Removing '" + str(img) + "' from queue.")  
+            #print(str(e))
+            print("Failed to get encoded image. Removing from queue.")  
             return None   
 
     # accepts image dictionary object

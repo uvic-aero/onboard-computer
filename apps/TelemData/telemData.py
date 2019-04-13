@@ -75,7 +75,7 @@ class TelemData:
     def getAlt(self): # Get vehicle altitude
         return self.vehicle.location.global_relative_frame.alt
 
-    def getGPSLocation(self): # Get vehicle postion (Returns dict of lat,long, and alt)
+    def get_location(self): # Get vehicle postion (Returns dict of lat,long, and alt)
         return {"lat":self.getLat, "lon":self.getLon, "alt":self.getAlt}
 
 telemData = TelemData()
