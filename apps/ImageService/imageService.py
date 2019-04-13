@@ -19,7 +19,6 @@ class ImageService:
         self.mutex = Lock()
         self.poll_time = int(config.values['image_service']['interval'])
 
-
     # The start and stop functions do not need to be used if the programmer 
     # thinks that this class should not take the form of a process
 
@@ -38,9 +37,9 @@ class ImageService:
             self.mutex.acquire()
             img_to_send = self.peekImageQueue()
             if img_to_send is not None:
-                encoded_img_to_send = self.get_encoded_img(img_to_send)
-                if encoded_img_to_send is not None:
-                    if self.send_img(encoded_img_to_send):
+                img_to_send['image'] = self.get_encoded_img(img_to_send['image'])
+                if img_to_send['image'] is not None:
+                    if self.send_img(img_to_send):
                         self.popImageQueue() 
                 else:
                     self.popImageQueue()    
@@ -80,14 +79,15 @@ class ImageService:
             print("Failed to get encoded image. Removing '" + str(img) + "' from queue.")  
             return None   
 
-    # accepts encoded image 
+    # accepts image dictionary object
     # returns True if image successfully sent to groundstation
-    def send_img(self, encoded_img):
+    def send_img(self, img):
         timestamp = time.time() * 1000
         try:
             payload = {
                 'timestamp': timestamp,
-                'image': encoded_img.decode('utf-8', "ignore")
+                'image': img['image'].decode('utf-8', "ignore"),
+                'telemetry': img['telemetry']
             }
             requests.post(self.groundstation_url + '/images', json=payload)
             print('successfully sent image to the groundstation.')
