@@ -10,6 +10,16 @@ import time
 import tornado
 from tornado import ioloop
 
+# Get Arguments
+parser = argparse.ArgumentParser()
+parser.add_argument("--simulate", "-s", nargs='?', dest='simulate',
+                const=True, default=False,
+                help="Activate Simulation Mode")
+args = parser.parse_args()
+
+if args.simulate:
+    os.environ["SIMULATE"] = 'SIMULATING'
+
 # import apps
 from apps.Config.config import config
 from apps.Routes.routes import routes
@@ -23,7 +33,6 @@ class OnboardComputer:
         self.routes = routes
         self.application = tornado.web.Application(self.routes)
         self.server = tornado.httpserver.HTTPServer(self.application)
-        self.get_arguments() 
 
     def start(self):
         print("Starting Onboard Computer")
@@ -38,27 +47,15 @@ class OnboardComputer:
         self.application.listen(config.values['obc']['port'])
         tornado.ioloop.IOLoop.instance().start()
         
-
     def stop(self):
         print("Stopping Onboard Computer")
 
         #stop apps
         self.imageService.stop()
-        self.imageService.stop()
         self.timelapse.stop()
         self.videoDisplay.stop()
         self.telemData()
     
-    def get_arguments(self):
-        parser = argparse.ArgumentParser()
-        parser.add_argument("--simulate", "-s", nargs='?', dest='simulate',
-                        const=True, default=False,
-                        help="Activate Simulation Mode")
-        args = parser.parse_args()
-        
-        if args.simulate:
-            os.environ["SIMULATE"] = 'SIMULATING'
-
 if __name__ == '__main__':
     obc = OnboardComputer()
     obc.start()

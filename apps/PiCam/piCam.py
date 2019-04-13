@@ -1,19 +1,30 @@
-#from picamera import PiCamera
+# from picamera import PiCamera
 import time
 import datetime
 import os
+import importlib
+
+if importlib.find_loader('picamera'):
+    from picamera import PiCamera
+
+from apps.ImageService.imageService import imageService
 
 class PiCam:
     def __init__(self):
-        #self.camera = PiCamera(resolution(1920, 1080))
+        self.camera = None
+        if os.environ.get('SIMULATE') is None:
+            self.camera = PiCamera() 
+            self.camera.resolution = (1024, 768)
         self.now = datetime.datetime.now()
         self.status = 'unset status'
    
     def take_picture(self):
         print('working')
-        pass
         date = str(self.now)[:10]
         path = '/home/pi/images/'+ date 
+        
+        #add thing to queue 
+        # send the picture to imageService at some point
         if not os.path.exists(path):
             try:
                 os.mkdir(path)
@@ -22,10 +33,13 @@ class PiCam:
             else:
                 print ("Successfully created the directory %s " % path)
 
-        file = open('/home/pi/images/'+ date +'/' + str(time.time())[:-8] + '.jpg', 'wb')
+        fpath = '/home/pi/images/'+ date +'/' + str(time.time())[:-8] + '.jpg'
+        file = open(fpath, 'wb')
         self.camera.capture(file)
         file.close()
-#   
+        imageService.appendImageQueue(fpath)
+        pass
+  
     def start_video(self):
         print('working')
         pass
@@ -40,8 +54,7 @@ class PiCam:
     def start_preview(self):
         print('working')
         pass
-        self.camera.start_preview()
-    
+        
     def stop_preview(self):
         print('working')
         pass
