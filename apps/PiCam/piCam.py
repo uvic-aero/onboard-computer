@@ -18,14 +18,15 @@ class PiCam:
             self.camera.resolution = (1024, 768)
         self.now = datetime.datetime.now()
         self.status = 'unset status'
+        self.counter = 0
    
     def take_picture(self):
         print('working')
         date = str(self.now)[:10]
         path = '/home/pi/images/'+ date 
-        
-        #add thing to queue 
-        # send the picture to imageService at some point
+        self.counter = self.counter + 1
+
+        # Create directory to store photo's if it does not already exist
         if not os.path.exists(path):
             try:
                 os.mkdir(path)
@@ -33,14 +34,16 @@ class PiCam:
                 print ("Creation of the directory %s failed" % path)
             else:
                 print ("Successfully created the directory %s " % path)
-
+        
+        # Write image to disk
         fpath = '/home/pi/images/'+ date +'/' + str(time.time())[:-8] + '.jpg'
         file = open(fpath, 'wb')
         self.camera.capture(file)
         file.close()
+
+        # Create image dict and add to queue
         img = {'id': self.counter, 'image': fpath, 'telemetry': telemData.get_location()}
         imageService.appendImageQueue(img)
-        pass
   
     def start_video(self):
         print('working')
