@@ -62,19 +62,20 @@ class TelemData:
 
     # Use for testing gps signal and telemetry data retrieval. WARNING: this method creates an infinite loop.
     def gps_test(self):
+        pass
         while True:
-            print(f'GPS lat: {self.getLat()} lon: {self.getLon()} alt: {self.getAlt}')
-            print(f'GPS signal strenght: {vehicle.gps_0}')
+            #print(f'GPS lat: {self.getLat()} lon: {self.getLon()} alt: {self.getAlt}')
+            #print(f'GPS signal strenght: {vehicle.gps_0}')
             time.sleep(1)
 
     def getLat(self): # Get vehicle latitude
         if not self.vehicle:
-            return 49
+            return 48.4284
         return str(self.vehicle.location.global_relative_frame.lat)
 
     def getLon(self): # Get vehicle longitude
         if not self.vehicle:
-            return 123
+            return -123.3656
         return str(self.vehicle.location.global_relative_frame.lon)
 
     def getAlt(self): # Get vehicle altitude
