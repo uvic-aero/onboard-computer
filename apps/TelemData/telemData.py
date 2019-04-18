@@ -1,4 +1,4 @@
-from dronekit import *
+from dronekit import * 
 from pymavlink import mavutil
 import argparse
 import serial
@@ -14,7 +14,7 @@ class TelemData:
         self.status = 'running'
         # this function will at least connect to pixhawk for future telem data retrieval.
         parser = argparse.ArgumentParser()
-        parser.add_argument('--connect', default='/dev/ttyAMA0')
+        parser.add_argument('--connect', default='/dev/serial0')
         parser.add_argument('--baud', default='115200')
         args = parser.parse_args()
         self.connect(args)
@@ -41,7 +41,7 @@ class TelemData:
         print('Connecting to aircraft via: %s' % args.connect)
 
         try:
-            self.vehicle = connect(args.connect, baud = args.baud, wait_ready = True)
+            self.vehicle = connect(args.connect, baud = 921600, wait_ready = True)
             self.connection_status = 1
             # Dronekit Error
         except dronekit.APIException:
@@ -63,8 +63,8 @@ class TelemData:
     # Use for testing gps signal and telemetry data retrieval. WARNING: this method creates an infinite loop.
     def gps_test(self):
         while True:
-            print(f'GPS lat: {self.getLat()} lon: {self.getLon()} alt: {self.getAlt}')
-            print(f'GPS signal strenght: {vehicle.gps_0}')
+#            print(f'GPS lat: {self.getLat()} lon: {self.getLon()} alt: {self.getAlt}')
+ #           print(f'GPS signal strenght: {vehicle.gps_0}')
             time.sleep(1)
 
     def getLat(self): # Get vehicle latitude

@@ -15,14 +15,16 @@ class PiCam:
         self.camera = None
         if os.environ.get('SIMULATE') is None:
             self.camera = PiCamera() 
-            self.camera.resolution = (1024, 768)
+            self.camera.resolution = (3280,2464)
         self.now = datetime.datetime.now()
         self.status = 'unset status'
+        self.counter = 0
    
     def take_picture(self):
         print('working')
         date = str(self.now)[:10]
         path = '/home/pi/images/'+ date 
+        self.counter = self.counter + 1
         
         #add thing to queue 
         # send the picture to imageService at some point
