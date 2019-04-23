@@ -7,4 +7,5 @@ numpy==1.15.4
 Pillow==5.4.1
 constants==0.6.0
 netifaces==0.10.9
+serial==0.0.97
 picamera==1.13
