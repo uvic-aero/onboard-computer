@@ -26,6 +26,7 @@ from apps.Routes.routes import routes
 from apps.ImageService.imageService import imageService
 from apps.VideoDisplay.videoDisplay import videoDisplay
 from apps.Timelapse.timelapse import timelapse
+from apps.TelemData.telemData import telemData
 
 class OnboardComputer:
     def __init__(self):
@@ -40,6 +41,7 @@ class OnboardComputer:
         imageService.start()
         timelapse.start()
         videoDisplay.start()
+        telemData.start()
 
         #start http server
         self.application.listen(config.values['obc']['port'])
@@ -52,6 +54,7 @@ class OnboardComputer:
         self.imageService.stop()
         self.timelapse.stop()
         self.videoDisplay.stop()
+        self.telemData()
     
 if __name__ == '__main__':
     obc = OnboardComputer()
