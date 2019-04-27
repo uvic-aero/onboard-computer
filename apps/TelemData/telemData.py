@@ -2,6 +2,7 @@ from dronekit import *
 from pymavlink import mavutil
 import argparse
 import serial
+from random import uniform
 
 class TelemData:
     
@@ -68,12 +69,12 @@ class TelemData:
 
     def getLat(self): # Get vehicle latitude
         if not self.vehicle:
-            return 48.4284
+            return uniform(49, 50) # random lat
         return str(self.vehicle.location.global_relative_frame.lat)
 
     def getLon(self): # Get vehicle longitude
         if not self.vehicle:
-            return -123.3656
+            return uniform(-123,-124)  # random lng
         return str(self.vehicle.location.global_relative_frame.lon)
 
     def getAlt(self): # Get vehicle altitude
@@ -83,5 +84,5 @@ class TelemData:
 
     def get_location(self): # Get vehicle postion (Returns dict of lat,long, and alt)
         return {"lat":self.getLat(), "lon":self.getLon(), "alt":self.getAlt()}
-
+    
 telemData = TelemData()
