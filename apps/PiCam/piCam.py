@@ -37,11 +37,19 @@ class PiCam:
         # Write image to disk
         fpath = '/home/pi/images/'+ date +'/' + str(time.time())[:-8] + '.jpg'
         file = open(fpath, 'wb')
+         
+        # Set current telem data for meta data
+        telemetry = telemData.get_location()
+        self.camera.exif_tags['GPS.GPSLatitude'] = telemetry['lat']
+        self.camera.exif_tags['GPS.GPSLongitude'] = telemetry['lon']
+        self.camera.exif_tags['GPS.GPSAltitude'] = telemetry['alt']
+        
+        # Capture image
         self.camera.capture(file)
         file.close()
 
         # Create image dict and add to queue
-        img = {'id': self.counter, 'image': fpath, 'telemetry': telemData.get_location()}
+        img = {'id': self.counter, 'image': fpath, 'telemetry': telemetry}
         imageService.appendImageQueue(img)
   
     def start_video(self):
