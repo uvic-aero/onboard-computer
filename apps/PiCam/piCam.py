@@ -40,9 +40,11 @@ class PiCam:
          
         # Set current telem data for meta data
         telemetry = telemData.get_location()
-        self.camera.exif_tags['GPS.GPSLatitude'] = telemetry['lat']
-        self.camera.exif_tags['GPS.GPSLongitude'] = telemetry['lon']
-        self.camera.exif_tags['GPS.GPSAltitude'] = telemetry['alt']
+        self.camera.exif_tags['GPS.GPSLatitude'] = str(abs(telemetry['lat']))
+        self.camera.exif_tags['GPS.GPSLatitudeRef'] = 'E'
+        self.camera.exif_tags['GPS.GPSLongitude'] = str(abs(telemetry['lon']))
+        self.camera.exif_tags['GPS.GPSLongitudeRef'] = 'N'
+        self.camera.exif_tags['GPS.GPSAltitude'] = str(abs(telemetry['alt']))
         
         # Capture image
         self.camera.capture(file)
