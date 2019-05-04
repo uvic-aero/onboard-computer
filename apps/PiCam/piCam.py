@@ -3,6 +3,7 @@ import time
 import datetime
 import os
 import importlib
+import uuid 
 
 if importlib.find_loader('picamera'):
     from picamera import PiCamera
@@ -35,7 +36,7 @@ class PiCam:
                 print ("Successfully created the directory %s " % path)
         
         # Write image to disk
-        fpath = '/home/pi/images/'+ date +'/' + str(time.time())[:-8] + '.jpg'
+        fpath = '/home/pi/images/'+ date +'/' + str(uuid.uuid1()) + '.jpg'
         file = open(fpath, 'wb')
         self.camera.capture(file)
         file.close()
