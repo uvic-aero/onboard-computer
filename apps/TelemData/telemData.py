@@ -16,7 +16,7 @@ class TelemData:
         # this function will at least connect to pixhawk for future telem data retrieval.
         parser = argparse.ArgumentParser()
         parser.add_argument('--connect', default='/dev/serial0')
-        parser.add_argument('--baud', default='115200')
+        parser.add_argument('--baud', default='921600')
         args = parser.parse_args()
         self.connect(args)
 
