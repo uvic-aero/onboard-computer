@@ -7,6 +7,10 @@ The purpose of the Onboard Computer (OBC) is to remotely control our camera (Son
 
 ### Getting Started
 1. Install python3.6 or greater
+1. Clone repository `git clone https://github.com/uvic-aero/onboard-computer.git`
+1. Current directory into onboard computer `cd onboard-computer`
+1. Create Python3 virtual env `python3 -m venv obc`
+1. Activate virtual environment `source obc/bin/activate` 
 1. Install python requirements `pip3 install -r requirements.txt`
 
 ### Configuration 
