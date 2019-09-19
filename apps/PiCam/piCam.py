@@ -6,7 +6,10 @@ import importlib
 import uuid 
 
 if importlib.find_loader('picamera'):
+    found_picamera = True
     from picamera import PiCamera
+else:
+    found_picamera = False
 
 from apps.ImageService.imageService import imageService
 from apps.TelemData.telemData import telemData
@@ -14,11 +17,13 @@ from apps.TelemData.telemData import telemData
 class PiCam:
     def __init__(self):
         self.camera = None
-        if os.environ.get('SIMULATE') is None:
+        if found_picamera:
+            self.status = 'PiCamera Connected'
             self.camera = PiCamera() 
             self.camera.resolution = (3280,2464)
+        else:
+            self.status = 'PiCamera Not Connected'
         self.now = datetime.datetime.now()
-        self.status = 'unset status'
         self.counter = 0
    
     def take_picture(self):

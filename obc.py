@@ -10,16 +10,6 @@ import time
 import tornado
 from tornado import ioloop
 
-# Get Arguments
-parser = argparse.ArgumentParser()
-parser.add_argument("--simulate", "-s", nargs='?', dest='simulate',
-                const=True, default=False,
-                help="Activate Simulation Mode")
-args = parser.parse_args()
-
-if args.simulate:
-    os.environ["SIMULATE"] = 'SIMULATING'
-
 # import apps
 from apps.Config.config import config
 from apps.Routes.routes import routes
@@ -39,7 +29,6 @@ class OnboardComputer:
         
         #start apps
         imageService.start()
-        timelapse.start()
         videoDisplay.start()
         telemData.start()
 

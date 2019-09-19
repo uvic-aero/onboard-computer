@@ -45,14 +45,14 @@ class TelemData:
             self.vehicle = connect(args.connect, baud = 921600, wait_ready = True)
             self.connection_status = 1
             # Dronekit Error
-        except dronekit.APIException:
+        except APIException:
                 print ('The connection has timed out.')
                 self.connection_status = 0
                 self.status = 'pixhawk connection broken'
 
         # Other error
         except:
-                print ('An unexpected error occured')
+                print ('Error connecting to pixhawk via serial.')
                 self.connection_status = 0
                 self.status = 'pixhawk connection broken'
 

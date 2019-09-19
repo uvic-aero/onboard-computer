@@ -21,9 +21,8 @@ The purpose of the Onboard Computer (OBC) is to remotely control our camera (Son
 ### Running 
 Start obc by running (in the repository root)
 	`python3 obc.py`
-
-To run obc in simultaion mode, run
-	`python3 obc.py -s`
+Check that the software is running by visiting the server
+  [http://0.0.0.0:1600/status/piCam](http://0.0.0.0:1600/status/piCam)
 
 <!--
 ## Livestreaming video
