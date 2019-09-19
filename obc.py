@@ -29,7 +29,6 @@ class OnboardComputer:
         
         #start apps
         imageService.start()
-#        timelapse.start()
         videoDisplay.start()
         telemData.start()
 
