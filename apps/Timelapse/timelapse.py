@@ -7,54 +7,54 @@ from apps.Config.config import config
 from apps.PiCam.piCam import piCam
 from apps.PiCam.simulation.piCam import piCam as simulatedCamera
 
-class Timelapse:
 
+class Timelapse:
     def __init__(self):
-        self.status = 'Down'
+        self.status = "Down"
         self.loop_flag = True
         self.camera = piCam
         self.stop_burst = False
 
-        #set default interval length.
-        self.interval = config.values['timelapse']['interval'] 
+        # set default interval length.
+        self.interval = config.values["timelapse"]["interval"]
         self.prev_interval = 3
         self.duration = 0
         self.photo_count = -1
 
-    # Start the timelapse application     
+    # Start the timelapse application
     def start(self):
         # Check if Simulation
-        if os.environ.get('SIMULATE'):
+        if os.environ.get("SIMULATE"):
             self.camera = simulatedCamera
 
         self.loop_flag = True
-        print('starting timelapse')
-        self.status = 'Running'
+        print("starting timelapse")
+        self.status = "Running"
         try:
-            _thread.start_new_thread( self.start_timelapse, ( ))
+            _thread.start_new_thread(self.start_timelapse, ())
         except:
-            print('Failed to Create Timelapse Thread')
+            print("Failed to Create Timelapse Thread")
 
-    # Stop the timelapse application 
+    # Stop the timelapse application
     def stop(self):
-        print('stopping timelapse')
-        self.status = 'Down'
+        print("stopping timelapse")
+        self.status = "Down"
         self.loop_flag = False
-        
-    # Run a loop that takes photos every X seconds    
+
+    # Run a loop that takes photos every X seconds
     def start_timelapse(self):
         self.photo_count = -1
         while self.loop_flag:
             self.camera.take_picture()
-            time.sleep(float(self.interval)) # Sleep for 3 seconds
-            # If Duration set, decrease photo count                 
+            time.sleep(float(self.interval))  # Sleep for 3 seconds
+            # If Duration set, decrease photo count
             if self.photo_count > 0:
-                self.photo_count = self.photo_count - 1 
+                self.photo_count = self.photo_count - 1
             if self.photo_count == 0:
                 self.photo_count = self.photo_count - 1
                 self.interval = self.prev_interval
                 self.duration = 0
-   
+
     # Update the interval between photos being taken
     def set_interval(self, newInterval):
         try:
@@ -64,7 +64,7 @@ class Timelapse:
 
         pass
 
-    # For a given amount of time ( new_duration ), photos 
+    # For a given amount of time ( new_duration ), photos
     # will be captured with a temporary interval ( burst_interval )
     def set_duration(self, new_duration, burst_interval):
         try:
@@ -77,7 +77,5 @@ class Timelapse:
 
         pass
 
+
 timelapse = Timelapse()
-
-
-

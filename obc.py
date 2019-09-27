@@ -18,6 +18,7 @@ from apps.VideoDisplay.videoDisplay import videoDisplay
 from apps.Timelapse.timelapse import timelapse
 from apps.TelemData.telemData import telemData
 
+
 class OnboardComputer:
     def __init__(self):
         self.routes = routes
@@ -26,27 +27,26 @@ class OnboardComputer:
 
     def start(self):
         print("Starting Onboard Computer")
-        
-        #start apps
+
+        # start apps
         imageService.start()
         videoDisplay.start()
         telemData.start()
 
-        #start http server
-        self.application.listen(config.values['obc']['port'])
+        # start http server
+        self.application.listen(config.values["obc"]["port"])
         tornado.ioloop.IOLoop.instance().start()
-        
+
     def stop(self):
         print("Stopping Onboard Computer")
 
-        #stop apps
+        # stop apps
         self.imageService.stop()
         self.timelapse.stop()
         self.videoDisplay.stop()
         self.telemData()
-    
-if __name__ == '__main__':
+
+
+if __name__ == "__main__":
     obc = OnboardComputer()
     obc.start()
-
-

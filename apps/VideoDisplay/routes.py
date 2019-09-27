@@ -1,4 +1,4 @@
-from apps.VideoDisplay.handlers import Status, Stop, Start 
+from apps.VideoDisplay.handlers import Status, Stop, Start
 
 routes = [
     (r"/status/videoDisplay", Status),
