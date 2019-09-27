@@ -1,6 +1,6 @@
 # UVic AERO Onboard Computer
 
-The purpose of the Onboard Computer (OBC) is to remotely control our camera (Sony ILCE 5100), utilize the camera API, and stream images/video from the camera to our ground station
+The purpose of the Onboard Computer (OBC) is to provide an functionality and interfacing to remote vehicles. The software runnning on OBC will adapt with the requirements of each years competition.
 
 ### Requirements
 * Python3.6 or greater
@@ -15,7 +15,7 @@ The purpose of the Onboard Computer (OBC) is to remotely control our camera (Son
 
 ### Configuration 
 1. Open the `config.ini` file located in the root directory of this repository
-1. Edit the groundstation ip address to http://<address of machine runnig gcs>
+1. Edit the groundstation ip address to http://[address of machine runnig gcs]
 1. Leave groundstation port as is unless explicitly modified on gcs
 
 ### Running 
