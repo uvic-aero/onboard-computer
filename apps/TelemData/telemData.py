@@ -67,7 +67,7 @@ class TelemData:
         while True:
             time.sleep(1)
 
-    def getDirection:
+    def getDirection(self):
         # Returns a value between 0-360 depending on the direction the ground vehicle is facing
         if not self.vehicle:
             return -1
