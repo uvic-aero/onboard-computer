@@ -1,10 +1,10 @@
 import datetime
 from camera import camera
 
-isRunning = False;
+isRunning = False
+
 
 class Timelapse:
-
     def __init__(self):
         isRunning = False
 
@@ -17,5 +17,5 @@ class Timelapse:
 
     def run(self):
         while isRunning:
-            if (datetime.now().strftime('%S')) % 3 == 0:
+            if (datetime.now().strftime("%S")) % 3 == 0:
                 camera.take_picture()

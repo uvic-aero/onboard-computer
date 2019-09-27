@@ -1,4 +1,29 @@
-from apps.PiCam.handlers import Status, TakePicture, StartVideo, StopVideo, StartPreview, StopPreview, GetExposureCompensation, SetExposureCompensation, IncExposureCompensation, DecExposureCompensation, GetShutterSpeed, SetShutterSpeed, IncShutterSpeed, DecShutterSpeed, GetAwbMode, SetAwbMode, GetAwbGains, SetAwbGains, IncAwbGains, DecAwbGains, GetIso, SetIso, IncIso, DecIso 
+from apps.PiCam.handlers import (
+    Status,
+    TakePicture,
+    StartVideo,
+    StopVideo,
+    StartPreview,
+    StopPreview,
+    GetExposureCompensation,
+    SetExposureCompensation,
+    IncExposureCompensation,
+    DecExposureCompensation,
+    GetShutterSpeed,
+    SetShutterSpeed,
+    IncShutterSpeed,
+    DecShutterSpeed,
+    GetAwbMode,
+    SetAwbMode,
+    GetAwbGains,
+    SetAwbGains,
+    IncAwbGains,
+    DecAwbGains,
+    GetIso,
+    SetIso,
+    IncIso,
+    DecIso,
+)
 
 routes = [
     (r"/status/piCam", Status),
@@ -24,5 +49,5 @@ routes = [
     (r"/getIso/piCam", GetIso),
     (r"/setIso/piCam", SetIso),
     (r"/incIso/piCam", IncIso),
-    (r"/decIso/piCam", DecIso)
+    (r"/decIso/piCam", DecIso),
 ]
