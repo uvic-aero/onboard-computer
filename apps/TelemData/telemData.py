@@ -67,19 +67,25 @@ class TelemData:
         while True:
             time.sleep(1)
 
+    def getDirection:
+        # Returns a value between 0-360 depending on the direction the ground vehicle is facing
+        if not self.vehicle:
+            return -1
+        return -1
+
     def getLat(self): # Get vehicle latitude
         if not self.vehicle:
-            return uniform(49, 50) # random lat
+            return -1 
         return str(self.vehicle.location.global_relative_frame.lat)
 
     def getLon(self): # Get vehicle longitude
         if not self.vehicle:
-            return uniform(-123,-124)  # random lng
+            return -1
         return str(self.vehicle.location.global_relative_frame.lon)
 
     def getAlt(self): # Get vehicle altitude
         if not self.vehicle:
-            return 0
+            return -1
         return self.vehicle.location.global_relative_frame.alt
 
     def get_location(self): # Get vehicle postion (Returns dict of lat,long, and alt)
