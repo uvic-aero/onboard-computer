@@ -9,7 +9,6 @@ class VideoStream:
         self.status = (
             "down"
         )
-        pass
 
     def start(self):
         print("Starting VideoStream...")
