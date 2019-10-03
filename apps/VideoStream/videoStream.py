@@ -6,9 +6,7 @@ class VideoStream:
    # TODO: Write more complete docstring when distinction between classes is more clear.
 
     def __init__(self):
-        self.status = (
-            "down"
-        )
+        self.status = "down"
 
     def start(self):
         print("Starting VideoStream...")
