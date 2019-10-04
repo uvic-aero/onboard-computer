@@ -1,4 +1,4 @@
-from apps.TelemData.handlers import Status, Stop, Start 
+from apps.Pixhawk.handlers import Status, Stop, Start 
 
 routes = [
     (r"/status/telemData", Status),

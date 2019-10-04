@@ -1,5 +1,5 @@
 from tornado import web
-from apps.TelemData.telemData import telemData
+from apps.Pixhawk.telemData import telemData
 
 class Status(web.RequestHandler):
     def set_default_headers(self):

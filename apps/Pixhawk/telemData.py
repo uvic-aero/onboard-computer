@@ -4,7 +4,7 @@ import argparse
 import serial
 from random import uniform
 
-class TelemData:
+class Pixhawk:
     
     def __init__(self):
         self.status = 'down' #this status is used to check if a service is functioning normaly or not
@@ -85,4 +85,4 @@ class TelemData:
     def get_location(self): # Get vehicle postion (Returns dict of lat,long, and alt)
         return {"lat":self.getLat(), "lon":self.getLon(), "alt":self.getAlt()}
     
-telemData = TelemData()
+telemData = Pixhawk()

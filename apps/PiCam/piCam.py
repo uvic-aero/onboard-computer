@@ -12,7 +12,7 @@ else:
     found_picamera = False
 
 from apps.ImageService.imageService import imageService
-from apps.TelemData.telemData import telemData
+from apps.Pixhawk.telemData import telemData
 
 class PiCam:
     def __init__(self):

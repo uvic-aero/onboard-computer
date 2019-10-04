@@ -2,7 +2,7 @@ import numpy
 from PIL import Image
 import pathlib
 from apps.ImageService.imageService import imageService
-from apps.TelemData.telemData import telemData
+from apps.Pixhawk.telemData import telemData
 
 class PiCam:
     def __init__(self):

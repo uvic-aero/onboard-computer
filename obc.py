@@ -16,7 +16,7 @@ from apps.Routes.routes import routes
 from apps.ImageService.imageService import imageService
 from apps.VideoDisplay.videoDisplay import videoDisplay
 from apps.Timelapse.timelapse import timelapse
-from apps.TelemData.telemData import telemData
+from apps.Pixhawk.telemData import telemData
 
 class OnboardComputer:
     def __init__(self):
