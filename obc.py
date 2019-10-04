@@ -11,7 +11,6 @@ import time
 
 # import apps
 from apps.Config.config import config
-from apps.Routes.routes import routes
 from apps.ImageService.imageService import imageService
 from apps.VideoDisplay.videoDisplay import videoDisplay
 from apps.Timelapse.timelapse import timelapse
@@ -29,7 +28,7 @@ class OnboardComputer:
         imageService.start()
         videoDisplay.start()
         telemData.start()
-        print("hello")
+
 
 
     def stop(self):
