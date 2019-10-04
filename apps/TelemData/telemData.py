@@ -73,7 +73,7 @@ class TelemData:
         # Returns a value between 0-360 depending on the direction the ground vehicle is facing
         if not self.vehicle:
             return -1
-        return -1
+        return str(self.vehicle.heading)
 
     def getLat(self):  # Get vehicle latitude
         if not self.vehicle:
