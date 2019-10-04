@@ -14,7 +14,6 @@ from tornado import ioloop
 from apps.Config.config import config
 from apps.Routes.routes import routes
 from apps.ImageService.imageService import imageService
-from apps.VideoDisplay.videoDisplay import videoDisplay
 from apps.Timelapse.timelapse import timelapse
 from apps.TelemData.telemData import telemData
 
@@ -30,7 +29,6 @@ class OnboardComputer:
 
         # start apps
         imageService.start()
-        videoDisplay.start()
         telemData.start()
 
         # start http server
@@ -43,7 +41,6 @@ class OnboardComputer:
         # stop apps
         self.imageService.stop()
         self.timelapse.stop()
-        self.videoDisplay.stop()
         self.telemData()
 
 
