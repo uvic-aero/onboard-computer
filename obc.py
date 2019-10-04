@@ -7,8 +7,7 @@ import signal
 import requests
 import traceback
 import time
-import tornado
-from tornado import ioloop
+
 
 # import apps
 from apps.Config.config import config
@@ -21,9 +20,7 @@ from apps.TelemData.telemData import telemData
 
 class OnboardComputer:
     def __init__(self):
-        self.routes = routes
-        self.application = tornado.web.Application(self.routes)
-        self.server = tornado.httpserver.HTTPServer(self.application)
+        pass
 
     def start(self):
         print("Starting Onboard Computer")
@@ -32,10 +29,8 @@ class OnboardComputer:
         imageService.start()
         videoDisplay.start()
         telemData.start()
+        print("hello")
 
-        # start http server
-        self.application.listen(config.values["obc"]["port"])
-        tornado.ioloop.IOLoop.instance().start()
 
     def stop(self):
         print("Stopping Onboard Computer")
