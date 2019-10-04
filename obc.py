@@ -27,7 +27,7 @@ class OnboardComputer:
 
     def start(self):
         print("Starting Onboard Computer")
-        change
+
         # start apps
         imageService.start()
         videoDisplay.start()
