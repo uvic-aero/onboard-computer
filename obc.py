@@ -8,7 +8,6 @@ import requests
 import traceback
 import time
 
-
 # import apps
 from apps.Config.config import config
 from apps.ImageService.imageService import imageService
