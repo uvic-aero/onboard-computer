@@ -17,7 +17,6 @@ from apps.ImageService.imageService import imageService
 from apps.Timelapse.timelapse import timelapse
 from apps.TelemData.telemData import telemData
 
-
 class OnboardComputer:
     def __init__(self):
         self.routes = routes
