@@ -16,7 +16,7 @@ from apps.Routes.routes import routes
 from apps.ImageService.imageService import imageService
 from apps.VideoDisplay.videoDisplay import videoDisplay
 from apps.Timelapse.timelapse import timelapse
-from apps.Pixhawk.telemData import telemData
+from apps.Pixhawk.pixhawk import pixhawk
 
 
 class OnboardComputer:
@@ -31,7 +31,7 @@ class OnboardComputer:
         # start apps
         imageService.start()
         videoDisplay.start()
-        telemData.start()
+        pixhawk.start()
 
         # start http server
         self.application.listen(config.values["obc"]["port"])
@@ -44,7 +44,7 @@ class OnboardComputer:
         self.imageService.stop()
         self.timelapse.stop()
         self.videoDisplay.stop()
-        self.telemData()
+        self.pixhawk()
 
 
 if __name__ == "__main__":

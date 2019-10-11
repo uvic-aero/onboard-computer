@@ -1,5 +1,5 @@
 from tornado import web
-from apps.Pixhawk.telemData import telemData
+from apps.Pixhawk.pixhawk import pixhawk
 
 
 class Status(web.RequestHandler):
@@ -11,7 +11,7 @@ class Status(web.RequestHandler):
     @web.asynchronous
     def get(self):
         try:
-            self.write({"service": "telemData", "status": telemData.status})
+            self.write({"service": "pixhawk", "status": pixhawk.status})
             self.finish()
         except:
             print("Error Writing Request Response")
@@ -30,9 +30,9 @@ class Stop(web.RequestHandler):
 
     @web.asynchronous
     def get(self):
-        telemData.stop()
+        pixhawk.stop()
         try:
-            self.write({"service": "telemData", "action": "Killing"})
+            self.write({"service": "pixhawk", "action": "Killing"})
             self.finish()
         except:
             print("Error Writing Request Response")
@@ -51,9 +51,9 @@ class Start(web.RequestHandler):
 
     @web.asynchronous
     def get(self):
-        telemData.start()
+        pixhawk.start()
         try:
-            self.write({"service": "telemData", "action": "Starting"})
+            self.write({"service": "pixhawk", "action": "Starting"})
             self.finish()
         except:
             print("Error Writing Request Response")

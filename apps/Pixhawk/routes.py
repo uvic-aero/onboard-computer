@@ -1,7 +1,7 @@
-from apps.TelemData.handlers import Status, Stop, Start
+from apps.Pixhawk.handlers import Status, Stop, Start
 
 routes = [
-    (r"/status/telemData", Status),
-    (r"/start/telemData", Start),
-    (r"/stop/telemData", Stop),
+    (r"/status/pixhawk", Status),
+    (r"/start/pixhawk", Start),
+    (r"/stop/pixhawk", Stop),
 ]
