@@ -25,7 +25,6 @@ class OnboardComputer:
         imageService.start()
         pixhawk.start()
 
-
     def stop(self):
         print("Stopping Onboard Computer")
 
