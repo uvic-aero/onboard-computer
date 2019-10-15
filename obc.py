@@ -23,7 +23,6 @@ class OnboardComputer:
 
         # start apps
         imageService.start()
-        videoDisplay.start()
         pixhawk.start()
 
 
@@ -34,7 +33,6 @@ class OnboardComputer:
         # stop apps
         self.imageService.stop()
         self.timelapse.stop()
-        self.videoDisplay.stop()
         self.pixhawk()
 
 
