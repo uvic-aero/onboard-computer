@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=/home/pi/.virtualenvs/cv/bin/python /mnt/c/Users/logan/OneDrive/Documents/Aero/onboard-computer/obc.py
+ExecStart=/home/pi/.virtualenvs/cv/bin/python dir/obc.py
 Restart=on-failure
 
 [Install]
