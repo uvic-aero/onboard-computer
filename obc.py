@@ -26,7 +26,6 @@ class OnboardComputer:
         pixhawk.start()
 
 
-
     def stop(self):
         print("Stopping Onboard Computer")
 
