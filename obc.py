@@ -12,7 +12,7 @@ import time
 from apps.Config.config import config
 from apps.ImageService.imageService import imageService
 from apps.Timelapse.timelapse import timelapse
-from apps.TelemData.telemData import telemData
+from apps.Pixhawk.pixhawk import pixhawk
 
 class OnboardComputer:
     def __init__(self):
@@ -23,9 +23,7 @@ class OnboardComputer:
 
         # start apps
         imageService.start()
-        telemData.start()
-
-
+        pixhawk.start()
 
     def stop(self):
         print("Stopping Onboard Computer")
@@ -33,7 +31,7 @@ class OnboardComputer:
         # stop apps
         self.imageService.stop()
         self.timelapse.stop()
-        self.telemData()
+        self.pixhawk()
 
 
 if __name__ == "__main__":

@@ -12,7 +12,7 @@ else:
     found_picamera = False
 
 from apps.ImageService.imageService import imageService
-from apps.TelemData.telemData import telemData
+from apps.Pixhawk.pixhawk import pixhawk
 
 
 class PiCam:
@@ -46,7 +46,7 @@ class PiCam:
         file = open(fpath, "wb")
 
         # Set current telem data for meta data
-        telemetry = telemData.get_location()
+        telemetry = pixhawk.get_location()
         self.camera.exif_tags["GPS.GPSLatitude"] = str(abs(telemetry["lat"]))
         self.camera.exif_tags["GPS.GPSLatitudeRef"] = "E"
         self.camera.exif_tags["GPS.GPSLongitude"] = str(abs(telemetry["lon"]))

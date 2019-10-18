@@ -5,7 +5,7 @@ import serial
 from random import uniform
 
 
-class TelemData:
+class Pixhawk:
     def __init__(self):
         self.status = (
             "down"
@@ -13,7 +13,7 @@ class TelemData:
         self.vehicle = None
 
     def start(self):
-        print("starting telemData")
+        print("starting Pixhawk")
         self.status = "running"
         # this function will at least connect to pixhawk for future telem data retrieval.
         parser = argparse.ArgumentParser()
@@ -94,4 +94,4 @@ class TelemData:
         return {"lat": self.getLat(), "lon": self.getLon(), "alt": self.getAlt()}
 
 
-telemData = TelemData()
+pixhawk = Pixhawk()

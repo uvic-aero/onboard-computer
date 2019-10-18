@@ -2,7 +2,7 @@ import numpy
 from PIL import Image
 import pathlib
 from apps.ImageService.imageService import imageService
-from apps.TelemData.telemData import telemData
+from apps.Pixhawk.pixhawk import pixhawk
 
 
 class PiCam:
@@ -17,11 +17,11 @@ class PiCam:
         fpath = "home/pi/images/" + str(self.counter) + ".png"
         im.save(fpath)
         self.counter += 1
-        print(telemData.get_location())
+        print(pixhawk.get_location())
         img = {
             "id": self.counter,
             "image": fpath,
-            "telemetry": telemData.get_location(),
+            "telemetry": pixhawk.get_location(),
         }
         imageService.appendImageQueue(img)
         print("Camera Simulating Image Capture")
