@@ -1,5 +1,4 @@
 import asyncio
-from tornado import web
 import time
 import base64
 import requests
