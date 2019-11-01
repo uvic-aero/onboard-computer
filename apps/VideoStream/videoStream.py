@@ -1,5 +1,5 @@
 # Import Statements
-
+import socket
 
 class VideoStream:
     """Class for streaming video. """
@@ -7,6 +7,8 @@ class VideoStream:
 
     def __init__(self):
         self.status = "down"
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.socket.bind(('', 1201))
 
     def start(self):
         print("Starting VideoStream...")

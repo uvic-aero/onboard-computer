@@ -13,6 +13,7 @@ from apps.Config.config import config
 from apps.ImageService.imageService import imageService
 from apps.Timelapse.timelapse import timelapse
 from apps.Pixhawk.pixhawk import pixhawk
+from apps.VideoStream.videoStream import videoStream
 
 class OnboardComputer:
     def __init__(self):
