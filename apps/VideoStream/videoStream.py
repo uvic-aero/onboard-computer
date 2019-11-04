@@ -1,5 +1,8 @@
 # Import Statements
+import numpy as np
 import socket
+import cv2
+import math
 
 class VideoStream:
     """Class for streaming video. """
@@ -19,6 +22,46 @@ class VideoStream:
         self.status = "down"
 
     # TODO: Add skeletons for additional class methods when functionality of class is made more clear.
-    
 
-videoStream = VideoStream()
+
+    client_address = "0.0.0.0"
+    img_length = 640
+    img_width = 640
+
+
+    def buffer_frame(frame, self): #make multiple threads for multiple clients
+        #frame is a numpy array
+        #create 4 threads to encode the image
+        img = cv2.imencode('.jpg', frame)[1]
+        img.resize(img, (img_length, img_width))
+        buffer = img.toString()
+        quarter_buffer_length = (len(buffer)/4)
+        quarter_buffer_length= math.floor(quarter_buffer_length)
+
+        chunk1 = buffer[0:quarter_buffer_length]
+        chunk2 = buffer[quarter_buffer_length:quarter_buffer_length*2]
+        chunk3 = buffer[quarter_buffer_length*2:quarter_buffer_length*4]
+        chunk4 = buffer[quarter_buffer_length*4:len(buffer-1)]
+
+        t1 = threading.Thread(target=send_data, args=chunk1)
+        t2 = threading.Thread(target=send_data, args=chunk2)
+        t3 = threading.Thread(target=send_data, args=chunk3)
+        t4 = threading.Thread(target=send_data, args=chunk4)
+
+        t1.start()
+        t2.start()
+        t3.start()
+        t4.start()
+
+    def send_data(chunk):
+        socket.sendTo(chunk, client_address)
+
+
+        #print(buffer.toString())
+
+
+
+
+
+if __name__ == '__main__':
+    videoStream = VideoStream()
