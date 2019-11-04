@@ -45,8 +45,8 @@ videoStream = VideoStream()
 
         chunk1 = buffer[0:quarter_buffer_length]
         chunk2 = buffer[quarter_buffer_length:quarter_buffer_length*2]
-        chunk3 = buffer[quarter_buffer_length*2:quarter_buffer_length*4]
-        chunk4 = buffer[quarter_buffer_length*4:len(buffer-1)]
+        chunk3 = buffer[quarter_buffer_length*2:quarter_buffer_length*3]
+        chunk4 = buffer[quarter_buffer_length*3:(len(buffer))]
 
         t1 = threading.Thread(target=send_data, args=chunk1)
         t2 = threading.Thread(target=send_data, args=chunk2)
