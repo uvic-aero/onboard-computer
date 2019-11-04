@@ -13,6 +13,11 @@ class VideoStream:
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.socket.bind(('', 1201))
 
+        #Configurations
+        self.client_address = "0.0.0.0"
+        self.img_length = 640 #New Resolution
+        self.img_width = 640
+
     def start(self):
         print("Starting VideoStream...")
         self.status = "running"
@@ -21,19 +26,19 @@ class VideoStream:
         print("Stopping VideoStream...")
         self.status = "down"
 
+videoStream = VideoStream()
+
     # TODO: Add skeletons for additional class methods when functionality of class is made more clear.
 
 
-    client_address = "0.0.0.0"
-    img_length = 640
-    img_width = 640
-
+    def send_data(chunk):
+        socket.sendTo(chunk, self.client_address)
 
     def buffer_frame(frame, self): #make multiple threads for multiple clients
         #frame is a numpy array
-        #create 4 threads to encode the image
+
         img = cv2.imencode('.jpg', frame)[1]
-        img.resize(img, (img_length, img_width))
+        img.resize(img, (self.img_length, self.img_width))
         buffer = img.toString()
         quarter_buffer_length = (len(buffer)/4)
         quarter_buffer_length= math.floor(quarter_buffer_length)
@@ -48,20 +53,7 @@ class VideoStream:
         t3 = threading.Thread(target=send_data, args=chunk3)
         t4 = threading.Thread(target=send_data, args=chunk4)
 
-        t1.start()
+        t1.start()   #sends 4 chunks via 4 threads
         t2.start()
         t3.start()
         t4.start()
-
-    def send_data(chunk):
-        socket.sendTo(chunk, client_address)
-
-
-        #print(buffer.toString())
-
-
-
-
-
-if __name__ == '__main__':
-    videoStream = VideoStream()
