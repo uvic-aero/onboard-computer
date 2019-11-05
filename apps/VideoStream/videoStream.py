@@ -3,6 +3,7 @@ import numpy as np
 import socket
 import cv2
 import math
+import threading
 
 class VideoStream:
     """Class for streaming video. """
