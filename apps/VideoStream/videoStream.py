@@ -26,7 +26,6 @@ class VideoStream:
         print("Stopping VideoStream...")
         self.status = "down"
 
-videoStream = VideoStream()
 
     # TODO: Add skeletons for additional class methods when functionality of class is made more clear.
 
@@ -34,7 +33,7 @@ videoStream = VideoStream()
     def send_data(chunk):
         socket.sendTo(chunk, self.client_address)
 
-    def buffer_frame(frame, self): #make multiple threads for multiple clients
+    def buffer_frame(frame, self): #make 4 threads for 4 chunks, each thread sending its corresponding chunk
         #frame is a numpy array
 
         img = cv2.imencode('.jpg', frame)[1]
@@ -57,3 +56,6 @@ videoStream = VideoStream()
         t2.start()
         t3.start()
         t4.start()
+        
+
+videoStream = VideoStream()        
