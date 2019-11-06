@@ -13,12 +13,16 @@ class VideoStream:
         self.status = "down"
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.socket.bind(('', 1201))
-
+        
+        self.cap = cv2.VideoCapture(0)
+        
         #Configurations
-        self.client_address = "0.0.0.0"
+        self.client_address = []
+        self.port = 5100 
         self.img_length = 640 #New Resolution
         self.img_width = 640
-
+        
+        
     def start(self):
         print("Starting VideoStream...")
         self.status = "running"
@@ -29,34 +33,26 @@ class VideoStream:
 
 
     # TODO: Add skeletons for additional class methods when functionality of class is made more clear.
-
-
-    def send_data(chunk):
-        socket.sendTo(chunk, self.client_address)
-
-    def buffer_frame(frame, self): #make 4 threads for 4 chunks, each thread sending its corresponding chunk
+    def main_loop:
+        while 1:
+            data, address = sock.recvfrom(4)
+            data = data.decode('utf-8')
+            if(data=="get"):
+                self.client_address.append(address)
+            if(data=="close"): #If the desktop client closes we can get it to send a few times "close" in order for us to close
+                self.client_address.remove() #-its connection and increase efficiency
+            
+    def buffer_frame(frame, self): 
         #frame is a numpy array
-
-        img = cv2.imencode('.jpg', frame)[1]
-        img.resize(img, (self.img_length, self.img_width))
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        #TODO: Review what resolution (size) we want the image
+        gray = cv2.resize(gray, (0, 0), fx=0.1, fy=0.1) 
+        img = cv2.imencode('.jpg', gray)[1]
         buffer = img.toString()
-        quarter_buffer_length = (len(buffer)/4)
-        quarter_buffer_length= math.floor(quarter_buffer_length)
-
-        chunk1 = buffer[0:quarter_buffer_length]
-        chunk2 = buffer[quarter_buffer_length:quarter_buffer_length*2]
-        chunk3 = buffer[quarter_buffer_length*2:quarter_buffer_length*3]
-        chunk4 = buffer[quarter_buffer_length*3:(len(buffer))]
-
-        t1 = threading.Thread(target=send_data, args=chunk1)
-        t2 = threading.Thread(target=send_data, args=chunk2)
-        t3 = threading.Thread(target=send_data, args=chunk3)
-        t4 = threading.Thread(target=send_data, args=chunk4)
-
-        t1.start()   #sends 4 chunks via 4 threads
-        t2.start()
-        t3.start()
-        t4.start()
+        
+        #compression
+        
+        
         
 
 videoStream = VideoStream()        
