@@ -39,6 +39,8 @@ class VideoStream:
         while keep_running:
             data, address = sock.recvfrom(4)
             data = data.decode('utf-8')
+            if(data is None):
+                continue
             if(data=="get"):
                 buf = buffer_frame(self.cap.read())
                 if len(buf) > 65507:
