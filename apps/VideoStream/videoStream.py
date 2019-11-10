@@ -34,27 +34,42 @@ class VideoStream:
 
 
     # TODO: Add skeletons for additional class methods when functionality of class is made more clear.
-    def main_loop:
-        keep_running = 1
+
+    connection = Connections()
+    keep_running = 1
+               
+    def stream_to_clients(): 
         while keep_running:
+            frame = cv2.VideoCapture(0)
+            buf = buffer_frame(frame)
+            address_list = connections.get_addresses() #TODO: Make get_adderesses() in connections
+            #TODO: make function that dynamically makes threads depending on the size of address_list
+            connections.read_heartbeat()
             data, address = sock.recvfrom(4)
             data = data.decode('utf-8')
             if(data is None):
                 continue
-            if(data=="get"):
-                buf = buffer_frame(self.cap.read())
-                if len(buf) > 65507:
-                    print("Image too large")
+                      
+            if(len(buf) > 65507):
+                print("Image too large")
                     sock.sendto("FAIL".encode('utf-8'), address)
                     continue
-                elif(data=="quit"):
-                    keep_running = False                
-                socket.sendto(buf, address)
-        print("Quitting...")
-        sock.close()
+            elif(data=="quit"):
+                keep_running = False
+                print("Quitting...")
+                sock.close()
+            if(data=="get" and address not in address_list): #just send "get" to join the stream!
+                connections.add(address)
+                
+            for x in range(0,len(address_list)):
+                connections.read_heartbeat(address_list[x])
+                socket.sendto(buf, address_list[x])
+                
+            connections.cleanup_connections()
+        
+        
                      
     def buffer_frame(frame): 
-        #TODO: frame is a numpy array?
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         #TODO: Review what resolution (size) we want the image, and create a configurable input
         gray = cv2.resize(gray, (0, 0), fx=0.1, fy=0.1) 
