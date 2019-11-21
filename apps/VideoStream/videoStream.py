@@ -34,6 +34,5 @@ class VideoStream:
 
     # TODO: Add skeletons for additional class methods when functionality of class is made more clear.
 
-videoStream = VideoStream()
 
-videoStream.loop()
+videoStream = VideoStream()
