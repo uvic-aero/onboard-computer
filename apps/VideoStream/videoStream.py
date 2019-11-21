@@ -1,7 +1,38 @@
-# Import Statements
 import socket
-import cv2
+import time
 import zlib
+import cv2
+
+class Connections:
+    """Class for handling active connections"""
+
+    def ___init___(self, timeout):
+        self.connections = []
+        self.times_since_heartbeat = []
+        self.timeout = timeout
+
+    def add(self, new_address):
+        self.connections.append(new_address)
+        self.times_since_heartbeat.append(0)
+
+    # Can remove by either address or index.
+    def remove(self, to_remove):
+        if(to_remove is str):
+            to_remove = self.connections.index(to_remove)
+        del self.connections[to_remove]
+        del self.times_since_heartbeat[to_remove]
+
+    def read_heartbeat(self, address):
+        index = self.connections.index(address)
+        times_since_heartbeat[index] = time.time()
+
+    # Clean up expired connections.
+    def cleanup_connections(self):
+        i = 0
+        while i < len(self.times_since_heartbeat):
+            if(time.time() - self.times_since_heartbeat[i] > self.timeout):
+                self.remove(i)
+            i = i - 1
 
 class VideoStream:
     """Class for streaming video. """
@@ -19,10 +50,11 @@ class VideoStream:
     def stop(self):
         print("Stopping VideoStream...")
         self.status = "down"
-    
+
     def send_frame(self, frame):
         data, address = self.socket.recvfrom(4)
         data = data.decode('utf-8')
+
         if (data == "get"):
             self.socket.sendto(frame, address)
 
@@ -30,10 +62,10 @@ class VideoStream:
         encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), quality]
         grey = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         encimg = cv2.imencode('.jpg', grey, encode_param)[1].tostring()
-        encimg = zlib.compress(encimg, 5)
+        encimg = zlib.compress(encimg, 9)
         videoStream.send_frame(encimg)
 
     # TODO: Add skeletons for additional class methods when functionality of class is made more clear.
-
+    
 
 videoStream = VideoStream()
