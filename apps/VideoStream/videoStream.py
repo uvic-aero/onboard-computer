@@ -1,7 +1,8 @@
 # Import Statements
-import numpy as np
 import socket
 import time
+import zlib
+import cv2
 
 class Connections:
     """Class for handling active connections"""
@@ -53,6 +54,13 @@ class VideoStream:
         print("Stopping VideoStream...")
         self.status = "down"
 
+    def compress_frame(self, frame, quality):
+        encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), quality]
+        grey = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        encimg = cv2.imencode('.jpg', grey, encode_param)[1].tostring()
+        encimg = zlib.compress(encimg, 9)
+        
+        return encimg
     def send_frame(self,frame):
         self.socket.sendto(frame[:1600], ('0.0.0.0', 12345))
 
