@@ -1,4 +1,5 @@
 from VideoStream import videoStream
+import cv2
 
 cap = cv2.VideoCapture(0)
 

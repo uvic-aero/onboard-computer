@@ -1,8 +1,6 @@
 # Import Statements
 import numpy as np
 import socket
-import cv2
-import sys
 
 class VideoStream:
 
@@ -25,7 +23,6 @@ class VideoStream:
         self.status = "down"
 
     def send_frame(self,frame):
-        print(sys.getsizeof(frame))
         self.socket.sendto(frame[:1600], ('0.0.0.0', 12345))
 
 videoStream = VideoStream()
