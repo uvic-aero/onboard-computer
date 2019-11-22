@@ -1,4 +1,5 @@
 # Import Statements
+import numpy as np
 import socket
 import time
 
@@ -34,6 +35,7 @@ class Connections:
             i = i - 1
 
 class VideoStream:
+
     """Class for streaming video. """
    # TODO: Write more complete docstring when distinction between classes is more clear.
 
@@ -41,6 +43,7 @@ class VideoStream:
         self.status = "down"
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.socket.bind(('', 1201))
+        self.compression_level = 6 
 
     def start(self):
         print("Starting VideoStream...")
@@ -50,7 +53,7 @@ class VideoStream:
         print("Stopping VideoStream...")
         self.status = "down"
 
-    # TODO: Add skeletons for additional class methods when functionality of class is made more clear.
-    
+    def send_frame(self,frame):
+        self.socket.sendto(frame[:1600], ('0.0.0.0', 12345))
 
 videoStream = VideoStream()
