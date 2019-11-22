@@ -56,9 +56,7 @@ class VideoStream:
         grey = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         encimg = cv2.imencode('.jpg', grey, encode_param)[1].tostring()
         encimg = zlib.compress(encimg, 9)
-        videoStream.send_frame(encimg)
-
-    # TODO: Add skeletons for additional class methods when functionality of class is made more clear.
-    
+        
+        return encimg
 
 videoStream = VideoStream()
