@@ -64,4 +64,4 @@ class VideoStream:
     def send_frame(self,frame):
         self.socket.sendto(frame[:1600], ('0.0.0.0', 12345))
 
-videoStream = VideoStream()
+videoStream = VideoStream() 
