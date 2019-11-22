@@ -16,3 +16,4 @@ MAVProxy==1.8.5
 monotonic==1.5
 pyserial==3.4
 urllib3==1.24.2
+opencv-python
