@@ -51,13 +51,6 @@ class VideoStream:
         print("Stopping VideoStream...")
         self.status = "down"
 
-    def send_frame(self, frame):
-        data, address = self.socket.recvfrom(4)
-        data = data.decode('utf-8')
-
-        if (data == "get"):
-            self.socket.sendto(frame, address)
-
     def compress_frame(self, frame, quality):
         encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), quality]
         grey = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
