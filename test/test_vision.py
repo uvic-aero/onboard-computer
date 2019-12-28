@@ -4,7 +4,7 @@ from apps.Vision import Vision
 
 class TestVision(unittest.TestCase):
 
-    def test_filer_contour(self):
+    def test_filter_contour(self):
         self.assertTrue(True)
 
 
