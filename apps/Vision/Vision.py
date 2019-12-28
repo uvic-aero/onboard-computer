@@ -1,7 +1,7 @@
-from Capture import Capture
-from DropOffZoneClassifier import DropOffZoneClassifier
-from LightSourceFinder import LightSourceFinder
-from QRCodeBoxClassifier import QRCodeBoxClassifier
+from apps.Vision.Capture import Capture
+from apps.Vision.DropOffZoneClassifier import DropOffZoneClassifier
+from apps.Vision.LightSourceFinder import LightSourceFinder
+from apps.Vision.QRCodeBoxClassifier import QRCodeBoxClassifier
 
 
 class Vision:
