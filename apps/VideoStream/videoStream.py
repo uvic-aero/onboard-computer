@@ -26,7 +26,7 @@ class Connections:
         index = self.connections.index(address)
         self.times_since_heartbeat[index] = time.time()
 
-    # Clean up expired connections. Gets called everytime a new client connects, list of clients is updated.
+    # Clean up expired connections. Gets called everytime a new client connects, connections are cleaned.
     def cleanup_connections(self):
         i = 0
         while i < len(self.times_since_heartbeat):
@@ -36,7 +36,7 @@ class Connections:
         return self.connections
 
     def update(self, address):
-        if address in self.connections: #What if we replace self.connections with cleanup_connections()?
+        if address in self.connections:
             self.read_heartbeat(address)
         else:
             self.add(address)
@@ -68,7 +68,7 @@ class VideoStream:
         frame = zlib.compress(frame, -1)
         self.socket.sendto(frame, address)
 
-    def listen(self, port=None): #Apparently this is a common workaround. Can't reference self in function arguments.
+    def listen(self, port=None):
         if port is None:
             port = self.port
         self.socket.bind(('', port))
@@ -82,10 +82,10 @@ class VideoStream:
             for address in self.connections.connections:
                 print(address)
 
-    def broadcast(self, frame): #broadcast() can be called from the camera code after it has finished with the frame. No loop required here.
+    def broadcast(self, frame):
         self.cleanup_connections()
         for address in self.connections.connections:
-            send_frame(frame, address)
+            self.send_frame(frame, address)
                 
     # TODO: Add skeletons for additional class methods when functionality of class is made more clear.
 
