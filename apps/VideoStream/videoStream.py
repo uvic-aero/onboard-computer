@@ -60,15 +60,12 @@ class VideoStream:
         print("Stopping VideoStream...")
         self.status = "down"
 
-    def encode_frame(self, frame, quality=4):
+    def send_frame(self, frame, address, quality=4):
+        frame = encode_frame(frame)
         encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), quality]
         grey = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        encimg = cv2.imencode('.jpg', grey, encode_param)[1].tostring()
-        encimg = zlib.compress(encimg, -1)
-        return encimg
-
-    def send_frame(self, frame, address):
-        frame = encode_frame(frame)
+        frame = cv2.imencode('.jpg', grey, encode_param)[1].tostring()
+        frame = zlib.compress(frame, -1)
         self.socket.sendto(frame, address)
 
     def listen(self, port=None): #Apparently this is a common workaround. Can't reference self in function arguments.
@@ -83,7 +80,10 @@ class VideoStream:
                 self.connections.update(address)
             for address in self.connections.connections:
                 print(address)
-                #send_frame(frame, address) #Frame still needs to come from somewhere.
+
+    def broadcast(self, frame): #broadcast() can be called from the camera code after it has finished with the frame. No loop required here.
+        for address in self.connections.connections:
+            send_frame(frame, address)
                 
     # TODO: Add skeletons for additional class methods when functionality of class is made more clear.
 
