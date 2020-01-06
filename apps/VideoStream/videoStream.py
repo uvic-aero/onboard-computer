@@ -77,14 +77,14 @@ class VideoStream:
         self.socket.bind(('', port))
         print('Listening on port', port)
         while True:
-            for connections in self.connections.connections:
-                data, address = self.socket.recvfrom(3)
-                data = data.decode('utf-8')
-                if (data == "get"):
-                    self.connections.update(address)
-                    #send_frame(frame, address) #Frame still needs to come from somewhere.
+            data, address = self.socket.recvfrom(3)
+            data = data.decode('utf-8')
+            if (data == "get"):
+                self.connections.update(address)
+            for address in self.connections.connections:
+                print(address)
+                #send_frame(frame, address) #Frame still needs to come from somewhere.
                 
-
     # TODO: Add skeletons for additional class methods when functionality of class is made more clear.
 
 videoStream = VideoStream()
