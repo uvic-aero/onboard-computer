@@ -26,13 +26,13 @@ class Connections:
         index = self.connections.index(address)
         self.times_since_heartbeat[index] = time.time()
 
-    # Clean up expired connections.
+    # Clean up expired connections. Gets called everytime a new client connects, list of clients is updated.
     def cleanup_connections(self):
         i = 0
         while i < len(self.times_since_heartbeat):
             if(time.time() - self.times_since_heartbeat[i] > self.timeout):
                 self.remove(i)
-            i = i - 1
+            i = i + 1
         return self.connections
 
     def update(self, address):
@@ -74,6 +74,7 @@ class VideoStream:
         self.socket.bind(('', port))
         print('Listening on port', port)
         while True:
+            self.connections.cleanup_connections()
             data, address = self.socket.recvfrom(3)
             data = data.decode('utf-8')
             if (data == "get"):
@@ -82,6 +83,7 @@ class VideoStream:
                 print(address)
 
     def broadcast(self, frame): #broadcast() can be called from the camera code after it has finished with the frame. No loop required here.
+        self.cleanup_connections()
         for address in self.connections.connections:
             send_frame(frame, address)
                 
