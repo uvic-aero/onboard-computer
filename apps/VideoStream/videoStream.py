@@ -26,17 +26,17 @@ class Connections:
         index = self.connections.index(address)
         self.times_since_heartbeat[index] = time.time()
 
-    # Clean up expired connections.
+    # Clean up expired connections. Gets called everytime a new client connects, connections are cleaned.
     def cleanup_connections(self):
         i = 0
         while i < len(self.times_since_heartbeat):
             if(time.time() - self.times_since_heartbeat[i] > self.timeout):
                 self.remove(i)
-            i = i - 1
+            i = i + 1
         return self.connections
 
     def update(self, address):
-        if address in self.connections: #What if we replace self.connections with cleanup_connections()?
+        if address in self.connections:
             self.read_heartbeat(address)
         else:
             self.add(address)
@@ -60,30 +60,32 @@ class VideoStream:
         print("Stopping VideoStream...")
         self.status = "down"
 
-    def encode_frame(self, frame, quality=4):
+    def send_frame(self, frame, address, quality=4):
+        frame = encode_frame(frame)
         encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), quality]
         grey = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        encimg = cv2.imencode('.jpg', grey, encode_param)[1].tostring()
-        encimg = zlib.compress(encimg, -1)
-        return encimg
-
-    def send_frame(self, frame, address):
-        frame = encode_frame(frame)
+        frame = cv2.imencode('.jpg', grey, encode_param)[1].tostring()
+        frame = zlib.compress(frame, -1)
         self.socket.sendto(frame, address)
 
-    def listen(self, port=None): #Apparently this is a common workaround. Can't reference self in function arguments.
+    def listen(self, port=None):
         if port is None:
             port = self.port
         self.socket.bind(('', port))
         print('Listening on port', port)
         while True:
+            self.connections.cleanup_connections()
             data, address = self.socket.recvfrom(3)
             data = data.decode('utf-8')
             if (data == "get"):
                 self.connections.update(address)
             for address in self.connections.connections:
                 print(address)
-                #send_frame(frame, address) #Frame still needs to come from somewhere.
+
+    def broadcast(self, frame):
+        self.cleanup_connections()
+        for address in self.connections.connections:
+            self.send_frame(frame, address)
                 
     # TODO: Add skeletons for additional class methods when functionality of class is made more clear.
 
