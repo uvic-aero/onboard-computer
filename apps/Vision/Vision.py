@@ -11,3 +11,6 @@ class Vision:
         self.DropOffZoneClassifier = DropOffZoneClassifier()
         self.LightSourceFinder = LightSourceFinder()
         self.QRCodeClassifier = QRCodeClassifier()
+
+
+vision = Vision()
