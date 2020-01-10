@@ -9,11 +9,13 @@ class QRCodeBoxTraining(QRCodeClassification):
     Attributes: 
         List of Float Lists: X (features)
         Integer List: Y (Labels)
+        SKlearn classifier object: clsf
     """
 
     def __init__(self):
         subimages = self.get_training_subimages("")
         self.X, self.Y = self.prep_training_data(subimages)
+        self.clsf = self.train(None)
 
     def get_training_subimages(self, directory):
         """ 
@@ -82,6 +84,23 @@ class QRCodeBoxTraining(QRCodeClassification):
             Logistic Regression
             Decision Tree
         and outputs results
+        """
+        pass
 
+    def train(self, clsf):
+        """ 
+        Trains classifier on training documents (self.X, self.Y)
+
+        Parameters: 
+            SKlearn classifier object: clsf
+
+        Returns:
+            SKlearn classifier object: clsf
+        """
+        return clsf
+
+    def write_clsf_to_pickle_file(self):
+        """
+        writes self.clsf to pickle file
         """
         pass

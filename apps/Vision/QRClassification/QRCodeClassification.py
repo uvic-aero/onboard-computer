@@ -29,7 +29,7 @@ class QRCodeBoxClassification:
         Returns: 
             List: [mean_area, std_area, cardinality_of_contour]
         """
-        pass
+        return []
 
     def extract_countours(self, subimage):
         """ 
@@ -42,7 +42,7 @@ class QRCodeBoxClassification:
             List of Lists of numpy arrays: Contours, 
             [[(x11,y11), ... , (x1n,y1n)], [(x21,y21), ... , (x2n,y2n)]] 
         """
-        pass
+        return []
 
     def get_contour_areas(self, contours):
         """ 
@@ -55,7 +55,7 @@ class QRCodeBoxClassification:
         Returns: 
             Float List: Areas
         """
-        pass
+        return []
 
     def split_frames(self, image):
         """ 
@@ -68,4 +68,4 @@ class QRCodeBoxClassification:
         Returns: 
             List of 2D numpy arrays: Subimages
         """
-        pass
+        return []
