@@ -4,7 +4,7 @@ import numpy as np
 
 class QRCodeBoxTraining(QRCodeClassification):
     """
-    This is a class for training and scoring QR Code classifiers
+    This is a standalone class for training and scoring QR Code classifiers
 
     Attributes: 
         List of Float Lists: X (features)
@@ -104,3 +104,6 @@ class QRCodeBoxTraining(QRCodeClassification):
         writes self.clsf to pickle file
         """
         pass
+
+
+train = QRCodeBoxTraining()

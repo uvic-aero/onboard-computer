@@ -1,4 +1,4 @@
-class QRCodeBoxClassification:
+class QRCodeClassification:
 
     def __init__(self):
         pass

@@ -1,4 +1,4 @@
-from QRCodeClassification import QRCodeClassification
+from apps.Vision.QRClassification.QRCodeClassification import QRCodeClassification
 
 
 class QRCodeClassifier(QRCodeClassification):
