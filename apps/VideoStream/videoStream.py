@@ -56,7 +56,7 @@ class VideoStream:
     def start(self):
         print("Starting VideoStream...")
         self.status = "running"
-        self.listenThread()
+        self.listen_thread()
 
     def stop(self):
         print("Stopping VideoStream...")
@@ -70,7 +70,7 @@ class VideoStream:
         frame = zlib.compress(frame, -1)
         self.socket.sendto(frame, address)
 
-    def listenThread(self):
+    def listen_thread(self):
         thread = threading.Thread(target = self.listen)
         thread.daemon = False
         thread.start()
