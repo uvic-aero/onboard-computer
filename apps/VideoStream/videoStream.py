@@ -3,7 +3,6 @@ import time
 import zlib
 import cv2
 import threading
-from queue import Queue
 
 class Connections:
     """Class for handling active connections"""
