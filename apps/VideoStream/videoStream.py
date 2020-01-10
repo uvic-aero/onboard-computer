@@ -2,6 +2,8 @@ import socket
 import time
 import zlib
 import cv2
+import threading
+from queue import Queue
 
 class Connections:
     """Class for handling active connections"""
@@ -54,7 +56,7 @@ class VideoStream:
     def start(self):
         print("Starting VideoStream...")
         self.status = "running"
-        self.listen()
+        self.listenThread()
 
     def stop(self):
         print("Stopping VideoStream...")
@@ -68,10 +70,16 @@ class VideoStream:
         frame = zlib.compress(frame, -1)
         self.socket.sendto(frame, address)
 
+    def listenThread(self):
+        thread = threading.Thread(target = self.listen)
+        thread.daemon = False
+        thread.start()
+
     def listen(self, port=None):
         if port is None:
             port = self.port
-        self.socket.bind(('', port))
+        with threading.Lock():
+            self.socket.bind(('', port))
         print('Listening on port', port)
         while True:
             self.connections.cleanup_connections()
@@ -86,7 +94,7 @@ class VideoStream:
         self.cleanup_connections()
         for address in self.connections.connections:
             self.send_frame(frame, address)
-                
+
     # TODO: Add skeletons for additional class methods when functionality of class is made more clear.
 
 videoStream = VideoStream()
