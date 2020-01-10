@@ -88,6 +88,7 @@ class VideoStream:
                 self.connections.update(address)
             for address in self.connections.connections:
                 print(address)
+            time.sleep(1)
 
     def broadcast(self, frame):
         self.cleanup_connections()
