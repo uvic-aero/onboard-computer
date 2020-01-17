@@ -1,73 +1,77 @@
 
 import serial
 
+MESSAGE_START = "<"
+MESSAGE_END = ">"
+ENDCODING = "utf-8"
+SERIAL_PORT = "/dev/ttyUSB0"
+
+#Used to control the ground vehicle
 class GroundControl():
-    #Used to control the ground vehicle
-
     def __init__(self):
-
         self.id = 0
 
-
         # open serial port
-        self.ser = serial.Serial('/dev/ttyUSB0')
+        self.ser = serial.Serial(SERIAL_PORT)
 
 
+    # Convert commands to string with format
+    # <id(int) 180(0,1) break(0,1) dir1(0,1), vel1(0-255), dir2(0,1), vel2(0-255) >
+    def convert_to_string(self, commands):
+        command_string = MESSAGE_START
 
-    def convert_to_binary(self, commands):
-        # Do something to convert the commands to binary
-        # Commands will be in a dictionary that looks like this
-
-        self.id += 1
-
-        binary_string = "<"
-
-        binary_string += str(self.id) + ' '
+        command_string += str(self.id) + " "
 
         if commands.get("180") == False:
-            binary_string += '0 '
+            command_string += "0 "
         else:
-            binary_string += '1 '
+            command_string += "1 "
 
         if commands.get("break") == False:
-            binary_string += '0 '
+            command_string += "0 "
         else:
-            binary_string += '1 '
+            command_string += "1 "
 
         #0 or 1 into string
-        binary_string += str(commands.get("dir1")) + " "
+        command_string += str(commands.get("dir1")) + " "
 
-        binary_string += str(commands.get("vel1")) + " "
+        command_string += str(commands.get("vel1")) + " "
 
-        binary_string += str(commands.get("dir2")) + " "
+        command_string += str(commands.get("dir2")) + " "
 
-        binary_string += str(commands.get("vel2")) + " "
+        command_string += str(commands.get("vel2")) + " "
 
-        binary_string += r">"
+        command_string += MESSAGE_END
 
-        return binary_string
+        return command_string
+    
 
-    # not sure why 2 functions
+    # Waits for message start and returns the message
+    def get_response(self):
+        response_buffer = ""
+        finished = False
+
+        while(not finished):
+            if(self.ser.read().decode(ENDCODING) == MESSAGE_START):
+                response_buffer += self.ser.read_until(MESSAGE_END.encode(ENDCODING)).decode(ENDCODING)
+                finished = True
+        
+        return response_buffer
+
+
+    # Send commands to arduino and print response
+    # Commands should be a dictionary that looks like
+    # {180: [True, False], break: [True, Flase], dir1: [0,1], vel1: [0-255], dir2: [0,1], vel2: [0-255]}
     def send_command_to_arduino(self, commands):
+        self.id += 1
+        to_send = self.convert_to_string(commands).encode(ENDCODING)
+        self.ser.write(to_send)
+        print(self.get_response())
 
-        self.ser.write(self.convert_to_binary(commands).encode('utf-8'))
-        print(commands)
-        print(self.convert_to_binary(commands))
-        return None
 
-    def serial_close(self):
+    # Close serial connection
+    def close_serial(self):
         self.ser.close()
 
-
-# Test functions
+# Create singleton instance
 gc = GroundControl()
-commands = {
-    '180': False,
-    'break': False,
-    'dir1': 1,
-    'vel1': 100,
-    'dir2': 0,
-    'vel2': 50
-    }
-gc.send_command_to_arduino(commands)
-gc.serial_close()
