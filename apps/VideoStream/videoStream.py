@@ -11,6 +11,7 @@ class Connections:
         self.connections = []
         self.times_since_heartbeat = []
         self.timeout = timeout
+        self.lock = threading.Lock()
 
     def add(self, new_address):
         self.connections.append(new_address)
@@ -54,11 +55,12 @@ class VideoStream:
 
     def start(self):
         print("Starting VideoStream...")
-        self.status = "running"
         self.listen_thread()
+        self.status = "running"
 
     def stop(self):
         print("Stopping VideoStream...")
+        threading._shutdown()
         self.status = "down"
 
     def send_frame(self, frame, address, quality=4):
@@ -70,17 +72,17 @@ class VideoStream:
         self.socket.sendto(frame, address)
 
     def listen_thread(self):
-        thread = threading.Thread(target = self.listen)
-        thread.daemon = False
-        thread.start()
-
-    def listen(self, port=None):
+        listen = threading.Thread(target = self.listen)
+        listen.daemon = False
+        listen.start()
+    
+    def listen(self, port = None):
         if port is None:
             port = self.port
-        with threading.Lock():
-            self.socket.bind(('', port))
+        self.socket.bind(('', port))
         print('Listening on port', port)
         while True:
+            self.connections.lock.acquire()
             self.connections.cleanup_connections()
             data, address = self.socket.recvfrom(3)
             data = data.decode('utf-8')
@@ -88,12 +90,16 @@ class VideoStream:
                 self.connections.update(address)
             for address in self.connections.connections:
                 print(address)
+            self.connections.lock.release()
             time.sleep(1)
 
     def broadcast(self, frame):
+        self.connections.lock.acquire()
         self.cleanup_connections()
         for address in self.connections.connections:
             self.send_frame(frame, address)
+        self.connections.lock.release()
+            
 
     # TODO: Add skeletons for additional class methods when functionality of class is made more clear.
 
