@@ -17,15 +17,13 @@ class Connections:
         self.connections.append(new_address)
         self.times_since_heartbeat.append(time.time())
         
-
-    # Can remove by either address or index.
     def remove(self, to_remove):
         if(to_remove is str):
             to_remove = self.connections.index(to_remove)
         del self.connections[to_remove]
         del self.times_since_heartbeat[to_remove]
-        
-    def read_heartbeat(self, address):     
+
+    def read_heartbeat(self, address):
         index = self.connections.index(address)
         self.times_since_heartbeat[index] = time.time()
 
@@ -43,22 +41,24 @@ class Connections:
 
 class VideoStream:
     """Class for streaming video. """
-   # TODO: Write more complete docstring when distinction between classes is more clear.                                                                    
-
+    # TODO: Write more complete docstring when distinction between classes is more clear.                                                                    
+    # TODO: Add skeletons for additional class methods when functionality of class is made more clear.
+    
     def __init__(self):
         self.status = "down"
         self.port = 1201
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.connections = Connections(2)
+        self.socket.settimeout(1)
 
     def start(self):
         print("Starting VideoStream...")
         self.listen_thread()
         self.status = "running"
-        self.socket.settimeout(1)
 
     def stop(self):
         print("Stopping VideoStream...")
+        threading._shutdown()
         self.socket.close()
         self.status = "down"
 
@@ -99,7 +99,5 @@ class VideoStream:
     def broadcast(self, frame):
         for address in self.connections.connections:
             self.send_frame(frame, address)            
-
-    # TODO: Add skeletons for additional class methods when functionality of class is made more clear.
 
 videoStream = VideoStream()
