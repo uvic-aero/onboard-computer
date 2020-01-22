@@ -94,7 +94,6 @@ class VideoStream:
                     for address in self.connections.connections:
                         print(address)
                     self.connections.lock.release()
-                continue
             except socket.timeout:
                 continue
 
