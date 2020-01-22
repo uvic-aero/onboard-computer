@@ -18,7 +18,7 @@ class Connections:
         self.times_since_heartbeat.append(time.time())
         
     def remove(self, to_remove):
-        if(to_remove is str):
+        if (to_remove is str):
             to_remove = self.connections.index(to_remove)
         del self.connections[to_remove]
         del self.times_since_heartbeat[to_remove]
@@ -29,7 +29,7 @@ class Connections:
 
     def cleanup(self):  
         for i in range(len(self.times_since_heartbeat)):
-            if(time.time() - self.times_since_heartbeat[i] > self.timeout):
+            if (time.time() - self.times_since_heartbeat[i] > self.timeout):
                 print("Client", self.connections[i], "timed out.")
                 self.remove(i)
 
@@ -80,7 +80,9 @@ class VideoStream:
         self.socket.bind(('', port))
         print('Listening on port', port)
         while True:
+            self.connections.lock.acquire()
             self.connections.cleanup()
+            self.connections.lock.release()
             for address in self.connections.connections:
                 print(address)
             try:    
