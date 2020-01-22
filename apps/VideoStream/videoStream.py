@@ -71,7 +71,6 @@ class VideoStream:
 
     def listen_thread(self):
         listen = threading.Thread(target = self.listen)
-        listen.daemon = False
         listen.start()
 
     def listen(self, port = None):
