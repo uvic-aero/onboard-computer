@@ -25,12 +25,14 @@ class DirectionVector:
    
       return heat_matrix
 
-   #only public method
    def compute_vector(self, new_frame):
+      
       #Compute Newest heat matrix
       heat_matrix = self.compute_heat_matrix(new_frame)
+      
       #Get co-ordinate of highest value in heat_matrix
       highest_cord = np.unravel_index(heat_matrix.argmax(), heat_matrix.shape)
+      
       #calculate the vector as (x1-x2),(y1-y2)
       vector = [self.shape/2,self.shape/2] - highest_cord
       return vector
