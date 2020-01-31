@@ -7,7 +7,6 @@ Pillow
 constants==0.6.0
 netifaces==0.10.9
 serial==0.0.97
-picamera==1.13
 chardet==3.0.4
 constants==0.6.0
 idna==2.7
@@ -17,4 +16,5 @@ monotonic==1.5
 pyserial==3.4
 urllib3==1.24.2
 opencv-python==4.1.2.30
+picamera==1.13
 
