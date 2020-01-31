@@ -31,7 +31,7 @@ OBC uses the [Unittest framework](https://docs.python.org/3/library/unittest.htm
 Tests live in the `/test` directory and can be ran with `python3 -m unittest test.[test_module_name]`
 
 For example run the Vision test with:
-`python3 -m unittest test.test_vision`
+`python3 -m unittest test.test_qrcode_classification`
 
 <!--
 ## Livestreaming video
