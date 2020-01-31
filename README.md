@@ -26,6 +26,7 @@ Check that the software is running by visiting the server
   [http://0.0.0.0:1600/status/piCam](http://0.0.0.0:1600/status/piCam)
 
 ## Running Unittests
+OBC uses the [Unittest framework](https://docs.python.org/3/library/unittest.html)
 
 Tests live in the `/test` directory and can be ran with `python3 -m unittest test.[test_module_name]`
 
