@@ -8,14 +8,14 @@ class DirectionVector:
       self.shape = 2
       self.heat_matrix = np.ones(self.shape,self.shape)
 
-   def get_oldest_frame(self):
+   def _get_oldest_frame(self):
       oldest_frame = self.frames_queue.get()
       return oldest_frame
 
-   def add_new_frame(self, frame):
+   def _add_new_frame(self, frame):
       self.frames_queue.put(frame)
 
-   def compute_heat_matrix(self, new_frame):
+   def _compute_heat_matrix(self, new_frame):
 
       #Compute heat matrix by by removing data from the last frame (divide)
       #and add new frame (multiply)
