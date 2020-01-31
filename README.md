@@ -25,6 +25,13 @@ Start obc by running (in the repository root)
 Check that the software is running by visiting the server
   [http://0.0.0.0:1600/status/piCam](http://0.0.0.0:1600/status/piCam)
 
+## Running Unittests
+
+Tests live in the `/test` directory and can be ran with `python3 -m unittest test.[test_module_name]`
+
+For example run the Vision test with:
+`python3 -m unittest test.test_vision`
+
 <!--
 ## Livestreaming video
 
