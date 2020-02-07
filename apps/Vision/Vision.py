@@ -12,7 +12,7 @@ class Vision:
         self.DropOffZoneClassifier = DropOffZoneClassifier()
         self.LightSourceFinder = LightSourceFinder()
         self.QRCodeClassifier = QRCodeClassifier()
-        self.HeatMatrix = HeatMatrix()
+        self.HeatMatrix = HeatMatrix(2,5)
 
 
 vision = Vision()
