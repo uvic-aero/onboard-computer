@@ -2,7 +2,7 @@ from apps.Vision.Capture import Capture
 from apps.Vision.DropOffZoneClassifier import DropOffZoneClassifier
 from apps.Vision.LightSourceFinder import LightSourceFinder
 from apps.Vision.QRClassification.QRCodeClassifier import QRCodeClassifier
-from apps.Vision.DirectionVector import DirectionVector
+from apps.Vision.HeatMatrix import HeatMatrix
 
 
 class Vision:
@@ -12,7 +12,7 @@ class Vision:
         self.DropOffZoneClassifier = DropOffZoneClassifier()
         self.LightSourceFinder = LightSourceFinder()
         self.QRCodeClassifier = QRCodeClassifier()
-        self.DirectionVector = DirectionVector()
+        self.HeatMatrix = HeatMatrix()
 
 
 vision = Vision()
