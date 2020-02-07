@@ -38,7 +38,9 @@ make runtest module=[test_module_name]
 ```
 
 For example run the Vision test with:
-`python3 -m unittest test.test_qrcode_classification`
+```
+python3 -m unittest test.test_qrcode_classification
+```
 or 
 ```
 make runtest module=test_qrcode_classification
