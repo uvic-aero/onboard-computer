@@ -3,9 +3,17 @@ from queue import Queue
 
 class HeatMatrix:
 
-   def __init__(self, size, queue_size):
-      if size < 1:
-         raise Exception("Size too small")
+   def __init__(self, size, queue_size, origin=None):
+      if size <= 1:
+         raise ValueTooSmallError
+      
+      if origin is not None:
+         if origin[0] - size >= 0 or origin[1] - size >= 0:
+            raise InvalidOriginError
+         self.origin = origin
+      else:
+         self.origin = np.array([size // 2,size // 2]) 
+
       self.shape = (size,size)
       self.queue_size = queue_size
       self.frames_queue = Queue(self.queue_size)
@@ -34,18 +42,23 @@ class HeatMatrix:
       self._add_new_frame(new_frame)
 
    def compute_vector(self, new_frame):
-      #Get size
-      size = self.shape[0]
       
       #Update the heatmatrix with the new frame
       self._update_heat_matrix(new_frame)
 
       #Get co-ordinate of highest value in heat_matrix
-      highest_cord = np.unravel_index(self.heat_matrix.argmax(), self.heat_matrix.shape)
+      highest_cord = np.unravel_index(np.argmax(self.heat_matrix, axis=None), self.heat_matrix.shape)
       
       #calculate the vector as (x1-x2),(y1-y2)
       #x1 and y1 being equivalent to origin
-      vector = ((size/2 - highest_cord[0])
-               ,(size/2 - highest_cord[1]))
+      vector = self.origin - highest_cord
 
       return vector
+
+class ValueTooSmallError(Exception):
+   """Raised when the input value is too small"""
+   pass
+
+class InvalidOriginError(Exception):
+   """Raised when origin is outside of matrix"""
+   pass
