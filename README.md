@@ -29,9 +29,12 @@ Check that the software is running by visiting the server
 OBC uses the [Unittest framework](https://docs.python.org/3/library/unittest.html)
 
 Tests live in the `/test` directory and can be ran with `python3 -m unittest test.[test_module_name]`
+or ```make runtest module=[test_module_name]```
 
 For example run the Vision test with:
 `python3 -m unittest test.test_qrcode_classification`
+or 
+`make runtest module=test_qrcode_classification`
 
 <!--
 ## Livestreaming video
