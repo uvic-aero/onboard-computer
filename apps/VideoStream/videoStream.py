@@ -27,11 +27,13 @@ class Connections:
         index = self.connections.index(address)
         self.times_since_heartbeat[index] = time.time()
 
-    def cleanup(self):  
-        for i in range(len(self.times_since_heartbeat)):
-            if (time.time() - self.times_since_heartbeat[i] > self.timeout):
+    def cleanup(self):
+        i = 0
+        while i < len(self.times_since_heartbeat):
+            if(time.time() - self.times_since_heartbeat[i] > self.timeout):
                 print("Client", self.connections[i], "timed out.")
                 self.remove(i)
+            i = i + 1
 
     def update(self, address):
         if address in self.connections:
