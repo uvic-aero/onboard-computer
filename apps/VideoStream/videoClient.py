@@ -9,7 +9,7 @@ class Client:
     def __init__(self):
 
 	# Create a UDP socket
-	self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.address = ('0.0.0.0', 1201) 
 
     def connect(self, address=None):
@@ -17,7 +17,7 @@ class Client:
         if address != None: self.address = address
 
         while True:
-            sent = self.sock.sendto("get".encode('utf-8'), address)
+            sent = self.sock.sendto("get".encode('utf-8'), self.address)
             data, server = self.sock.recvfrom(65507)
             if (data is not None):
                 array = zlib.decompress(data, 0)
@@ -34,3 +34,7 @@ class Client:
         self.sock.sendto("quit".encode('utf-8'), self.address)
         print("Quitting")
         cv2.destroyAllWindows()
+
+
+client = Client()
+client.connect()
