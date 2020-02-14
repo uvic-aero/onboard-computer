@@ -8,36 +8,32 @@ class Connections:
     """Class for handling active connections"""
 
     def __init__(self, timeout):
-        self.connections = []
-        self.times_since_heartbeat = []
+        self.connections = {}
         self.timeout = timeout
         self.lock = threading.Lock()
 
     def add(self, new_address):
-        self.connections.append(new_address)
-        self.times_since_heartbeat.append(time.time())
-        
-    def remove(self, to_remove):
-        if (to_remove is str):
-            to_remove = self.connections.index(to_remove)
-        del self.connections[to_remove]
-        del self.times_since_heartbeat[to_remove]
+        key = new_address[0] + ':' + str(new_address[1])
+        connection = {'socket':new_address, 'time':time.time()}
+        self.connections[key] = connection
 
-    def read_heartbeat(self, address):
-        index = self.connections.index(address)
-        self.times_since_heartbeat[index] = time.time()
+    def remove(self, to_remove):
+        # if (to_remove is str):
+        #     to_remove = self.connections.index(to_remove)
+        del self.connections[to_remove]
 
     def cleanup(self):
-        i = 0
-        while i < len(self.times_since_heartbeat):
-            if(time.time() - self.times_since_heartbeat[i] > self.timeout):
-                print("Client", self.connections[i], "timed out.")
-                self.remove(i)
-            i = i + 1
+        to_remove = []
+        for key in self.connections.keys():
+            if (time.time() - self.connections[key]['time'] > self.timeout):
+                print("Client", key, "timed out.")
+                to_remove.append(key)
+        for key in to_remove:
+            self.remove(key)
 
     def update(self, address):
         if address in self.connections:
-            self.read_heartbeat(address)
+            self.connections[address]['time'] = time.time()
         else:
             self.add(address)
 
@@ -51,7 +47,7 @@ class VideoStream:
         self.port = 1201
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.connections = Connections(2)
-        self.socket.settimeout(1)
+        self.socket.settimeout(2)
 
     def start(self):
         print("Starting VideoStream...")
@@ -84,22 +80,20 @@ class VideoStream:
             self.connections.lock.acquire()
             self.connections.cleanup()
             self.connections.lock.release()
-            for address in self.connections.connections:
-                print(address)
+            for key in self.connections.connections.keys():
+                print(key)
             try:    
                 data, address = self.socket.recvfrom(3)
                 data = data.decode('utf-8')
                 if (data == "get"):
                     self.connections.lock.acquire()
                     self.connections.update(address)
-                    for address in self.connections.connections:
-                        print(address)
                     self.connections.lock.release()
             except socket.timeout:
                 continue
 
     def broadcast(self, frame):
-        for address in self.connections.connections:
-            self.send_frame(frame, address)            
+        for key in self.connections.connections.keys():
+            self.send_frame(frame, self.connections.connections[key]['socket'])          
 
 videoStream = VideoStream()
