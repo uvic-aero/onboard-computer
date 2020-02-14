@@ -34,7 +34,3 @@ class Client:
         self.sock.sendto("quit".encode('utf-8'), self.address)
         print("Quitting")
         cv2.destroyAllWindows()
-
-
-client = Client()
-client.connect()
