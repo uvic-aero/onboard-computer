@@ -3,20 +3,27 @@ import serial
 
 MESSAGE_START = "<"
 MESSAGE_END = ">"
-ENDCODING = "utf-8"
-SERIAL_PORT = "/dev/ttyUSB0"
+ENCODING = "ascii"
+SERIAL_PORT = "COM8"
+BAUDRATE = 115200
+
+READY_MESSAGE = "<Arduino is ready>"
 
 #Used to control the ground vehicle
 class GroundControl():
     def __init__(self):
         self.id = 0
+        self.open_serial()
 
-        # open serial port
-        self.ser = serial.Serial(SERIAL_PORT)
+    # open serial port and wait for ready
+    def open_serial(self):
+        self.ser = serial.Serial(SERIAL_PORT, BAUDRATE)
+        while self.get_response() != READY_MESSAGE:
+            pass
 
 
     # Convert commands to string with format
-    # <id(int) 180(0,1) break(0,1) dir1(0,1), vel1(0-255), dir2(0,1), vel2(0-255) >
+    # <id(int) 180(0,1) brake(0,1) dir1(0,1), vel1(0-255), dir2(0,1), vel2(0-255) >
     def convert_to_string(self, commands):
         command_string = MESSAGE_START
 
@@ -27,7 +34,7 @@ class GroundControl():
         else:
             command_string += "1 "
 
-        if commands.get("break") == False:
+        if commands.get("brake") == False:
             command_string += "0 "
         else:
             command_string += "1 "
@@ -48,12 +55,12 @@ class GroundControl():
 
     # Waits for message start and returns the message
     def get_response(self):
-        response_buffer = ""
+        response_buffer = MESSAGE_START
         finished = False
 
         while(not finished):
-            if(self.ser.read().decode(ENDCODING) == MESSAGE_START):
-                response_buffer += self.ser.read_until(MESSAGE_END.encode(ENDCODING)).decode(ENDCODING)
+            if(self.ser.read().decode(ENCODING) == MESSAGE_START):
+                response_buffer += self.ser.read_until(MESSAGE_END.encode(ENCODING)).decode(ENCODING)
                 finished = True
         
         return response_buffer
@@ -61,12 +68,12 @@ class GroundControl():
 
     # Send commands to arduino and print response
     # Commands should be a dictionary that looks like
-    # {180: [True, False], break: [True, Flase], dir1: [0,1], vel1: [0-255], dir2: [0,1], vel2: [0-255]}
+    # {180: [True, False], brake: [True, Flase], dir1: [0,1], vel1: [0-255], dir2: [0,1], vel2: [0-255]}
     def send_command_to_arduino(self, commands):
         self.id += 1
-        to_send = self.convert_to_string(commands).encode(ENDCODING)
+        to_send = self.convert_to_string(commands).encode(ENCODING)
         self.ser.write(to_send)
-        print(self.get_response())
+        return self.get_response()
 
 
     # Close serial connection
@@ -74,4 +81,4 @@ class GroundControl():
         self.ser.close()
 
 # Create singleton instance
-gc = GroundControl()
+ground_control = GroundControl()
