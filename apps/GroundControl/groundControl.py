@@ -4,7 +4,7 @@ import serial
 MESSAGE_START = "<"
 MESSAGE_END = ">"
 ENCODING = "ascii"
-SERIAL_PORT = "COM8"
+SERIAL_PORT = "/dev/ttyUSB0"
 BAUDRATE = 115200
 
 READY_MESSAGE = "<Arduino is ready>"
