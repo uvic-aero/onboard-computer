@@ -7,6 +7,13 @@ from apps.Vision.QRClassification.QRCodeClassification import QRCodeClassificati
 
 class TestVision(unittest.TestCase):
 
+    def test_set_subimage_dim():
+        """
+        Assert that the LCD of the resolution dimensions is used as the
+        subimage dimension.
+        """
+        pass
+
     def test_exract_features(self):
         """
             Assert exract_features returns a list 
@@ -41,6 +48,54 @@ class TestVision(unittest.TestCase):
             contour=contour, max_height=max_height, max_len=max_len, min_len=min_len),
             None
         )
+
+    def test_filter_contour_gt_min_lt_max_ht():
+        """
+        positive case, inbetween the two bounds
+        """
+        pass
+
+    def test_filter_countour_gt_max_ht():
+        """
+        negative case, exceeds upper bound
+        """
+        pass
+
+    def test_filter_countour_vertice_lt_min():
+        """
+        negative case, vertices less than lower bound
+        """
+        pass
+
+    def test_filter_countour_vertice_gt_min_lt_max():
+        """
+        positive case, vertices is within bounds
+        """
+        pass
+
+    def test_filter_countour_vertice_gt_max():
+        """
+        negative case, vertices exceeds upper bound
+        """
+        pass
+
+    def test_extract_contours():
+        """
+        assert that correct datatype is returned
+        """
+        pass
+
+    def test_get_contour_areas():
+        """
+        assert correct datatype, irrelevant contours are filtered out
+        """
+        pass
+
+    def test_split_frames():
+        """
+        assert returns correct number of subimages
+        """
+        pass
 
 
 if __name__ == '__main__':
