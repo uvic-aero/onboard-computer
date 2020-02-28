@@ -7,6 +7,31 @@ from apps.Vision.QRClassification.QRCodeClassification import QRCodeClassificati
 
 class TestQRCodeClassification(unittest.TestCase):
 
+
+
+    def test_parameters_defaults():
+        """
+        Instatiate class and check parameters are not none
+        Defaults are whats in the config
+        """
+        test_config = {
+            sub_image_dim: "", 
+            max_height: "", 
+            min_height: "", 
+            max_vertices: "", 
+            min_vertices: "", 
+            threshold_val: "", 
+            threshold_type: "", 
+            contour_mode: "", 
+            contour_method: "", 
+            epsilon_factor: "", 
+            poly_closed: ""
+        }
+        QR_classification = QRCodeClassification(resolution=(1080,1440))
+        QR_classification.config = test_config
+
+        pass
+    
     def test_set_subimage_dim():
         """
         Assert that the LCD of the resolution dimensions is used as the
