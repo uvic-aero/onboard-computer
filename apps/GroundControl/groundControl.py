@@ -19,7 +19,7 @@ class GroundControl():
     def open_serial(self):
         self.ser = serial.Serial(SERIAL_PORT, BAUDRATE)
         while self.get_response() != READY_MESSAGE:
-            pass
+            print("Waiting for motor controller.")
 
 
     # Convert commands to string with format
