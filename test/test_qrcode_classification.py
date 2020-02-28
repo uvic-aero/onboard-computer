@@ -5,7 +5,7 @@ import numpy as np
 from apps.Vision.QRClassification.QRCodeClassification import QRCodeClassification
 
 
-class TestVision(unittest.TestCase):
+class TestQRCodeClassification(unittest.TestCase):
 
     def test_set_subimage_dim():
         """
@@ -91,15 +91,11 @@ class TestVision(unittest.TestCase):
         """
         pass
 
-<<<<<<< HEAD
     def test_split_frames():
         """
         assert returns correct number of subimages
         """
         pass
-=======
-        self.assertEqual(clsfn.filter_contour(None), [])
->>>>>>> 38009b6da62b525dda2a2e444a3a9a1cbfa6ef56
 
 
 if __name__ == '__main__':
