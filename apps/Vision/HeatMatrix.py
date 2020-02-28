@@ -14,10 +14,11 @@ class HeatMatrix:
       else:
          self.origin = np.array([size // 2,size // 2]) 
 
+      #CHANGE TO RESOLUTION
       self.shape = (size,size)
       self.queue_size = queue_size
       self.frames_queue = Queue(self.queue_size)
-      self.heat_matrix = np.ones(self.shape)
+      self.heat_matrix = np.zeros(self.shape)
       self._init_queue()
 
    def _get_oldest_frame(self):
@@ -33,10 +34,14 @@ class HeatMatrix:
          self.frames_queue.put(dummy_frame)
 
    def _update_heat_matrix(self, new_frame):
+      #Calculate overall decay being applied to a frame during its life time
+      oldest_frame_decay = .5^self.queue_size
 
-      #Compute heat matrix by by removing data from the last frame (divide)
-      #and add new frame (multiply)
-      self.heat_matrix = (self.heat_matrix / self._get_oldest_frame()) * new_frame
+      #Decay the heat matrix data and then subtract the oldest frame
+      self.heat_matrix = self.heat_matrix * .5 - (self._get_oldest_frame()*oldest_frame_decay)
+
+      #Add the new data to the heat matrix
+      self.heat_matrix += new_frame
 
       #Add newest frame into our queue for the future
       self._add_new_frame(new_frame)
