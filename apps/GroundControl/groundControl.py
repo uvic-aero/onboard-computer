@@ -26,30 +26,21 @@ class GroundControl():
     # <id(int) 180(0,1) brake(0,1) dir1(0,1), vel1(0-255), dir2(0,1), vel2(0-255) >
     def convert_to_string(self, commands):
         command_string = MESSAGE_START
-
         command_string += str(self.id) + " "
-
         if commands.get("180") == False:
             command_string += "0 "
         else:
             command_string += "1 "
-
         if commands.get("brake") == False:
             command_string += "0 "
         else:
             command_string += "1 "
-
         #0 or 1 into string
         command_string += str(commands.get("dir1")) + " "
-
         command_string += str(commands.get("vel1")) + " "
-
         command_string += str(commands.get("dir2")) + " "
-
         command_string += str(commands.get("vel2")) + " "
-
         command_string += MESSAGE_END
-
         return command_string
     
 
