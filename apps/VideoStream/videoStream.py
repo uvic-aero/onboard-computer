@@ -56,9 +56,9 @@ class VideoStream:
 
     def stop(self):
         print("Stopping VideoStream...")
+        self.status = "down"
         threading._shutdown()
         self.socket.close()
-        self.status = "down"
 
     def send_frame(self, frame, address, quality=4):
         encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), quality]
@@ -77,6 +77,9 @@ class VideoStream:
         self.socket.bind(('', port))
         print('Listening on port', port)
         while True:
+            if self.status == "down":
+                break
+            print(self.status)
             self.connections.lock.acquire()
             self.connections.cleanup()
             self.connections.lock.release()
