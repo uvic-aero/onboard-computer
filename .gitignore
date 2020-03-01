@@ -3,5 +3,9 @@ __pycache__
 images
 env
 venv
+opencv
+opencv_contrib
+OpenCV-master-py3
+installation
 
 .vscode/settings.json
