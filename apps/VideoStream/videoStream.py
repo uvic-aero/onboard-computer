@@ -74,12 +74,11 @@ class VideoStream:
     def listen(self, port = None):
         if port is None:
             port = self.port
-        self.socket.bind(('', port))
+        self.socket.bind(('127.0.0.1', port))
         print('Listening on port', port)
         while True:
             if self.status == "down":
                 break
-            print(self.status)
             self.connections.lock.acquire()
             self.connections.cleanup()
             self.connections.lock.release()
