@@ -3,6 +3,7 @@ import time
 import zlib
 import cv2
 import threading
+import sys
 
 class Connections:
     """Class for handling active connections"""
@@ -42,9 +43,9 @@ class VideoStream:
     # TODO: Write more complete docstring when distinction between classes is more clear.                                                                    
     # TODO: Add skeletons for additional class methods when functionality of class is made more clear.
     
-    def __init__(self):
+    def __init__(self, port=1201):
         self.status = "down"
-        self.port = 1201
+        self.port = port
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.connections = Connections(2)
         self.socket.settimeout(2)
@@ -57,7 +58,6 @@ class VideoStream:
     def stop(self):
         print("Stopping VideoStream...")
         self.status = "down"
-        threading._shutdown()
         self.socket.close()
 
     def send_frame(self, frame, address, quality=4):
@@ -74,7 +74,12 @@ class VideoStream:
     def listen(self, port = None):
         if port is None:
             port = self.port
-        self.socket.bind(('127.0.0.1', port))
+        try:
+            self.socket.bind(('127.0.0.1', port))
+        except socket.error:
+            print("Failed to bind port, exiting...")
+            self.stop()
+            return
         print('Listening on port', port)
         while True:
             if self.status == "down":
