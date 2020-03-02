@@ -54,11 +54,13 @@ class VideoStream:
     def start(self):
         if self.socket != None: pass
         print("Starting VideoStream...")
+        self.lock.acquire()
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.connections = Connections(2)
         self.socket.settimeout(2)
         self.listen_thread()
         self.status = "running"
+        self.lock.release()
 
     def stop(self):
         print("Stopping VideoStream...")
@@ -68,7 +70,7 @@ class VideoStream:
         self.socket.close()
         self.socket = None
         self.lock.release()
-
+        print("waiting for thread to join")
         self.thread.join()
 
 
@@ -112,10 +114,10 @@ class VideoStream:
                 data = data.decode('utf-8')
                 if (data == "get"):
                     self.connections.update(address)
-                self.lock.release()
             except socket.timeout:
                 self.lock.release()
                 continue
+            self.lock.release()
 
     def broadcast(self, frame):
         for key in self.connections.connections.keys():
