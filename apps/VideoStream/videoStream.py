@@ -102,30 +102,31 @@ class VideoStream:
         print('Listening on port', port)
         self.stop_lock.release()
         while True:
-            self.connections.cleanup()
-
             self.lock.acquire()
-            
+            self.connections.cleanup()
+            self.lock.release()
+
             # make sure socket is still open
             if self.socket is None:
-                self.lock.release()
                 return
-
+            
+            self.lock.acquire()
             for key in self.connections.connections.keys():
                 print(key)
-            
+            self.lock.release()
+
             try:  
                 print("Thread listening for data")
                 data, address = self.socket.recvfrom(3)
                 print("Thread got: ", data)
                 data = data.decode('utf-8')
                 if (data == "get"):
+                    self.lock.acquire()
                     self.connections.update(address)
+                    self.lock.release()
             except socket.timeout:
                 print("Socket timed out")
-                self.lock.release()
                 continue
-            self.lock.release()
 
     def broadcast(self, frame):
         for key in self.connections.connections.keys():
