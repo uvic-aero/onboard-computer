@@ -46,15 +46,20 @@ class VideoStream:
     def __init__(self, port=1201):
         self.thread = None
         self.lock = threading.Lock()
+        self.stop_lock = threading.Lock()
 
         self.status = "down"
         self.socket = None
         self.port = port
 
     def start(self):
-        if self.socket != None: pass
         print("Starting VideoStream...")
         self.lock.acquire()
+        self.stop_lock.acquire()
+        # If socket already initialized, pass
+        if self.socket != None: 
+            self.lock.release()
+            pass
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.connections = Connections(2)
         self.socket.settimeout(2)
@@ -63,13 +68,14 @@ class VideoStream:
         self.lock.release()
 
     def stop(self):
-        print("Stopping VideoStream...")
-
         self.lock.acquire()
+        self.stop_lock.acquire()
+        print("Stopping VideoStream...")
         self.status = "down"
         self.socket.close()
         self.socket = None
         self.lock.release()
+        self.stop_lock.release()
         print("waiting for thread to join")
         self.thread.join()
 
@@ -94,8 +100,8 @@ class VideoStream:
             print("Failed to bind port, exiting...")
             self.stop()
         print('Listening on port', port)
+        self.stop_lock.release()
         while True:
-
             self.connections.cleanup()
 
             self.lock.acquire()
@@ -109,12 +115,14 @@ class VideoStream:
                 print(key)
             
             try:  
+                print("Thread listening for data")
                 data, address = self.socket.recvfrom(3)
-                self.connections.lock.release()
+                print("Thread got: ", data)
                 data = data.decode('utf-8')
                 if (data == "get"):
                     self.connections.update(address)
             except socket.timeout:
+                print("Socket timed out")
                 self.lock.release()
                 continue
             self.lock.release()
