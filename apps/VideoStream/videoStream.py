@@ -3,7 +3,7 @@ import time
 import zlib
 import cv2
 import threading
-import sys
+import os
 
 class Connections:
     """Class for handling active connections"""
@@ -79,11 +79,10 @@ class VideoStream:
         except socket.error:
             print("Failed to bind port, exiting...")
             self.stop()
-            return
         print('Listening on port', port)
         while True:
             if self.status == "down":
-                break
+                os._exit(1)
             self.connections.lock.acquire()
             self.connections.cleanup()
             self.connections.lock.release()
