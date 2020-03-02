@@ -3,7 +3,7 @@ import time
 import zlib
 import cv2
 import threading
-import os
+import sys
 
 class Connections:
     """Class for handling active connections"""
@@ -58,7 +58,6 @@ class VideoStream:
     def stop(self):
         print("Stopping VideoStream...")
         self.status = "down"
-        self.socket.close()
 
     def send_frame(self, frame, address, quality=4):
         encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), quality]
@@ -82,7 +81,8 @@ class VideoStream:
         print('Listening on port', port)
         while True:
             if self.status == "down":
-                os._exit(1)
+                sys.exit()
+                self.socket.close()
             self.connections.lock.acquire()
             self.connections.cleanup()
             self.connections.lock.release()
