@@ -44,6 +44,9 @@ class VideoStream:
     # TODO: Add skeletons for additional class methods when functionality of class is made more clear.
     
     def __init__(self, port=1201):
+        self.thread = None
+        self.lock = threading.Lock()
+
         self.status = "down"
         self.socket = None
         self.port = port
@@ -59,12 +62,15 @@ class VideoStream:
 
     def stop(self):
         print("Stopping VideoStream...")
-        # TODO Listen loop relies on this param, lets update that
-        self.connections.lock.acquire()
+
+        self.lock.acquire()
         self.status = "down"
         self.socket.close()
         self.socket = None
-        self.connections.lock.release()
+        self.lock.release()
+
+        self.thread.join()
+
 
     def send_frame(self, frame, address, quality=4):
         encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), quality]
@@ -74,8 +80,8 @@ class VideoStream:
         self.socket.sendto(frame, address)
 
     def listen_thread(self):
-        listen = threading.Thread(target = self.listen)
-        listen.start()
+        self.thread = threading.Thread(target = self.listen)
+        self.thread.start()
 
     def listen(self, port = None):
         if port is None:
@@ -87,27 +93,29 @@ class VideoStream:
             self.stop()
         print('Listening on port', port)
         while True:
-            self.connections.lock.acquire()
+
             self.connections.cleanup()
-            self.connections.lock.release()
+
+            self.lock.acquire()
+            
+            # make sure socket is still open
+            if self.socket is None:
+                self.lock.release()
+                return
+
             for key in self.connections.connections.keys():
                 print(key)
             
             try:  
-                self.connections.lock.acquire()
-                if self.socket is None: return
                 data, address = self.socket.recvfrom(3)
                 self.connections.lock.release()
                 data = data.decode('utf-8')
                 if (data == "get"):
-                    self.connections.lock.acquire()
                     self.connections.update(address)
-                    self.connections.lock.release()
+                self.lock.release()
             except socket.timeout:
+                self.lock.release()
                 continue
-            
-            if self.status == "down":
-                break
 
     def broadcast(self, frame):
         for key in self.connections.connections.keys():
