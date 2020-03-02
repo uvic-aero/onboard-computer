@@ -45,9 +45,11 @@ class VideoStream:
     
     def __init__(self, port=1201):
         self.status = "down"
+        self.socket = None
         self.port = port
 
     def start(self):
+        if self.socket != None: pass
         print("Starting VideoStream...")
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.connections = Connections(2)
@@ -58,12 +60,11 @@ class VideoStream:
     def stop(self):
         print("Stopping VideoStream...")
         # TODO Listen loop relies on this param, lets update that
+        self.connections.lock.acquire()
         self.status = "down"
-
-        time.sleep(1)
-
         self.socket.close()
         self.socket = None
+        self.connections.lock.release()
 
     def send_frame(self, frame, address, quality=4):
         encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), quality]
@@ -93,8 +94,10 @@ class VideoStream:
                 print(key)
             
             try:  
-                if self.socket is None: pass
+                self.connections.lock.acquire()
+                if self.socket is None: return
                 data, address = self.socket.recvfrom(3)
+                self.connections.lock.release()
                 data = data.decode('utf-8')
                 if (data == "get"):
                     self.connections.lock.acquire()
