@@ -15,10 +15,11 @@ class TestVideoStream(unittest.TestCase):
         videoStream.start()
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         address = ('0.0.0.0', videoStream.port)
-        sent = sock.sendto("get".encode('utf-8'), address)
-        videoStream.stop()
+        while len(videoStream.connections.connections) < 1:
+            sock.sendto("get".encode('utf-8'), address)
         self.assertEqual(len(videoStream.connections.connections), 1)
-
+        videoStream.stop()
+        sock.close()
 
 if __name__ == '__main__':
     unittest.main()
