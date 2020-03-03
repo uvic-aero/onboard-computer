@@ -76,7 +76,6 @@ class VideoStream:
         self.socket = None
         self.lock.release()
         self.stop_lock.release()
-        print("waiting for thread to join")
         self.thread.join()
 
 
@@ -116,9 +115,7 @@ class VideoStream:
             self.lock.release()
 
             try:  
-                print("Thread listening for data")
                 data, address = self.socket.recvfrom(3)
-                print("Thread got: ", data)
                 data = data.decode('utf-8')
                 if (data == "get"):
                     self.lock.acquire()
@@ -127,6 +124,9 @@ class VideoStream:
             except socket.timeout:
                 print("Socket timed out")
                 continue
+            except OSError:
+                return
+
 
     def broadcast(self, frame):
         for key in self.connections.connections.keys():
