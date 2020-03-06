@@ -4,6 +4,8 @@ import datetime
 import os
 import importlib
 import uuid
+import cv2
+import numpy as np
 
 if importlib.find_loader("picamera"):
     found_picamera = True
@@ -21,9 +23,9 @@ class PiCam:
         if found_picamera:
             self.status = "PiCamera Connected"
             self.camera = PiCamera()
-            self.camera.resolution = (3280, 2464)
         else:
             self.status = "PiCamera Not Connected"
+            self.camera = 0 # for starting up local opencv capture
         self.now = datetime.datetime.now()
         self.counter = 0
 
@@ -61,6 +63,11 @@ class PiCam:
         img = {"id": self.counter, "image": fpath, "telemetry": telemetry}
         imageService.appendImageQueue(img)
 
+    def capture(self):
+        cam = cv2.VideoCapture(self.camera)
+        ret_val, frame = cam.read()
+        return frame
+
     def start_video(self):
         print("working")
 
@@ -78,6 +85,22 @@ class PiCam:
     def stop_preview(self):
         print("working")
         self.camera.stop_preview()
+
+    def get_resolution(self):
+        print("working")
+        return self.camera.resolution
+  
+    def set_resolution(self, value=(2592,1944)):
+        print("working")
+        self.camera.resolution = value
+ 
+    def get_framerate(self):
+        print("working")
+        return self.camera.framerate
+  
+    def set_framerate(self, value=32):
+        print("working")
+        self.camera.framerate = value
 
     def get_exposure_compensation(self):
         print("working")
