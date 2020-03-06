@@ -256,6 +256,7 @@ class TestQRCodeClassification(unittest.TestCase):
         sub_images = clsfn.split_frames(subimage)
         height, width, ____ = subimage.shape
 
+        #check correct number of 
         self.assertEquals()
         pass
 
