@@ -214,12 +214,14 @@ class TestQRCodeClassification(unittest.TestCase):
             [0, 1], [1, 1],
             [0, 0], [1, 0]
         ])
+        test_countours = [contour_1x4_len4, contour_2x5_len4, contour_1x1_len4]
+        expected_areas = np.array([4.0, 10.0])
         clsfn = QRCodeClassification(self.res)
 
         # expect invalid areas to be filtered out
         self.assertEquals(clsfn.get_contour_areas(
-            contours=[valid_contour, invalid_contour], min_height=min_height, max_height=max_height, max_len=max_len, min_len=min_len).shape[0],
-            np.array([4.0, 10.0])
+            contours=test_countours, min_height=min_height, max_height=max_height, max_len=max_len, min_len=min_len).shape[0],
+            expected_areas
         )
 
     def test_split_frames():
