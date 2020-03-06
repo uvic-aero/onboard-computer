@@ -9,28 +9,26 @@ class TestQRCodeClassification(unittest.TestCase):
 
     def __init__(self):
         self.test_config = {
-            sub_image_dim: "", 
-            max_height: "", 
-            min_height: "", 
-            max_vertices: "", 
-            min_vertices: "", 
-            threshold_val: "", 
-            threshold_type: "", 
-            contour_mode: "", 
-            contour_method: "", 
-            epsilon_factor: "", 
+            sub_image_dim: "",
+            max_height: "",
+            min_height: "",
+            max_vertices: "",
+            min_vertices: "",
+            threshold_val: "",
+            threshold_type: "",
+            contour_mode: "",
+            contour_method: "",
+            epsilon_factor: "",
             poly_closed: ""
         }
-
 
     def test_parameters_defaults():
         """
         Instatiate class and check parameters are not none
         Defaults are whats in the config
         """
-        QR_classification = QRCodeClassification(resolution=(1080,1440))
+        QR_classification = QRCodeClassification(resolution=(1080, 1440))
         QR_classification.config = self.test_config
-
 
     def test_exract_features(self):
         """
@@ -83,7 +81,6 @@ class TestQRCodeClassification(unittest.TestCase):
         ])
         clsfn = QRCodeClassification()
 
-
         self.assertEquals(clsfn.filter_contour(
             contour=contour, min_height=min_height, max_height=max_height, max_len=max_len, min_len=min_len),
             contour
@@ -104,7 +101,6 @@ class TestQRCodeClassification(unittest.TestCase):
             [0, 0], [1, 0]
         ])
         clsfn = QRCodeClassification()
-
 
         self.assertEquals(clsfn.filter_contour(
             contour=contour, min_height=min_height, max_height=max_height, max_len=max_len, min_len=min_len),
@@ -147,7 +143,6 @@ class TestQRCodeClassification(unittest.TestCase):
         ])
         clsfn = QRCodeClassification()
 
-
         self.assertEquals(clsfn.filter_contour(
             contour=contour, min_height=min_height, max_height=max_height, max_len=max_len, min_len=min_len),
             contour
@@ -173,7 +168,6 @@ class TestQRCodeClassification(unittest.TestCase):
         ])
         clsfn = QRCodeClassification()
 
-
         self.assertEquals(clsfn.filter_contour(
             contour=contour, min_height=min_height, max_height=max_height, max_len=max_len, min_len=min_len),
             None
@@ -194,7 +188,6 @@ class TestQRCodeClassification(unittest.TestCase):
             [0, 0], [1, 0]
         ])
         clsfn = QRCodeClassification()
-
 
         self.assertEquals(type(clsfn.filter_contour(
             contour=contour, min_height=min_height, max_height=max_height, max_len=max_len, min_len=min_len)),
@@ -222,12 +215,12 @@ class TestQRCodeClassification(unittest.TestCase):
         ])
         clsfn = QRCodeClassification()
 
-        #check type
+        # check type
         self.assertEquals(type(clsfn.get_contour_areas(
             contour=valid_contour, min_height=min_height, max_height=max_height, max_len=max_len, min_len=min_len)),
             np.ndarray
         )
-        #check invalid gets filtered out
+        # check invalid gets filtered out
         self.assertEquals(clsfn.get_contour_areas(
             contour=[valid_contour, non_valid_contour], min_height=min_height, max_height=max_height, max_len=max_len, min_len=min_len).shape[0],
             valid_contour
@@ -237,14 +230,15 @@ class TestQRCodeClassification(unittest.TestCase):
         """
         assert returns correct number of subimages
         """
-        image = cv2.imread("test/assets/test_image_1.jpg")
+        image = cv2.imread("test/assets/test_2592x1944_image.jpg")
         height, width, ____ = image.shape
         resolution = (height, width)
         clsfn = QRCodeClassification(resolution=resolution)
         sub_images = clsfn.split_frames(image)
 
-        num_images = (height / config.sub_image_dim[0])*(width / onfig.sub_image_dim[1])
-        #check correct number of 
+        num_images = (
+            height / self.config.sub_image_dim[0])*(width / self.config.sub_image_dim[1])
+        # check correct number of
         self.assertEquals(num_images, sub_images.shape[0])
 
 
