@@ -54,11 +54,3 @@ class HeatMatrix:
       vector = self.origin - highest_cord
 
       return vector
-
-class ValueTooSmallError(Exception):
-   """Raised when the input value is too small"""
-   pass
-
-class InvalidOriginError(Exception):
-   """Raised when origin is outside of matrix"""
-   pass
