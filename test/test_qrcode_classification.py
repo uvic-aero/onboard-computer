@@ -251,15 +251,15 @@ class TestQRCodeClassification(unittest.TestCase):
         """
         assert returns correct number of subimages
         """
-        subimage = cv2.imread("test/assets/test_subimage_1.jpg")
-        clsfn = QRCodeClassification()
-        sub_images = clsfn.split_frames(subimage)
-        height, width, ____ = subimage.shape
-        for img in sub_images:
-            sub_height, sub_width, ____ = img.shape
-        
-        num_images = (height / sub_height)*(width / sub_width)
+        resolution = (2592,1944)
+        image = cv2.imread("test/assets/test_image_1.jpg")
+        clsfn = QRCodeClassification(resolution=resolution)
+        sub_images = clsfn.split_frames(image)
 
+        height, width, ____ = image.shape
+
+        sub_height, sub_width, ____ =  sub_images[0].shape
+        num_images = (height / sub_height)*(width / sub_width)
         #check correct number of 
         self.assertEquals(num_images, sub_images.shape[0])
         pass
