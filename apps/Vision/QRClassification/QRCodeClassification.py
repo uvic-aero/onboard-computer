@@ -127,3 +127,4 @@ class QRCodeClassification:
                 subimages.append(img[r:r+subimgHeight, c:c+subimgWidth, :])
 
         return subimages
+
