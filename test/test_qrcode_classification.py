@@ -7,14 +7,8 @@ from apps.Vision.QRClassification.QRCodeClassification import QRCodeClassificati
 
 class TestQRCodeClassification(unittest.TestCase):
 
-
-
-    def test_parameters_defaults():
-        """
-        Instatiate class and check parameters are not none
-        Defaults are whats in the config
-        """
-        test_config = {
+    def __init__(self):
+        self.test_config = {
             sub_image_dim: "", 
             max_height: "", 
             min_height: "", 
@@ -27,17 +21,16 @@ class TestQRCodeClassification(unittest.TestCase):
             epsilon_factor: "", 
             poly_closed: ""
         }
-        QR_classification = QRCodeClassification(resolution=(1080,1440))
-        QR_classification.config = test_config
 
-        pass
-    
-    def test_set_subimage_dim():
+
+    def test_parameters_defaults():
         """
-        Assert that the LCD of the resolution dimensions is used as the
-        subimage dimension.
+        Instatiate class and check parameters are not none
+        Defaults are whats in the config
         """
-        pass
+        QR_classification = QRCodeClassification(resolution=(1080,1440))
+        QR_classification.config = self.test_config
+
 
     def test_exract_features(self):
         """
@@ -95,7 +88,6 @@ class TestQRCodeClassification(unittest.TestCase):
             contour=contour, min_height=min_height, max_height=max_height, max_len=max_len, min_len=min_len),
             contour
         )
-        pass
 
     def test_filter_countour_gt_max_ht():
         """
@@ -118,7 +110,6 @@ class TestQRCodeClassification(unittest.TestCase):
             contour=contour, min_height=min_height, max_height=max_height, max_len=max_len, min_len=min_len),
             None
         )
-        pass
 
     def test_filter_countour_vertice_lt_min():
         """
@@ -139,7 +130,6 @@ class TestQRCodeClassification(unittest.TestCase):
             contour=contour, min_height=min_height, max_height=max_height, max_len=max_len, min_len=min_len),
             None
         )
-        pass
 
     def test_filter_countour_vertice_gt_min_lt_max():
         """
@@ -162,7 +152,6 @@ class TestQRCodeClassification(unittest.TestCase):
             contour=contour, min_height=min_height, max_height=max_height, max_len=max_len, min_len=min_len),
             contour
         )
-        pass
 
     def test_filter_countour_vertice_gt_max():
         """
@@ -189,7 +178,6 @@ class TestQRCodeClassification(unittest.TestCase):
             contour=contour, min_height=min_height, max_height=max_height, max_len=max_len, min_len=min_len),
             None
         )
-        pass
 
     def test_extract_contours():
         """
@@ -212,7 +200,6 @@ class TestQRCodeClassification(unittest.TestCase):
             contour=contour, min_height=min_height, max_height=max_height, max_len=max_len, min_len=min_len)),
             np.ndarray
         )
-        pass
 
     def test_get_contour_areas():
         """
@@ -245,24 +232,20 @@ class TestQRCodeClassification(unittest.TestCase):
             contour=[valid_contour, non_valid_contour], min_height=min_height, max_height=max_height, max_len=max_len, min_len=min_len).shape[0],
             valid_contour
         )
-        pass
 
     def test_split_frames():
         """
         assert returns correct number of subimages
         """
-        resolution = (2592,1944)
         image = cv2.imread("test/assets/test_image_1.jpg")
+        height, width, ____ = image.shape
+        resolution = (height, width)
         clsfn = QRCodeClassification(resolution=resolution)
         sub_images = clsfn.split_frames(image)
 
-        height, width, ____ = image.shape
-
-        sub_height, sub_width, ____ =  sub_images[0].shape
-        num_images = (height / sub_height)*(width / sub_width)
+        num_images = (height / config.sub_image_dim[0])*(width / onfig.sub_image_dim[1])
         #check correct number of 
         self.assertEquals(num_images, sub_images.shape[0])
-        pass
 
 
 if __name__ == '__main__':
