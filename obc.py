@@ -14,6 +14,7 @@ from apps.ImageService.imageService import imageService
 from apps.Timelapse.timelapse import timelapse
 from apps.Pixhawk.pixhawk import pixhawk
 from apps.VideoStream.videoStream import videoStream
+from apps.Vision.Vision import vision
 
 class OnboardComputer:
     def __init__(self):
@@ -25,6 +26,7 @@ class OnboardComputer:
         # start apps
         imageService.start()
         pixhawk.start()
+        vision.start()
 
     def stop(self):
         print("Stopping Onboard Computer")
@@ -38,3 +40,4 @@ class OnboardComputer:
 if __name__ == "__main__":
     obc = OnboardComputer()
     obc.start()
+    vision.Capture()
