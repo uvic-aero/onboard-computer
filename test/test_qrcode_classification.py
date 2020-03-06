@@ -255,9 +255,13 @@ class TestQRCodeClassification(unittest.TestCase):
         clsfn = QRCodeClassification()
         sub_images = clsfn.split_frames(subimage)
         height, width, ____ = subimage.shape
+        for img in sub_images:
+            sub_height, sub_width, ____ = img.shape
+        
+        num_images = (height / sub_height)*(width / sub_width)
 
         #check correct number of 
-        self.assertEquals()
+        self.assertEquals(num_images, sub_images.shape[0])
         pass
 
 
