@@ -2,18 +2,18 @@ class QRCodeClassification:
 
     def __init__(self):
 
-        #initialize config      
+        # initialize config
         config = {
-            sub_image_dim: "", 
-            max_height: "", 
-            min_height: "", 
-            max_vertices: "", 
-            min_vertices: "", 
-            threshold_val: "", 
-            threshold_type: "", 
-            contour_mode: "", 
-            contour_method: "", 
-            epsilon_factor: "", 
+            sub_image_dim: "",
+            max_height: "",
+            min_height: "",
+            max_vertices: "",
+            min_vertices: "",
+            threshold_val: "",
+            threshold_type: "",
+            contour_mode: "",
+            contour_method: "",
+            epsilon_factor: "",
             poly_closed: ""
         }
         pass

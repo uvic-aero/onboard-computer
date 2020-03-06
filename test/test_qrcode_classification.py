@@ -24,7 +24,6 @@ class TestQRCodeClassification(unittest.TestCase):
 
     def tearDown(self):
         self.test_config = None
-        self.res = None
         return super().tearDown()
 
     def test_invalid_dims(self):
@@ -43,7 +42,7 @@ class TestQRCodeClassification(unittest.TestCase):
             clsfn = QRCodeClassification(self.test_config)
             clsfn.config = self.test_config
 
-        # first dim not divisible
+        # second dim not divisible
         self.test_config.sub_image_dim = (216, 200)
         with self.assertRaises(InvalidSubImageDimError) as cm:
             clsfn = QRCodeClassification(self.test_config)
@@ -55,7 +54,7 @@ class TestQRCodeClassification(unittest.TestCase):
             of 3 non-zero floats
         """
         subimage = cv2.imread("test/assets/test_subimage_1.jpg")
-        clsfn = QRCodeClassification(self.res)
+        clsfn = QRCodeClassification(self.test_config)
         features = clsfn.exract_features(subimage)
 
         self.assertEqual(len(features), 3)
@@ -77,7 +76,7 @@ class TestQRCodeClassification(unittest.TestCase):
             [0, 1], [1, 1],
             [0, 0], [1, 0]
         ])
-        clsfn = QRCodeClassification(self.res)
+        clsfn = QRCodeClassification(self.test_config)
 
         self.assertEquals(clsfn.filter_contour(
             contour=contour, min_height=min_height, max_height=max_height, max_len=max_len, min_len=min_len),
@@ -98,7 +97,7 @@ class TestQRCodeClassification(unittest.TestCase):
             [0, 1], [1, 4],
             [0, 0], [1, 0]
         ])
-        clsfn = QRCodeClassification(self.res)
+        clsfn = QRCodeClassification(self.test_config)
 
         self.assertEquals(clsfn.filter_contour(
             contour=contour, min_height=min_height, max_height=max_height, max_len=max_len, min_len=min_len),
@@ -119,7 +118,7 @@ class TestQRCodeClassification(unittest.TestCase):
             [0, 1], [1, 100000],
             [0, 0], [1, 0]
         ])
-        clsfn = QRCodeClassification(self.res)
+        clsfn = QRCodeClassification(self.test_config)
 
         self.assertEquals(clsfn.filter_contour(
             contour=contour, min_height=min_height, max_height=max_height, max_len=max_len, min_len=min_len),
@@ -139,7 +138,7 @@ class TestQRCodeClassification(unittest.TestCase):
         contour = np.asarray([
             [0, 1]
         ])
-        clsfn = QRCodeClassification(self.res)
+        clsfn = QRCodeClassification(self.test_config)
 
         self.assertEquals(clsfn.filter_contour(
             contour=contour, min_height=min_height, max_height=max_height, max_len=max_len, min_len=min_len),
@@ -160,7 +159,7 @@ class TestQRCodeClassification(unittest.TestCase):
             [0, 1], [1, 4],
             [0, 0], [1, 0]
         ])
-        clsfn = QRCodeClassification(self.res)
+        clsfn = QRCodeClassification(self.test_config)
 
         self.assertEquals(clsfn.filter_contour(
             contour=contour, min_height=min_height, max_height=max_height, max_len=max_len, min_len=min_len),
@@ -185,7 +184,7 @@ class TestQRCodeClassification(unittest.TestCase):
             [2, 1], [2, 4],
             [0, 2], [2, 0]
         ])
-        clsfn = QRCodeClassification(self.res)
+        clsfn = QRCodeClassification(self.test_config)
 
         self.assertEquals(clsfn.filter_contour(
             contour=contour, min_height=min_height, max_height=max_height, max_len=max_len, min_len=min_len),
@@ -206,7 +205,7 @@ class TestQRCodeClassification(unittest.TestCase):
             [0, 1], [1, 4],
             [0, 0], [1, 0]
         ])
-        clsfn = QRCodeClassification(self.res)
+        clsfn = QRCodeClassification(self.test_config)
 
         self.assertEquals(type(clsfn.filter_contour(
             contour=contour, min_height=min_height, max_height=max_height, max_len=max_len, min_len=min_len)),
@@ -237,7 +236,7 @@ class TestQRCodeClassification(unittest.TestCase):
         ])
         test_countours = [contour_1x4_len4, contour_2x5_len4, contour_1x1_len4]
         expected_areas = np.array([4.0, 10.0])
-        clsfn = QRCodeClassification(self.res)
+        clsfn = QRCodeClassification(self.test_config)
 
         # expect invalid areas to be filtered out
         self.assertEquals(clsfn.get_contour_areas(
@@ -252,7 +251,7 @@ class TestQRCodeClassification(unittest.TestCase):
         image = cv2.imread("test/assets/test_2592x1944_image.jpg")
         height, width, ____ = image.shape
         resolution = (height, width)
-        clsfn = QRCodeClassification(self.res)
+        clsfn = QRCodeClassification(self.test_config)
         sub_images = clsfn.split_frames(image)
 
         num_images = (
