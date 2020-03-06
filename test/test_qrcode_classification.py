@@ -3,12 +3,14 @@ import cv2
 import numpy as np
 
 from apps.Vision.QRClassification.QRCodeClassification import QRCodeClassification
+from exceptions.exceptions import InvalidSubImageDimError
 
 
 class TestQRCodeClassification(unittest.TestCase):
 
-    def __init__(self):
+    def setUp(self):
         self.test_config = {
+            resolution: (2592, 1944),
             sub_image_dim: (216, 216),
             max_height: 1900,
             min_height: 20,
@@ -18,15 +20,34 @@ class TestQRCodeClassification(unittest.TestCase):
             epsilon_factor: 0.05,
             poly_closed: True
         }
-        self.res = resolution = (1080, 1440)
+        return super().setUp()
 
-    def test_parameters_defaults():
+    def tearDown(self):
+        self.test_config = None
+        self.res = None
+        return super().tearDown()
+
+    def test_invalid_dims(self):
         """
-        Instatiate class and check parameters are not none
-        Defaults are whats in the config
+        Set an invalid dim, and assert that invalid dimensions exception is thrown
         """
-        QR_classification = QRCodeClassification(self.res)
-        QR_classification.config = self.test_config
+        # both dims not divisible
+        self.test_config.sub_image_dim = (200, 200)
+        with self.assertRaises(InvalidSubImageDimError) as cm:
+            clsfn = QRCodeClassification(self.test_config)
+            clsfn.config = self.test_config
+
+        # first dim not divisible
+        self.test_config.sub_image_dim = (200, 216)
+        with self.assertRaises(InvalidSubImageDimError) as cm:
+            clsfn = QRCodeClassification(self.test_config)
+            clsfn.config = self.test_config
+
+        # first dim not divisible
+        self.test_config.sub_image_dim = (216, 200)
+        with self.assertRaises(InvalidSubImageDimError) as cm:
+            clsfn = QRCodeClassification(self.test_config)
+            clsfn.config = self.test_config
 
     def test_exract_features(self):
         """
@@ -63,7 +84,7 @@ class TestQRCodeClassification(unittest.TestCase):
             None
         )
 
-    def test_filter_contour_gt_min_lt_max_ht():
+    def test_filter_contour_gt_min_lt_max_ht(self):
         """
         positive case, inbetween the two bounds
         """
@@ -84,7 +105,7 @@ class TestQRCodeClassification(unittest.TestCase):
             contour
         )
 
-    def test_filter_countour_gt_max_ht():
+    def test_filter_countour_gt_max_ht(self):
         """
         negative case, exceeds upper bound
         """
@@ -105,7 +126,7 @@ class TestQRCodeClassification(unittest.TestCase):
             None
         )
 
-    def test_filter_countour_vertice_lt_min():
+    def test_filter_countour_vertice_lt_min(self):
         """
         negative case, vertices less than lower bound
         """
@@ -125,7 +146,7 @@ class TestQRCodeClassification(unittest.TestCase):
             None
         )
 
-    def test_filter_countour_vertice_gt_min_lt_max():
+    def test_filter_countour_vertice_gt_min_lt_max(self):
         """
         positive case, vertices is within bounds
         """
@@ -146,7 +167,7 @@ class TestQRCodeClassification(unittest.TestCase):
             contour
         )
 
-    def test_filter_countour_vertice_gt_max():
+    def test_filter_countour_vertice_gt_max(self):
         """
         negative case, vertices exceeds upper bound
         """
@@ -171,7 +192,7 @@ class TestQRCodeClassification(unittest.TestCase):
             None
         )
 
-    def test_extract_contours():
+    def test_extract_contours(self):
         """
         assert that correct datatype is returned
         """
@@ -192,7 +213,7 @@ class TestQRCodeClassification(unittest.TestCase):
             np.ndarray
         )
 
-    def test_get_contour_areas():
+    def test_get_contour_areas(self):
         """
         correct areas are returned.
         """
@@ -224,7 +245,7 @@ class TestQRCodeClassification(unittest.TestCase):
             expected_areas
         )
 
-    def test_split_frames():
+    def test_split_frames(self):
         """
         assert returns correct number of subimages
         """
