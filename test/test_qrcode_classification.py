@@ -9,25 +9,23 @@ class TestQRCodeClassification(unittest.TestCase):
 
     def __init__(self):
         self.test_config = {
-            sub_image_dim: "",
-            max_height: "",
-            min_height: "",
-            max_vertices: "",
-            min_vertices: "",
-            threshold_val: "",
-            threshold_type: "",
-            contour_mode: "",
-            contour_method: "",
-            epsilon_factor: "",
-            poly_closed: ""
+            sub_image_dim: (216, 216),
+            max_height: 1900,
+            min_height: 20,
+            max_vertices: 50,
+            min_vertices: 2,
+            threshold_val: 120,
+            epsilon_factor: 0.05,
+            poly_closed: True
         }
+        self.res = resolution = (1080, 1440)
 
     def test_parameters_defaults():
         """
         Instatiate class and check parameters are not none
         Defaults are whats in the config
         """
-        QR_classification = QRCodeClassification(resolution=(1080, 1440))
+        QR_classification = QRCodeClassification(self.res)
         QR_classification.config = self.test_config
 
     def test_exract_features(self):
@@ -36,7 +34,7 @@ class TestQRCodeClassification(unittest.TestCase):
             of 3 non-zero floats
         """
         subimage = cv2.imread("test/assets/test_subimage_1.jpg")
-        clsfn = QRCodeClassification()
+        clsfn = QRCodeClassification(self.res)
         features = clsfn.exract_features(subimage)
 
         self.assertEqual(len(features), 3)
@@ -58,7 +56,7 @@ class TestQRCodeClassification(unittest.TestCase):
             [0, 1], [1, 1],
             [0, 0], [1, 0]
         ])
-        clsfn = QRCodeClassification()
+        clsfn = QRCodeClassification(self.res)
 
         self.assertEquals(clsfn.filter_contour(
             contour=contour, min_height=min_height, max_height=max_height, max_len=max_len, min_len=min_len),
@@ -79,7 +77,7 @@ class TestQRCodeClassification(unittest.TestCase):
             [0, 1], [1, 4],
             [0, 0], [1, 0]
         ])
-        clsfn = QRCodeClassification()
+        clsfn = QRCodeClassification(self.res)
 
         self.assertEquals(clsfn.filter_contour(
             contour=contour, min_height=min_height, max_height=max_height, max_len=max_len, min_len=min_len),
@@ -100,7 +98,7 @@ class TestQRCodeClassification(unittest.TestCase):
             [0, 1], [1, 100000],
             [0, 0], [1, 0]
         ])
-        clsfn = QRCodeClassification()
+        clsfn = QRCodeClassification(self.res)
 
         self.assertEquals(clsfn.filter_contour(
             contour=contour, min_height=min_height, max_height=max_height, max_len=max_len, min_len=min_len),
@@ -120,7 +118,7 @@ class TestQRCodeClassification(unittest.TestCase):
         contour = np.asarray([
             [0, 1]
         ])
-        clsfn = QRCodeClassification()
+        clsfn = QRCodeClassification(self.res)
 
         self.assertEquals(clsfn.filter_contour(
             contour=contour, min_height=min_height, max_height=max_height, max_len=max_len, min_len=min_len),
@@ -141,7 +139,7 @@ class TestQRCodeClassification(unittest.TestCase):
             [0, 1], [1, 4],
             [0, 0], [1, 0]
         ])
-        clsfn = QRCodeClassification()
+        clsfn = QRCodeClassification(self.res)
 
         self.assertEquals(clsfn.filter_contour(
             contour=contour, min_height=min_height, max_height=max_height, max_len=max_len, min_len=min_len),
@@ -166,7 +164,7 @@ class TestQRCodeClassification(unittest.TestCase):
             [2, 1], [2, 4],
             [0, 2], [2, 0]
         ])
-        clsfn = QRCodeClassification()
+        clsfn = QRCodeClassification(self.res)
 
         self.assertEquals(clsfn.filter_contour(
             contour=contour, min_height=min_height, max_height=max_height, max_len=max_len, min_len=min_len),
@@ -187,7 +185,7 @@ class TestQRCodeClassification(unittest.TestCase):
             [0, 1], [1, 4],
             [0, 0], [1, 0]
         ])
-        clsfn = QRCodeClassification()
+        clsfn = QRCodeClassification(self.res)
 
         self.assertEquals(type(clsfn.filter_contour(
             contour=contour, min_height=min_height, max_height=max_height, max_len=max_len, min_len=min_len)),
@@ -196,34 +194,32 @@ class TestQRCodeClassification(unittest.TestCase):
 
     def test_get_contour_areas():
         """
-        assert correct datatype, irrelevant contours are filtered out
+        correct areas are returned.
         """
         max_height = 100
         min_height = 2
         max_len = 100
         min_len = 2
 
-        # Square contour with length 4, and height 5
-        valid_contour = np.asarray([
+        # Square contour with length 4, and height 4
+        contour_1x4_len4 = np.asarray([
             [0, 1], [1, 4],
             [0, 0], [1, 0]
         ])
-
-        non_valid_contour = np.asarray([
+        contour_2x5_len4 = np.asarray([
+            [0, 1], [2, 5],
+            [0, 0], [2, 0]
+        ])
+        contour_1x1_len4 = np.asarray([
             [0, 1], [1, 1],
             [0, 0], [1, 0]
         ])
-        clsfn = QRCodeClassification()
+        clsfn = QRCodeClassification(self.res)
 
-        # check type
-        self.assertEquals(type(clsfn.get_contour_areas(
-            contour=valid_contour, min_height=min_height, max_height=max_height, max_len=max_len, min_len=min_len)),
-            np.ndarray
-        )
-        # check invalid gets filtered out
+        # expect invalid areas to be filtered out
         self.assertEquals(clsfn.get_contour_areas(
-            contour=[valid_contour, non_valid_contour], min_height=min_height, max_height=max_height, max_len=max_len, min_len=min_len).shape[0],
-            valid_contour
+            contours=[valid_contour, invalid_contour], min_height=min_height, max_height=max_height, max_len=max_len, min_len=min_len).shape[0],
+            np.array([4.0, 10.0])
         )
 
     def test_split_frames():
@@ -233,7 +229,7 @@ class TestQRCodeClassification(unittest.TestCase):
         image = cv2.imread("test/assets/test_2592x1944_image.jpg")
         height, width, ____ = image.shape
         resolution = (height, width)
-        clsfn = QRCodeClassification(resolution=resolution)
+        clsfn = QRCodeClassification(self.res)
         sub_images = clsfn.split_frames(image)
 
         num_images = (
