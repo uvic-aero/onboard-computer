@@ -40,4 +40,3 @@ class OnboardComputer:
 if __name__ == "__main__":
     obc = OnboardComputer()
     obc.start()
-    vision.Capture()
