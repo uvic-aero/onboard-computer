@@ -16,6 +16,7 @@ from apps.Pixhawk.pixhawk import pixhawk
 from apps.VideoStream.videoStream import videoStream
 from apps.Vision.Vision import vision
 
+
 class OnboardComputer:
     def __init__(self):
         pass
@@ -26,7 +27,6 @@ class OnboardComputer:
         # start apps
         imageService.start()
         pixhawk.start()
-        vision.start()
 
     def stop(self):
         print("Stopping Onboard Computer")
