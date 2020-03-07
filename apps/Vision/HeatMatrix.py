@@ -3,41 +3,44 @@ from queue import Queue
 
 class HeatMatrix:
 
-   def __init__(self, size, queue_size, origin=None):
-      if size <= 1:
+   def __init__(self, shape, queue_size, origin=None):
+      x,y = shape
+      
+      if x <= 1 | y <= 1:
          raise ValueTooSmallError
       
       if origin is not None:
-         if origin[0] - size >= 0 or origin[1] - size >= 0:
+         if origin[0] - x >= 0 or origin[1] - y >= 0:
             raise InvalidOriginError
          self.origin = origin
       else:
-         self.origin = np.array([size // 2,size // 2]) 
+         self.origin = np.array([x // 2, y // 2]) 
 
-      self.shape = (size,size)
+      #CHANGE TO RESOLUTION
+      self.shape = shape
       self.queue_size = queue_size
       self.frames_queue = Queue(self.queue_size)
-      self.heat_matrix = np.ones(self.shape)
-      self._init_queue()
+      self.heat_matrix = np.zeros(self.shape)
+      self.capacity = 0
 
    def _get_oldest_frame(self):
       oldest_frame = self.frames_queue.get()
       return oldest_frame
 
    def _add_new_frame(self, frame):
+      self.capacity += 1
       self.frames_queue.put(frame)
 
-   def _init_queue(self):
-      dummy_frame = np.ones(self.shape)
-      for q in range(self.queue_size):
-         self.frames_queue.put(dummy_frame)
-
    def _update_heat_matrix(self, new_frame):
-
-      #Compute heat matrix by by removing data from the last frame (divide)
-      #and add new frame (multiply)
-      self.heat_matrix = (self.heat_matrix / self._get_oldest_frame()) * new_frame
-
+      #Calculate overall decay being applied to a frame during its life time
+      oldest_frame_decay = .5**self.queue_size
+      
+      # Check queue is full
+      if self.capacity >= self.queue_size:
+          #Decay the heat matrix data and then subtract the oldest frame
+          self.heat_matrix = self.heat_matrix * .5 - (self._get_oldest_frame()*oldest_frame_decay)
+      #Add the new data to the heat matrix
+      self.heat_matrix += new_frame
       #Add newest frame into our queue for the future
       self._add_new_frame(new_frame)
 
