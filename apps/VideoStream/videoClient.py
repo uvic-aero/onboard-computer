@@ -10,7 +10,7 @@ class Client:
 
 	# Create a UDP socket
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.address = ('0.0.0.0', 1201) 
+        self.address = ('192.168.0.131', 1201) 
 
     def connect(self, address=None):
 
@@ -34,3 +34,6 @@ class Client:
         self.sock.sendto("quit".encode('utf-8'), self.address)
         print("Quitting")
         cv2.destroyAllWindows()
+
+client = Client()
+client.connect()

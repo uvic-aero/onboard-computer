@@ -2,8 +2,7 @@ import unittest
 import cv2
 import numpy as np
 
-from apps.Vision.QRClassification.QRCodeClassification import QRCodeClassification
-from exceptions.exceptions import InvalidSubImageDimError
+from apps.Vision.QRClassification.QRCodeClassification import QRCodeClassification, InvalidSubImageDimError
 
 
 class TestQRCodeClassification(unittest.TestCase):

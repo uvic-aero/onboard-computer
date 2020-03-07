@@ -1,7 +1,6 @@
 import unittest
 import numpy as np
-from apps.Vision.HeatMatrix import HeatMatrix
-from exceptions.exceptions import ValueTooSmallError, InvalidOriginError
+from apps.Vision.HeatMatrix import HeatMatrix, ValueTooSmallError, InvalidOriginError
 
 
 class TestHeatMatrix(unittest.TestCase):
