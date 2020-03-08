@@ -15,3 +15,4 @@ count = 0
 for subimage in subimages:
     cv2.imwrite(f"./{directory}/img_{count}.jpg", subimage)
     count += 1
+    
