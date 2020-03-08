@@ -67,7 +67,7 @@ class QRCodeClassification:
             if h > 20 and h < 1900:
                 return (x, y)
 
-        return (-1, -1)
+        return None
 
     def extract_countours(self, subimage): 
         """ 
@@ -127,4 +127,3 @@ class QRCodeClassification:
                 subimages.append(img[r:r+subimgHeight, c:c+subimgWidth, :])
 
         return subimages
-
