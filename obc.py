@@ -14,6 +14,8 @@ from apps.ImageService.imageService import imageService
 from apps.Timelapse.timelapse import timelapse
 from apps.Pixhawk.pixhawk import pixhawk
 from apps.VideoStream.videoStream import videoStream
+from apps.Vision.Vision import vision
+
 
 
 class OnboardComputer:
