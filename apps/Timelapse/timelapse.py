@@ -15,7 +15,7 @@ class Timelapse:
         self.stop_burst = False
 
         # set default interval length.
-        self.interval = config.values["timelapse"]["interval"]
+        self.interval = config["timelapse-interval"]
         self.prev_interval = 3
         self.duration = 0
         self.photo_count = -1

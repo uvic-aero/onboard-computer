@@ -11,9 +11,9 @@ from apps.Config.config import config
 class ImageService:
 
     groundstation_url = (
-        config.values["groundstation"]["ip"]
+        config["groundstation-ip"]
         + ":"
-        + config.values["groundstation"]["port"]
+        + config["groundstation-port"]
     )
 
     def __init__(self):
@@ -21,7 +21,7 @@ class ImageService:
         self.status = "down"
         self.image_queue = []
         self.mutex = Lock()
-        self.poll_time = int(config.values["image_service"]["interval"])
+        self.poll_time = int(config["image_service-interval"])
 
     # The start and stop functions do not need to be used if the programmer
     # thinks that this class should not take the form of a process

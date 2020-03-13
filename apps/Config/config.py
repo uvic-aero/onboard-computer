@@ -1,30 +1,16 @@
-import configparser
-
-
-class Config:
-    def __init__(self):
-        self.values = self.get_values()
-        self.print_values()
-
-    def get_values(self):
-        config = configparser.ConfigParser()
-        config.read("config.ini")
-        return config
-
-    def get(self, category, key):
-        return self.values[category][key]
-
-    def print_values(self):
-        print(
-            "Configuration:"
-            "\n  OBC PORT: {0}"
-            "\n  GCS IP: {1}"
-            "\n  GCS PORT: {2}".format(
-                self.values["obc"]["port"],
-                self.values["groundstation"]["ip"],
-                self.values["groundstation"]["port"],
-            )
-        )
-
-
-config = Config()
+config = {
+    "groundstation-ip": "http://localhost",
+    "groundstation-port": 24002,
+    "obc-port": 1600,
+    "timelapse-interval": 5,
+    "image_service_interval": 5,
+    "resolution":(2592, 1944),
+    "sub_image_dim":(216, 216),
+    "max_height":1900,
+    "min_height":20,
+    "max_vertices":50,
+    "min_vertices":2,
+    "threshold_val":120,
+    "epsilon_factor":0.05,
+    "poly_closed":True
+}
