@@ -16,7 +16,6 @@ class QRCodeClassification:
             epsilon_factor: "",
             poly_closed: ""
         }
-        pass
 
     def exract_features(self, subimage):
         """ 
@@ -44,7 +43,14 @@ class QRCodeClassification:
         Returns: 
             List: [mean_area, std_area, cardinality_of_contour]
         """
-        return []
+        curve_len = cv2.arcLength(contour, True)
+        approx = cv2.approxPolyDP(contour, 0.05 * curve_len, True)
+        if len(approx) >= 2 and len(approx) < 50:
+            x, y, w, h = cv2.boundingRect(approx)
+            if h > 20 and h < 1900:
+                return (x, y)
+
+        return None
 
     def extract_countours(self, subimage):
         """ 
@@ -83,4 +89,13 @@ class QRCodeClassification:
         Returns: 
             List of 2D numpy arrays: Subimages
         """
-        return []
+        subimages = []
+        img = cv2.imread(image)
+        subimgHeight = self.resolution[0]//self.gridSize
+        subimgWidth = self.resolution[1]//self.gridSize
+    
+        for r in range(0, self.resolution[0],  subimgHeight):
+            for c in range(0, self.resolution[1], subimgWidth):
+                subimages.append(img[r:r+subimgHeight, c:c+subimgWidth, :])
+
+        return subimages
