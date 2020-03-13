@@ -11,6 +11,9 @@ class Config:
         config.read("config.ini")
         return config
 
+    def get(self, category, key):
+        return self.values[category][key]
+
     def print_values(self):
         print(
             "Configuration:"
