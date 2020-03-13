@@ -13,7 +13,7 @@ class ImageService:
     groundstation_url = (
         config["groundstation-ip"]
         + ":"
-        + config["groundstation-port"]
+        + str(config["groundstation-port"])
     )
 
     def __init__(self):
@@ -21,7 +21,7 @@ class ImageService:
         self.status = "down"
         self.image_queue = []
         self.mutex = Lock()
-        self.poll_time = int(config["image_service-interval"])
+        self.poll_time = int(config["image_service_interval"])
 
     # The start and stop functions do not need to be used if the programmer
     # thinks that this class should not take the form of a process
