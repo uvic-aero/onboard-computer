@@ -2,7 +2,7 @@ pymavlink==2.3.4
 dronekit==2.9.2
 future==0.17.1
 requests==2.20.0
-numpy==1.17.3
+numpy==1.22.0
 Pillow
 constants==0.6.0
 netifaces==0.10.9
