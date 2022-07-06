@@ -10,7 +10,7 @@ serial==0.0.97
 chardet==3.0.4
 constants==0.6.0
 idna==2.7
-lxml==4.6.4
+lxml==4.9.1
 MAVProxy==1.8.5
 monotonic==1.5
 pyserial==3.4
